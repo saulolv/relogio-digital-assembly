@@ -1,0 +1,39 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.8</VERSION>
+ <DEVICE>"ATmega328P"</DEVICE>
+ <WORKING_DIR>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\Debug\digital-clock.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>digital-clock.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>digital-clock.map</FILE>
+  <FILE>digital-clock.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <mode_1><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>5</LINE></mode_1>
+  <mode_2><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>6</LINE></mode_2>
+  <reset><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>17</LINE></reset>
+  <OCI1A_ISR><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>52</LINE></OCI1A_ISR>
+  <main><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>49</LINE></main>
+  <continue><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>62</LINE></continue>
+  <cronometro><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>100</LINE></cronometro>
+  <pass><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>68</LINE></pass>
+  <hora_atual><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>74</LINE></hora_atual>
+  <atualiza_minuto_atual><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>87</LINE></atualiza_minuto_atual>
+  <end><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>95</LINE></end>
+  <pass_soma><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>126</LINE></pass_soma>
+  <atualiza_minuto_cronometro><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>118</LINE></atualiza_minuto_cronometro>
+ </LABELS>
+</ASSEMBLER_INFO>
