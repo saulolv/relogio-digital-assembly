@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm Mon Apr 07 09:11:15 2025
+AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Mon Apr 07 20:01:35 2025
 
 
 EQU  SIGNATURE_000 0000001e
@@ -701,17 +701,27 @@ DEF  actual_mode  r18
 DEF  temp1        r16
 DEF  temp2        r17
 CSEG reset        00000018
-CSEG OCI1A_ISR    00000039
+CSEG OCI1A_ISR    00000043
 EQU  PRESCALE     00000004
 EQU  PRESCALE_DIV 00000100
 EQU  WGM          00000004
 EQU  TOP          0000f424
-CSEG main         00000038
-CSEG continue     0000003f
-CSEG cronometro   0000005b
-CSEG pass         00000042
-CSEG hora_atual   00000046
-CSEG atualiza_minuto_atual 00000050
-CSEG end          00000058
-CSEG pass_soma    00000070
-CSEG atualiza_minuto_cronometro 00000068
+CSEG main         0000003a
+CSEG exibe_digito_0 0000007d
+CSEG delay_multiplex 000000a7
+CSEG exibe_digito_1 00000087
+CSEG exibe_digito_2 00000090
+CSEG exibe_digito_3 00000097
+CSEG continue     00000049
+CSEG cronometro   00000065
+CSEG pass         0000004c
+CSEG hora_atual   00000050
+CSEG atualiza_minuto_atual 0000005a
+CSEG end          00000062
+CSEG pass_soma    0000007a
+CSEG atualiza_minuto_cronometro 00000072
+CSEG dividir      000000ac
+CSEG enviar_para_cd4511 000000a0
+CSEG espera       000000a8
+CSEG div_loop     000000ae
+CSEG fim_div      000000b3

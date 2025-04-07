@@ -1,18 +1,18 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.8</VERSION>
  <DEVICE>"ATmega328P"</DEVICE>
- <WORKING_DIR>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\Debug</WORKING_DIR>
+ <WORKING_DIR>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\Debug</WORKING_DIR>
  <INCLUDE_PATH>
   <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\Debug\digital-clock.obj</FILE>
+  <FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\Debug\digital-clock.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>digital-clock.hex</FILE>
@@ -22,18 +22,28 @@
   <FILE>digital-clock.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <mode_1><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>5</LINE></mode_1>
-  <mode_2><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>6</LINE></mode_2>
-  <reset><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>17</LINE></reset>
-  <OCI1A_ISR><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>52</LINE></OCI1A_ISR>
-  <main><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>49</LINE></main>
-  <continue><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>62</LINE></continue>
-  <cronometro><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>100</LINE></cronometro>
-  <pass><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>68</LINE></pass>
-  <hora_atual><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>74</LINE></hora_atual>
-  <atualiza_minuto_atual><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>87</LINE></atualiza_minuto_atual>
-  <end><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>95</LINE></end>
-  <pass_soma><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>126</LINE></pass_soma>
-  <atualiza_minuto_cronometro><FILE>C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm</FILE><LINE>118</LINE></atualiza_minuto_cronometro>
+  <mode_1><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>5</LINE></mode_1>
+  <mode_2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>6</LINE></mode_2>
+  <reset><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>18</LINE></reset>
+  <OCI1A_ISR><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>87</LINE></OCI1A_ISR>
+  <main><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>69</LINE></main>
+  <exibe_digito_0><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>165</LINE></exibe_digito_0>
+  <delay_multiplex><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>218</LINE></delay_multiplex>
+  <exibe_digito_1><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>177</LINE></exibe_digito_1>
+  <exibe_digito_2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>187</LINE></exibe_digito_2>
+  <exibe_digito_3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>196</LINE></exibe_digito_3>
+  <continue><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>96</LINE></continue>
+  <cronometro><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>135</LINE></cronometro>
+  <pass><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>101</LINE></pass>
+  <hora_atual><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>108</LINE></hora_atual>
+  <atualiza_minuto_atual><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>121</LINE></atualiza_minuto_atual>
+  <end><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>129</LINE></end>
+  <pass_soma><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>159</LINE></pass_soma>
+  <atualiza_minuto_cronometro><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>151</LINE></atualiza_minuto_cronometro>
+  <dividir><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>226</LINE></dividir>
+  <enviar_para_cd4511><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>207</LINE></enviar_para_cd4511>
+  <espera><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>220</LINE></espera>
+  <div_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>230</LINE></div_loop>
+  <fim_div><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>239</LINE></fim_div>
  </LABELS>
 </ASSEMBLER_INFO>

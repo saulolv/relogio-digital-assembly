@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.8  C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digital-clock\main.asm Mon Apr 07 09:11:15 2025
+AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Mon Apr 07 20:01:35 2025
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
                                  
-                                 #define CLOCK 16.0e6
+                                 #define CLOCK 16.0e6	;Define o clock do microcontrolador como 16 MHz.
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega328P.xml **********
                                  ;*************************************************************************
@@ -985,20 +985,21 @@ AVRASM ver. 2.2.8  C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digit
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
-                                 #define DELAY 1
+                                 #define DELAY 1			;Indica que a interrupção vai acontecer a cada 1 segundo.
                                  
-                                 .dseg
-000100                           mode_1: .byte 2
-000102                           mode_2: .byte 3
+                                 .dseg					;Sram
+000100                           mode_1: .byte 2			;Guarda o tempo atual (minuto, segundo).
+000102                           mode_2: .byte 3			;Guarda o cronômetro (minuto, segundo, flag de ativação).
                                  
-                                 .def actual_mode = r18
-                                 .def temp1 = r16
-                                 .def temp2 = r17
+                                 .def actual_mode = r18	;Armazena o modo atual de operação (relógio, cronômetro, ajuste...)
+                                 .def temp1 = r16		;Variavel temporaria
+                                 .def temp2 = r17		;Variavel temporaria
                                  
-                                 .cseg
-000000 940c 0018                 jmp reset
-                                 .org OC1Aaddr
-000016 940c 0039                     jmp OCI1A_ISR
+                                 .cseg					;Flash
+000000 940c 0018                 jmp reset				;Inicialização
+                                 .org OC1Aaddr			;Vai para o endereço de vetor da interrupção Timer1 Compara A
+000016 940c 0043                     jmp OCI1A_ISR		;Quando essa interrupção acontecer, pule para a função OCI1A_ISR
+                                 
                                  
                                  reset:
 000018 ef0f                          ldi r16, low(RAMEND)
@@ -1006,112 +1007,227 @@ AVRASM ver. 2.2.8  C:\Users\higor\Documents\Atmel Studio\7.0\digital-clock\digit
 00001a e008                          ldi r16, high(RAMEND)
 00001b bf0e                          out SPH, r16
                                  
-00001c e000                          ldi temp1, 0
-00001d 9300 0100                     sts mode_1, temp1
-00001f 9300 0101                     sts mode_1 + 1, temp1
-000021 9300 0102                     sts mode_2, temp1
-000023 9300 0103                     sts mode_2 + 1, temp1
-000025 9300 0104                     sts mode_2 + 2, temp1  ; Flag = 0
+00001c e00f                      	ldi temp1, 0b00001111     ; PB0–PB3 como saída
+00001d b904                      	out DDRB, temp1
                                  
-000027 e002                          ldi temp1, (1 << OCIE1A)
-000028 9300 006f                     sts TIMSK1, temp1
+00001e e000                          ldi temp1, 0              ; Carrega o valor 0 no registrador temp1 (r16)
                                  
-                                     .equ PRESCALE = 0b100
-                                     .equ PRESCALE_DIV = 256
-                                     .equ WGM = 0b0100
-                                     .equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
                                  
-00002a ef04                          ldi temp1, high(TOP)
-00002b 9300 0089                     sts OCR1AH, temp1
-00002d e204                          ldi temp1, low(TOP)
-00002e 9300 0088                     sts OCR1AL, temp1
-000030 e000                          ldi temp1, ((WGM&0b11) << WGM10)
-000031 9300 0080                     sts TCCR1A, temp1
-000033 e00c                          ldi temp1, ((WGM>>2) << WGM12)|(PRESCALE << CS10)
-000034 9300 0081                     sts TCCR1B, temp1
-000036 e022                          ldi actual_mode, 2
-000037 9478                          sei
+00001f 9300 0100                 	sts mode_1, temp1         ; Zera os minutos atuais do relógio (mode_1 = 0)
+000021 9300 0101                 	sts mode_1 + 1, temp1     ; Zera os segundos atuais do relógio (mode_1 + 1 = 0)
+000023 9300 0102                 	sts mode_2, temp1         ; Zera os minutos do cronômetro (mode_2 = 0)
+000025 9300 0103                 	sts mode_2 + 1, temp1     ; Zera os segundos do cronômetro (mode_2 + 1 = 0)
+000027 9300 0104                 	sts mode_2 + 2, temp1     ; Zera a flag de ativação do cronômetro (mode_2 + 2 = 0)
+                                 
+                                 
+000029 e002                          ldi temp1, (1 << OCIE1A)  ; Carrega no registrador temp1 um valor com o bit OCIE1A ativado (bit que habilita a interrupção do Timer1 Compare Match A)
+00002a 9300 006f                 	sts TIMSK1, temp1         ; Escreve esse valor no registrador TIMSK1, ativando a interrupção do Timer1 (Canal A)
+                                 
+                                 
+                                     .equ PRESCALE = 0b100           ; Seleciona o prescaler do Timer1 como 256 (CS12:CS10 = 100)
+                                 	.equ PRESCALE_DIV = 256         ; Valor real do prescaler (divisor de clock)
+                                 	.equ WGM = 0b0100               ; Define o modo de operação do Timer1 como CTC (Clear Timer on Compare Match)
+                                 	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
+                                 									 ; Calcula o valor de contagem necessário para gerar uma interrupção a cada DELAY segundos
+                                 									 ; Fórmula: TOP = (Clock / Prescaler) * Tempo
+                                 									 ; Exemplo: (16.000.000 / 256) * 1s = 62500 → TOP = 62500
+                                 									 ; Esse valor será colocado em OCR1A
+                                 
+                                 
+00002c ef04                      	ldi temp1, high(TOP)              ; Carrega o byte mais significativo do valor TOP no registrador temp1
+00002d 9300 0089                 	sts OCR1AH, temp1                 ; Armazena esse valor no registrador OCR1AH (parte alta do valor de comparação do Timer1)
+00002f e204                      	ldi temp1, low(TOP)               ; Carrega o byte menos significativo do valor TOP no registrador temp1
+000030 9300 0088                 	sts OCR1AL, temp1                 ; Armazena esse valor no registrador OCR1AL (parte baixa do valor de comparação do Timer1)
+                                 									  ; Agora OCR1A = TOP, valor que define quando o timer gera uma interrupção (em modo CTC)
+                                 
+000032 e000                      	ldi temp1, ((WGM & 0b11) << WGM10) ; Extrai os 2 bits menos significativos de WGM e posiciona em WGM10/WGM11
+000033 9300 0080                 	sts TCCR1A, temp1                 ; Configura os bits de modo de operação do Timer1 no registrador TCCR1A
+                                 
+000035 e00c                      	ldi temp1, ((WGM >> 2) << WGM12) | (PRESCALE << CS10)
+                                 									  ; Extrai os bits mais significativos de WGM e o valor do prescaler,
+                                 									  ; desloca para as posições corretas (WGM12/WGM13 e CS10/CS11/CS12)
+                                 
+000036 9300 0081                 	sts TCCR1B, temp1                 ; Configura modo CTC e ativa o prescaler de 256 no registrador TCCR1B
+000038 e022                      	ldi actual_mode, 2                ; Define o modo de operação inicial como 2 (cronômetro ativo)
+000039 9478                      	sei                               ; Ativa as interrupções globais (sem isso, nenhuma interrupção é executada)
+                                 
                                  
                                  main:
-000038 cfff                          rjmp main
+                                     ; Exibe cada dígito um por vez (em alta velocidade)
+                                 
+00003a d042                          rcall exibe_digito_0
+00003b d06b                          rcall delay_multiplex
+                                 
+00003c d04a                          rcall exibe_digito_1
+00003d d069                          rcall delay_multiplex
+                                 
+00003e d051                          rcall exibe_digito_2
+00003f d067                          rcall delay_multiplex
+                                 
+000040 d056                          rcall exibe_digito_3
+000041 d065                          rcall delay_multiplex
+                                 
+000042 cff7                          rjmp main
+                                 
                                  
                                  OCI1A_ISR:
-000039 930f                          push r16
-00003a b70f                          in r16, SREG
-00003b 930f                          push r16
+000043 930f                          push r16                 ; Salva registrador temporário
+000044 b70f                          in r16, SREG
+000045 930f                          push r16                 ; Salva o status do processador (flags)
                                  
-                                     ; verifica se o modo atual eh o cronometro
-00003c 3022                          cpi actual_mode, 2
-00003d f409                          brne continue
-00003e d01c                          rcall cronometro
+000046 3022                          cpi actual_mode, 2       ; Se o modo atual for cronômetro (2)
+000047 f409                          brne continue            ; Se não for, pula
+000048 d01c                          rcall cronometro         ; Chama função do cronômetro
                                  
-                                     continue:
-                                         ; verifica se o modo atual eh ajustar as horas, se for não atualiza a hora atual
-00003f 3023                              cpi actual_mode, 3
-000040 f009                              breq pass
-000041 d004                              rcall hora_atual
+                                 	continue:
+000049 3023                      		cpi actual_mode, 3       ; Se for modo ajuste (3), pula
+00004a f009                      		breq pass
+00004b d004                      		rcall hora_atual         ; Atualiza o relógio
                                  
-                                     pass:
-000042 910f                              pop r16
-000043 bf0f                              out SREG, r16
-000044 910f                              pop r16
-000045 9518                              reti
+                                 	pass:
+00004c 910f                      		pop r16                  ; Restaura SREG
+00004d bf0f                      		out SREG, r16
+00004e 910f                      		pop r16                  ; Restaura r16
+00004f 9518                      		reti                     ; Retorna da interrupção
+                                 
                                  
                                  hora_atual:
-000046 930f                          push temp1
-000047 931f                          push temp2
+000050 930f                          push temp1               ; Salva registradores temporários
+000051 931f                          push temp2
                                  
-000048 9110 0101                     lds temp2, mode_1 + 1
-00004a 9513                          inc temp2
+000052 9110 0101                     lds temp2, mode_1 + 1    ; Carrega segundos atuais do relógio
+000054 9513                          inc temp2                ; Incrementa 1 segundo
                                  
-00004b 331c                          cpi temp2, 60
-00004c f019                          breq atualiza_minuto_atual
+000055 331c                          cpi temp2, 60            ; Verifica se chegou a 60 segundos
+000056 f019                          breq atualiza_minuto_atual ; Se sim, pula para atualizar minutos
                                  
-00004d 9310 0101                     sts mode_1 + 1, temp2
-00004f c008                          rjmp end
+000057 9310 0101                     sts mode_1 + 1, temp2    ; Caso contrário, salva segundos atualizados
+000059 c008                          rjmp end                 ; E sai da função
                                  
                                      atualiza_minuto_atual:
-000050 9100 0100                         lds temp1, mode_1
-000052 9503                              inc temp1
-000053 9300 0100                         sts mode_1, temp1
+00005a 9100 0100                 		lds temp1, mode_1        ; Carrega minutos atuais
+00005c 9503                      		inc temp1                ; Incrementa minutos
+00005d 9300 0100                 		sts mode_1, temp1        ; Salva minutos atualizados
                                  
-000055 e010                              ldi temp2, 0
-000056 9310 0101                         sts mode_1 + 1, temp2
+00005f e010                      		ldi temp2, 0             ; Zera os segundos
+000060 9310 0101                 		sts mode_1 + 1, temp2
                                  
                                      end:
-000058 910f                          pop temp1
-000059 911f                          pop temp2
-00005a 9508                          ret
+000062 910f                          pop temp1                ; Restaura registradores
+000063 911f                          pop temp2
+000064 9508                          ret                      ; Retorna da função
+                                 
                                  
                                  cronometro:
-00005b 930f                          push temp1
-00005c 931f                          push temp2
+000065 930f                          push temp1               ; Salva registradores temporários
+000066 931f                          push temp2
                                  
-                                     ; Verifica se o cronometro esta ativo
-00005d 9110 0104                     lds temp2, mode_2 + 2
-00005f 3010                          cpi temp2, 0
-000060 f079                          breq pass_soma
+000067 9110 0104                     lds temp2, mode_2 + 2    ; Lê a flag de ativação do cronômetro
+000069 3010                          cpi temp2, 0
+00006a f079                          breq pass_soma           ; Se for 0, cronômetro está desligado → sai da função
                                  
-000061 9110 0103                     lds temp2, mode_2 + 1
-000063 9513                          inc temp2
+00006b 9110 0103                     lds temp2, mode_2 + 1    ; Lê os segundos do cronômetro
+00006d 9513                          inc temp2                ; Incrementa 1 segundo
                                  
-                                     ; verifica se chegou em 60 segundos
-000064 331c                          cpi temp2, 60
-000065 f011                          breq atualiza_minuto_cronometro
+00006e 331c                          cpi temp2, 60
+00006f f011                          breq atualiza_minuto_cronometro ; Se chegou a 60 segundos, vai atualizar minutos
                                  
-000066 9310 0103                     sts mode_2 + 1, temp2
+000070 9310 0103                     sts mode_2 + 1, temp2    ; Caso contrário, salva os segundos atualizados
                                  
-                                     atualiza_minuto_cronometro:
-000068 9100 0102                         lds temp1, mode_2
-00006a 9503                              inc temp1
-00006b 9300 0102                         sts mode_2, temp1
+                                 	atualiza_minuto_cronometro:
+000072 9100 0102                 		lds temp1, mode_2        ; Lê os minutos
+000074 9503                      		inc temp1                ; Incrementa minutos
+000075 9300 0102                 		sts mode_2, temp1        ; Salva minutos atualizados
                                  
-00006d e010                              ldi temp2, 0
-00006e 9310 0103                         sts mode_2 + 1, temp2
+000077 e010                      		ldi temp2, 0             ; Zera os segundos
+000078 9310 0103                 		sts mode_2 + 1, temp2
                                  
-                                     pass_soma:
-000070 910f                          pop temp1
-000071 911f                          pop temp2
+                                 	pass_soma:
+00007a 910f                      		pop temp1                ; Restaura registradores
+00007b 911f                      		pop temp2
+00007c 9508                      		ret                      ; Retorna da função
+                                 
+                                 
+                                 exibe_digito_0:
+00007d 9100 0101                     lds temp1, mode_1 + 1
+00007f e01a                          ldi temp2, 10
+000080 940e 00ac                     call dividir        ; quociente em temp1, resto em temp2
+000082 2f01                          mov temp1, temp2    ; pega o resto → unidade dos segundos
+000083 d01c                          rcall enviar_para_cd4511
+000084 e018                          ldi temp2, (1 << PB3)
+000085 b915                          out PORTB, temp2
+000086 9508                          ret
+                                 
+                                 
+                                 
+                                 exibe_digito_1:
+000087 9100 0101                     lds temp1, mode_1 + 1
+000089 e01a                          ldi temp2, 10
+00008a 940e 00ac                     call dividir
+00008c d013                          rcall enviar_para_cd4511
+00008d e014                          ldi temp2, (1 << PB2)    ; ativa só o display 1
+00008e b915                          out PORTB, temp2
+00008f 9508                          ret
+                                 
+                                 
+                                 exibe_digito_2:
+000090 9100 0100                     lds temp1, mode_1
+000092 700f                          andi temp1, 0x0F
+000093 d00c                          rcall enviar_para_cd4511
+000094 e012                          ldi temp2, (1 << PB1)    ; ativa só o display 2
+000095 b915                          out PORTB, temp2
+000096 9508                          ret
+                                 
+                                 
+                                 exibe_digito_3:
+000097 9100 0100                     lds temp1, mode_1
+000099 e01a                          ldi temp2, 10
+00009a 940e 00ac                     call dividir
+00009c d003                          rcall enviar_para_cd4511
+00009d e011                          ldi temp2, (1 << PB0)    ; ativa só o display 3
+00009e b915                          out PORTB, temp2
+00009f 9508                          ret
+                                 
+                                 
+                                 
+                                 enviar_para_cd4511:
+0000a0 0f00                          lsl temp1        ; <<1
+0000a1 0f00                          lsl temp1        ; <<2 → desloca para alinhar com PD2–PD5
+                                 
+0000a2 b11b                          in temp2, PORTD
+0000a3 7c13                          andi temp2, 0b11000011   ; limpa bits PD2–PD5
+0000a4 2b10                          or temp2, temp1
+0000a5 b91b                          out PORTD, temp2
+0000a6 9508                          ret
+                                 
+                                 
+                                 delay_multiplex:
+0000a7 ec08                          ldi temp1, 200
+                                 espera:
+0000a8 0000                          nop
+0000a9 950a                          dec temp1
+0000aa f7e9                          brne espera
+0000ab 9508                          ret
+                                 
+                                 dividir:
+0000ac 933f                          push r19
+                                 
+0000ad 2733                          clr r19              ; r19 será o quociente
+                                 div_loop:
+0000ae 1701                          cp temp1, temp2      ; compara se temp1 >= temp2
+0000af f018                          brlo fim_div         ; se temp1 < temp2, fim
+                                 
+0000b0 1b01                          sub temp1, temp2     ; temp1 -= temp2
+0000b1 9533                          inc r19              ; quociente++
+                                 
+0000b2 cffb                          rjmp div_loop
+                                 
+                                 fim_div:
+0000b3 2f10                          mov temp2, temp1     ; resto → temp2
+0000b4 2f03                          mov temp1, r19       ; quociente → temp1
+                                 
+0000b5 913f                          pop r19
+0000b6 9508                          ret
 
 
 RESOURCE USE INFORMATION
@@ -1131,37 +1247,37 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  36 r17:  18 r18:   3 r19:   0 r20:   0 
+r13:   0 r14:   0 r15:   0 r16:  53 r17:  37 r18:   3 r19:   5 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
-Registers used: 3 out of 35 (8.6%)
+Registers used: 4 out of 35 (11.4%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
-andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+andi  :   2 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   4 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   1 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   5 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   4 jmp   :   2 
-ld    :   0 ldd   :   0 ldi   :  11 lds   :   5 lpm   :   0 lsl   :   0 
-lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   3 pop   :   6 
-push  :   6 rcall :   2 ret   :   2 reti  :   1 rjmp  :   2 rol   :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   1 brlt  :   0 brmi  :   0 
+brne  :   2 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   3 cbi   :   0 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   0 
+cpi   :   5 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   2 inc   :   5 jmp   :   2 
+ld    :   0 ldd   :   0 ldi   :  20 lds   :   9 lpm   :   0 lsl   :   2 
+lsr   :   0 mov   :   3 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+neg   :   0 nop   :   1 or    :   1 ori   :   0 out   :   9 pop   :   7 
+push  :   7 rcall :  14 ret   :   9 reti  :   1 rjmp  :   3 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  16 
-sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 17 out of 113 (15.0%)
+sub   :   1 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
+Instructions used: 28 out of 113 (24.8%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0000e6    190      0    190   32768   0.6%
+[.cseg] 0x000000 0x00016e    326      0    326   32768   1.0%
 [.dseg] 0x000100 0x000105      0      5      5    2048   0.2%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
