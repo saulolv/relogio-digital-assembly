@@ -185,22 +185,40 @@ exibe_digito_1:
 
 
 exibe_digito_2:
+    ; Carregar o valor total de minutos (mode_1)
     lds temp1, mode_1
-    andi temp1, 0x0F
+    ; Dividir por 10
+    ldi temp2, 10
+    call dividir         ; --> Depois dessa chamada:
+                         ;     temp1 = quociente (tens dos minutos)
+                         ;     temp2 = resto     (unidades dos minutos)
+    mov temp1, temp2     ; Queremos exibir o resto no display de UNIDADES
     rcall enviar_para_cd4511
-    ldi temp2, (1 << PB1)    ; ativa só o display 2
+
+    ; Ativar o display correspondente à unidade dos minutos (PB1)
+    ldi temp2, (1 << PB1)
     out PORTB, temp2
     ret
+
 
 
 exibe_digito_3:
+    ; Carregar de novo o valor total de minutos
     lds temp1, mode_1
+    ; Dividir por 10
     ldi temp2, 10
-    call dividir
+    call dividir         ; --> Depois dessa chamada:
+                         ;     temp1 = quociente (tens)
+                         ;     temp2 = resto     (unidades)
+
+    ; Agora exibimos 'temp1' (a dezena)
     rcall enviar_para_cd4511
-    ldi temp2, (1 << PB0)    ; ativa só o display 3
+
+    ; Ativar o display correspondente à dezena dos minutos (PB0)
+    ldi temp2, (1 << PB0)
     out PORTB, temp2
     ret
+
 
 
 
