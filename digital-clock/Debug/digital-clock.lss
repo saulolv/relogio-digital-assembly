@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Mon Apr 07 20:01:35 2025
+AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Mon Apr 07 21:21:40 2025
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
@@ -1227,7 +1227,6 @@ AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digita
 0000b4 2f03                          mov temp1, r19       ; quociente → temp1
                                  
 0000b5 913f                          pop r19
-0000b6 9508                          ret
 
 
 RESOURCE USE INFORMATION
