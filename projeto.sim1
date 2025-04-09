@@ -16,7 +16,7 @@
 
 <item itemtype="BJT" CircId="BJT-46" mainComp="false" Show_id="false" Show_Val="false" Pos="380,-136" rotation="0" hflip="1" vflip="1" label="BJT-46" idLabPos="18,0" labelrot="0" valLabPos="-16,20" valLabRot="0" PNP="false" Gain="100" Vcrit="0.670736 V" />
 
-<item itemtype="MCU" CircId="mega328-47" mainComp="false" Show_id="true" Show_Val="false" Pos="-260,-276" rotation="-90" hflip="1" vflip="1" label="mega328-47" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0" Frequency="16 MHz" Program="digital-clock/Debug/digital-clock.hex" Auto_Load="false" saveEepr="true" Logic_Symbol="false" Rst_enabled="false" Ext_Osc="false" Wdt_enabled="false" Clk_Out="false" MainMcu="true" SerialMon="-1" />
+<item itemtype="MCU" CircId="mega328-47" mainComp="false" Show_id="true" Show_Val="false" Pos="-260,-276" rotation="-90" hflip="1" vflip="1" label="mega328-47" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0" Frequency="16 MHz" Program="digital-clock/Debug/digital-clock.hex" Auto_Load="false" saveEepr="true" Logic_Symbol="false" Rst_enabled="false" Ext_Osc="false" Wdt_enabled="false" Clk_Out="false" MainMcu="true" SerialMon="1" />
 
 <item itemtype="Resistor" CircId="Resistor-71" mainComp="false" ShowProp="Resistance" Show_id="false" Show_Val="true" Pos="108,-136" rotation="0" hflip="1" vflip="1" label="Resistor-71" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Resistance="100 Ω" />
 
@@ -29,8 +29,6 @@
 <item itemtype="Subcircuit" CircId="CD4511-79" mainComp="false" Show_id="true" Show_Val="false" Pos="-128,-236" rotation="0" hflip="1" vflip="1" label="CD4511-79" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0" Input_High_V="2.5 V" Input_Low_V="2.5 V" Input_Imped="1e+09 Ω" Out_High_V="5 V" Out_Low_V="0 V" Out_Imped="40 Ω" Tpd_ps="10 ns" Tr_ps="3 ns" Tf_ps="4 ns" Logic_Symbol="true" />
 
 <item itemtype="AudioOut" CircId="AudioOut-95" mainComp="false" Show_id="false" Show_Val="false" Pos="-216,-484" rotation="0" hflip="1" vflip="1" label="AudioOut-95" idLabPos="-20,-36" labelrot="0" valLabPos="-16,20" valLabRot="0" Buzzer="false" Impedance="8 Ω" Frequency="1 kHz" />
-
-<item itemtype="SerialPort" CircId="SerialPort-96" mainComp="false" Show_id="false" Show_Val="false" Pos="-212,-432" rotation="0" hflip="1" vflip="1" label="SerialPort-96" idLabPos="-20,-32" labelrot="0" valLabPos="-16,20" valLabRot="0" Auto="false" Baudrate="9600 _Bd" DataBits="8 _bits" StopBits="1 _bits" SerialMon="false" />
 
 <item itemtype="Ground" CircId="Ground-97" mainComp="false" Show_id="false" Show_Val="false" Pos="-460,-448" rotation="90" hflip="1" vflip="1" label="Ground-97" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
@@ -214,8 +212,6 @@
 
 <item itemtype="Connector" uid="Connector-243" startpinid="CD4511-79-G" endpinid="Node-89-1" pointList="-88,-180,12,-180" />
 
-<item itemtype="Connector" uid="Connector-244" startpinid="Node-21-2" endpinid="Node-89-0" pointList="76,-292,-44,-292,-44,-180,12,-180" />
-
 <item itemtype="Connector" uid="Connector-245" startpinid="Node-89-2" endpinid="Seven Segment-1-pin_g" pointList="12,-180,12,-180" />
 
 <item itemtype="Connector" uid="Connector-250" startpinid="mega328-47-PORTD2" endpinid="CD4511-79-D0" pointList="-228,-268,-228,-228,-136,-228" />
@@ -226,10 +222,6 @@
 
 <item itemtype="Connector" uid="Connector-253" startpinid="mega328-47-PORTD5" endpinid="CD4511-79-D3" pointList="-172,-268,-172,-204,-136,-204" />
 
-<item itemtype="Connector" uid="Connector-278" startpinid="mega328-47-PORTD0" endpinid="SerialPort-96-pin1" pointList="-244,-268,-244,-244,-348,-244,-348,-424,-252,-424" />
-
-<item itemtype="Connector" uid="Connector-279" startpinid="mega328-47-PORTD1" endpinid="SerialPort-96-pin0" pointList="-236,-268,-236,-236,-356,-236,-356,-440,-252,-440" />
-
 <item itemtype="Connector" uid="Connector-280" startpinid="mega328-47-PORTB4" endpinid="AudioOut-95-lPin" pointList="-172,-316,-172,-332,-396,-332,-396,-492,-232,-492" />
 
 <item itemtype="Connector" uid="Connector-283" startpinid="Ground-97-Gnd" endpinid="Node-99-0" pointList="-444,-448,-444,-448" />
@@ -237,8 +229,6 @@
 <item itemtype="Connector" uid="Connector-284" startpinid="Node-99-2" endpinid="AudioOut-95-rPin" pointList="-444,-448,-444,-484,-232,-484" />
 
 <item itemtype="Connector" uid="Connector-285" startpinid="BJT-43-emiter" endpinid="Node-100-0" pointList="44,-120,44,-88" />
-
-<item itemtype="Connector" uid="Connector-290" startpinid="Push-98-switch0pinN" endpinid="mega328-47-PORTB5" pointList="-552,-324,-180,-324,-180,-316" />
 
 <item itemtype="Connector" uid="Connector-292" startpinid="Push-101-switch0pinN" endpinid="mega328-47-PORTD6" pointList="-556,-260,-164,-260,-164,-268" />
 
@@ -265,5 +255,9 @@
 <item itemtype="Connector" uid="Connector-346" startpinid="CD4511-79-!LT" endpinid="Node-120-0" pointList="-136,-196,-468,-196" />
 
 <item itemtype="Connector" uid="Connector-347" startpinid="Node-120-2" endpinid="Rail-117-outnod" pointList="-468,-196,-468,-204" />
+
+<item itemtype="Connector" uid="Connector-244" startpinid="Node-21-2" endpinid="Node-89-0" pointList="76,-292,-44,-292,-44,-180,12,-180" />
+
+<item itemtype="Connector" uid="Connector-290" startpinid="Push-98-switch0pinN" endpinid="mega328-47-PORTB5" pointList="-552,-324,-180,-324,-180,-316" />
 
 </circuit>
