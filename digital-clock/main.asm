@@ -45,7 +45,7 @@ reset:
     ldi temp1, high(RAMEND)
     out SPH, temp1
 
-    ; --- Configuração dos I/O Ports (Display + Botões - Mantido do original) ---
+    ; --- Configuração dos I/O Ports (Display + Botões) ---
     ldi temp1, 0b00001111     ; PB0–PB3 como saída (Seleção de Display)
     out DDRB, temp1
     ldi temp1, 0b00111100     ; PD2-PD5 como saída (Segmentos CD4511)
@@ -81,7 +81,7 @@ reset:
     sts UBRR0H, temp1
     ldi temp1, low(UBRR_VALUE)
     sts UBRR0L, temp1
-    ; Habilita transmissor (TXEN0) - Receptor não explicitamente necessário pelo pedido
+    ; Habilita transmissor (TXEN0)
     ldi temp1, (1 << TXEN0)
     sts UCSR0B, temp1
     ; Configura formato do frame: 8 bits de dados (UCSZ00, UCSZ01), 1 stop bit (padrão)
@@ -93,7 +93,7 @@ reset:
     sei                               ; Habilita interrupções globais
 
 main:
-    ; Exibe cada dígito um por vez (em alta velocidade) - Lógica mantida
+    ; Exibe cada dígito um por vez (em alta velocidade)
     rcall exibe_digito_0
     rcall delay_multiplex
     rcall exibe_digito_1
@@ -243,7 +243,7 @@ isr_end:
     reti                ; Retorna da interrupção
 
 ; =========================================================================
-; FUNÇÕES DE ATUALIZAÇÃO (Mantidas do original)
+; FUNÇÕES DE ATUALIZAÇÃO
 ; =========================================================================
 hora_atual:
     push temp1               ; Salva registradores temporários
@@ -295,7 +295,7 @@ crono_end:
     ret                      ; Retorna da função
 
 ; =========================================================================
-; FUNÇÕES DE DISPLAY (Mantidas, mas precisam do 'dividir')
+; FUNÇÕES DE DISPLAY
 ; =========================================================================
 exibe_digito_0: ; Unidade Segundos (Relógio ou Cronômetro - precisa checar modo?)
                 ; Assumindo que mostra o relógio por padrão ou MODO 1
@@ -355,9 +355,9 @@ enviar_para_cd4511: ; (Mantida do original)
     pop temp2
     ret
 
-delay_multiplex: ; (Mantida do original)
+delay_multiplex: ;
     push temp1
-    ldi temp1, 200 ; Ajuste conforme necessário para o brilho
+    ldi temp1, 200 ; brilho
 delay_loop_mux:
     nop
     nop
@@ -366,7 +366,7 @@ delay_loop_mux:
     pop temp1
     ret
 
-dividir: ; (Mantida do original - Usada pelo Display)
+dividir: ; (Usada pelo Display)
     ; Entrada: temp1 = dividendo, temp2 = divisor
     ; Saída: temp1 = quociente, temp2 = resto
     push r19
