@@ -24,7 +24,7 @@ adjust_digit_selector: .byte 1 ; Variável para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=
     jmp reset           ; Inicialização
     .org OC1Aaddr       ; Vai para o endereço de vetor da interrupção Timer1 Compara A
     jmp OCI1A_ISR       ; Quando essa interrupção acontecer, pule para a função OCI1A_ISR
-    ; O vetor da serial RX não é necessário conforme o pedido, mas se precisar, seria .org USART_RX_vect
+	
 
 ; --- Strings para a Serial ---
 str_modo1: .db "[MODO 1] ", 0
