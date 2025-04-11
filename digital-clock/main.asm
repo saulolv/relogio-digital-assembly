@@ -1,5 +1,7 @@
-#define CLOCK 16.0e6	;Define o clock do microcontrolador como 16 MHz.
-#define DELAY 1			;Indica que a interrupção vai acontecer a cada 1 segundo.
+#define CLOCK 16000000 ;clock speed
+#define DELAY 1
+;#define DELAY_ms 10
+;.equ DELAY_CYCLES = int(CLOCK * DELAY_ms) / 1000
 
 .dseg					;Sram
 mode_1: .byte 2			;Guarda o tempo atual (minuto, segundo).
@@ -9,20 +11,57 @@ mode_2: .byte 3			;Guarda o cronômetro (minuto, segundo, flag de ativação).
 .def temp1 = r16		;Variavel temporaria
 .def temp2 = r17		;Variavel temporaria
 
-.cseg					;Flash
-jmp reset				;Inicialização
-.org OC1Aaddr			;Vai para o endereço de vetor da interrupção Timer1 Compara A
-    jmp OCI1A_ISR		;Quando essa interrupção acontecer, pule para a função OCI1A_ISR
+.cseg
+.org 0x0000
+    jmp reset
+
+.org PCI0addr
+    jmp pcint0_isr
+
+.org OC1Aaddr
+    jmp OCI1A_ISR
 
 
 reset:
+	; PB4 como saída
+    ldi r16, (1 << PB4)
+    out DDRB, r16
+
+    ; Ativa pull-up interno em PB5
+    ldi r16, (1 << PB5)
+    out PORTB, r16
+
+    ; Habilita interrupção de mudança de pino PCINT0 (PORTB)
+    ldi r16, (1 << PCIE0)
+    sts PCICR, r16
+
+    ; Habilita interrupção para PB5 (PCINT5)
+    ldi r16, (1 << PCINT5)
+    sts PCMSK0, r16
+
+    ; Inicializa UART
+    ldi temp1, 103          ; Baudrate 9600 (para 16 MHz e UBRR = 103)
+    sts UBRR0L, temp1
+    ldi temp1, (1 << TXEN0) ; Habilita transmissor
+    sts UCSR0B, temp1
+    ldi temp1, (1 << UCSZ01) | (1 << UCSZ00) ; 8 bits
+    sts UCSR0C, temp1
+
+
     ldi r16, low(RAMEND)
     out SPL, r16
     ldi r16, high(RAMEND)
     out SPH, r16
 
-	ldi temp1, 0b00001111     ; PB0–PB3 como saída
+
+	;ldi temp1, 0b00001111     ; PB0–PB3 como saída
+	ldi temp1, 0b00011111     ; PB0–PB4 como saída
 	out DDRB, temp1
+
+	
+    
+
+
 
     ldi temp1, 0              ; Carrega o valor 0 no registrador temp1 (r16)
 
@@ -67,8 +106,8 @@ reset:
 
 
 main:
-    ; Exibe cada dígito um por vez (em alta velocidade)
 
+	
     rcall exibe_digito_0
     rcall delay_multiplex
 
@@ -80,8 +119,29 @@ main:
 
     rcall exibe_digito_3
     rcall delay_multiplex
+   
+
 
     rjmp main
+
+; --- INTERRUPÇÃO PCINT0 ---
+pcint0_isr:
+    push r16
+    in r16, PINB
+    sbrs r16, PB5        ; Se PB5 está em nível alto → botão solto
+    rjmp ligar
+
+    ; Botão solto → desliga PB4
+    cbi PORTB, PB4
+    rjmp pcint0_isr
+
+ligar:
+    ; Botão pressionado → liga PB4
+    sbi PORTB, PB4
+
+pcint0_isr:
+    pop r16
+    reti
 
 
 OCI1A_ISR:
@@ -165,57 +225,61 @@ cronometro:
 exibe_digito_0:
     lds temp1, mode_1 + 1
     ldi temp2, 10
-    call dividir        ; quociente em temp1, resto em temp2
-    mov temp1, temp2    ; pega o resto → unidade dos segundos
+    call dividir             ; temp1 = quociente, temp2 = resto
+    mov temp1, temp2         ; unidade dos segundos
     rcall enviar_para_cd4511
-    ldi temp2, (1 << PB3)
+
+    in temp2, PORTB
+    sbrc temp2, PB4          ; se PB4 está alto
+        ori temp2, (1 << PB4) ; preserva PB4
+    andi temp2, 0b11110000   ; limpa PB0–PB3
+    ori temp2, (1 << PB3)    ; ativa display 0
     out PORTB, temp2
     ret
-
 
 
 exibe_digito_1:
     lds temp1, mode_1 + 1
     ldi temp2, 10
-    call dividir
+    call dividir             ; temp1 = dezena dos segundos
     rcall enviar_para_cd4511
-    ldi temp2, (1 << PB2)    ; ativa só o display 1
+
+    in temp2, PORTB
+    sbrc temp2, PB4
+    ori temp2, (1 << PB4)
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB2)
     out PORTB, temp2
     ret
 
 
 exibe_digito_2:
-    ; Carregar o valor total de minutos (mode_1)
     lds temp1, mode_1
-    ; Dividir por 10
     ldi temp2, 10
-    call dividir         ; --> Depois dessa chamada:
-                         ;     temp1 = quociente (tens dos minutos)
-                         ;     temp2 = resto     (unidades dos minutos)
-    mov temp1, temp2     ; Queremos exibir o resto no display de UNIDADES
+    call dividir             ; temp1 = dezena, temp2 = unidade dos minutos
+    mov temp1, temp2         ; queremos a unidade
     rcall enviar_para_cd4511
 
-    ; Ativar o display correspondente à unidade dos minutos (PB1)
-    ldi temp2, (1 << PB1)
+    in temp2, PORTB
+    sbrc temp2, PB4
+    ori temp2, (1 << PB4)
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB1)
     out PORTB, temp2
     ret
 
 
-
 exibe_digito_3:
-    ; Carregar de novo o valor total de minutos
     lds temp1, mode_1
-    ; Dividir por 10
     ldi temp2, 10
-    call dividir         ; --> Depois dessa chamada:
-                         ;     temp1 = quociente (tens)
-                         ;     temp2 = resto     (unidades)
-
-    ; Agora exibimos 'temp1' (a dezena)
+    call dividir             ; temp1 = dezena dos minutos
     rcall enviar_para_cd4511
 
-    ; Ativar o display correspondente à dezena dos minutos (PB0)
-    ldi temp2, (1 << PB0)
+    in temp2, PORTB
+    sbrc temp2, PB4
+    ori temp2, (1 << PB4)
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB0)
     out PORTB, temp2
     ret
 
@@ -232,14 +296,6 @@ enviar_para_cd4511:
     out PORTD, temp2
     ret
 
-
-delay_multiplex:
-    ldi temp1, 200
-espera:
-    nop
-    dec temp1
-    brne espera
-    ret
 
 dividir:
     push r19
@@ -260,3 +316,16 @@ fim_div:
 
     pop r19
     ret
+
+delay_multiplex:
+    push r24
+    push r25
+    ldi r25, high(5000) ;SUJEITO A MUDANÇA
+    ldi r24, low(5000)
+delay_loop:
+    sbiw r24, 1
+    brne delay_loop
+    pop r25
+    pop r24
+    ret
+
