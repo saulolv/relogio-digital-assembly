@@ -71,6 +71,16 @@ reset:
     ldi r16, (1 << PCINT5)
     sts PCMSK0, r16
 
+
+    in temp1, PORTD
+    ori temp1, (1 << PD6) | (1 << PD7)
+    out PORTD, temp1
+
+    ; Ativa pull-up em PD6 (RESET) e PD7 (START)
+    in temp1, DDRD
+    andi temp1, 0b00111111     ; PD6 e PD7 como entrada
+    out DDRD, temp1
+
 	ldi temp1, 0b00011111     ; PB0–PB4 como saída
 	out DDRB, temp1
 
@@ -119,47 +129,117 @@ reset:
     sei                               ; Habilita interrupções globais
 
 main:
-    ; Verifica se a flag de troca de modo está setada
+    ; Verifica flag de troca de modo
     lds temp1, trocar_modo_flag
     cpi temp1, 1
-    brne continuar_exibicao
+    brne verificar_botoes
 
-    ; Beep
+    ; Beep e troca de modo
+    rcall beep_modo
+    rcall trocar_modo
+
+
+; ============================
+; CONTROLE DE MODO E BOTÕES
+; ============================
+verificar_botoes:
+    ; Se estiver no MODO 2, verifica START e RESET
+    cpi actual_mode, 2
+    brne continuar
+    rcall verifica_botoes_modo2
+
+continuar:
+    ; Multiplexação do display
+    rcall multiplexar_display
+    rjmp main
+
+
+; --- Função: Emitir beep curto (PB4) ---
+beep_modo:
     sbi PORTB, PB4
     rcall delay_multiplex
-	rcall delay_multiplex
-	rcall delay_multiplex
-	rcall delay_multiplex
-	rcall delay_multiplex
-	rcall delay_multiplex
-	rcall delay_multiplex
     cbi PORTB, PB4
+    ret
 
-    ; Troca modo
+
+; --- Função: Trocar modo atual (1 → 2 → 3 → 1) ---
+trocar_modo:
     mov temp1, actual_mode
     inc temp1
     cpi temp1, 4
-    brlo salva_novo_modo_main
+    brlo modo_ok
     ldi temp1, 1
-	salva_novo_modo_main:
-		mov actual_mode, temp1
+modo_ok:
+    mov actual_mode, temp1
+    ldi temp1, 0
+    sts trocar_modo_flag, temp1
+    ret
 
-		; Limpa a flag
-		ldi temp1, 0
-		sts trocar_modo_flag, temp1
 
-	continuar_exibicao:
-		; Multiplexação normal
-		rcall exibe_digito_0
-		rcall delay_multiplex
-		rcall exibe_digito_1
-		rcall delay_multiplex
-		rcall exibe_digito_2
-		rcall delay_multiplex
-		rcall exibe_digito_3
-		rcall delay_multiplex
 
-    rjmp main
+; --- Função: Verificar botões START (PD7) e RESET (PD6) ---
+verifica_botoes_modo2:
+    ; Verifica botão START (PD7)
+    sbic PIND, PD7
+    rjmp verifica_reset
+    rcall aciona_start
+esperar_soltar_start:
+    sbis PIND, PD7
+    rjmp esperar_soltar_start
+
+verifica_reset:
+    ; Verifica botão RESET (PD6)
+    sbic PIND, PD6
+    rjmp fim_verifica_botoes
+    rcall aciona_reset
+esperar_soltar_reset:
+    sbis PIND, PD6
+    rjmp esperar_soltar_reset
+
+fim_verifica_botoes:
+    ret
+
+
+; --- Função: Inverter flag do cronômetro e avisar "[MODO 2] START" ---
+aciona_start:
+    lds temp1, mode_2+2
+    ldi temp2, 1
+    eor temp1, temp2
+    sts mode_2+2, temp1
+
+    rcall beep_modo
+
+    ldi ZL, low(str_modo2_run<<1)
+    ldi ZH, high(str_modo2_run<<1)
+    rcall USART_Transmit_String
+    ldi ZL, low(str_newline<<1)
+    ldi ZH, high(str_newline<<1)
+    rcall USART_Transmit_String
+
+    ret
+
+
+; --- Função: Resetar cronômetro (se parado) e avisar "[MODO 2] RESET" ---
+aciona_reset:
+    lds temp1, mode_2+2
+    cpi temp1, 0
+    brne reset_nop
+
+    ldi temp1, 0
+    sts mode_2, temp1
+    sts mode_2+1, temp1
+
+    rcall beep_modo
+
+    ldi ZL, low(str_modo2_stop<<1)
+    ldi ZH, high(str_modo2_stop<<1)
+    rcall USART_Transmit_String
+    ldi ZL, low(str_newline<<1)
+    ldi ZH, high(str_newline<<1)
+    rcall USART_Transmit_String
+
+reset_nop:
+    ret
 
 
 ; --- INTERRUPÇÃO PCINT0 ---
@@ -377,62 +457,73 @@ crono_end:
 ; =========================================================================
 ; FUNÇÕES DE DISPLAY
 ; =========================================================================
+multiplexar_display:
+    ; Seleciona os dados corretos conforme o modo
+    cpi actual_mode, 2
+    breq usa_dados_cronometro
 
+usa_dados_relogio:
+    lds temp1, mode_1 + 1    ; Segundos
+    ldi temp2, 10
+    call dividir             ; temp1 = dezena, temp2 = unidade
+    mov r23, temp2           ; Sec Unid
+    mov r24, temp1           ; Sec Dez
 
-
-exibe_digito_0:
-    lds temp1, mode_1 + 1
+    lds temp1, mode_1        ; Minutos
     ldi temp2, 10
     call dividir
-    mov temp1, temp2
+    mov r25, temp2           ; Min Unid
+    mov r26, temp1           ; Min Dez
+    rjmp exibir_valores
+
+usa_dados_cronometro:
+    lds temp1, mode_2 + 1
+    ldi temp2, 10
+    call dividir
+    mov r23, temp2
+    mov r24, temp1
+
+    lds temp1, mode_2
+    ldi temp2, 10
+    call dividir
+    mov r25, temp2
+    mov r26, temp1
+
+exibir_valores:
+    mov temp1, r23
     rcall enviar_para_cd4511
     in temp2, PORTB
-    sbrc temp2, PB4
-        ori temp2, (1 << PB4)
     andi temp2, 0b11110000
     ori temp2, (1 << PB3)
     out PORTB, temp2
-    ret
+    rcall delay_multiplex
 
-exibe_digito_1:
-    lds temp1, mode_1 + 1
-    ldi temp2, 10
-    call dividir
+    mov temp1, r24
     rcall enviar_para_cd4511
     in temp2, PORTB
-    sbrc temp2, PB4
-    ori temp2, (1 << PB4)
     andi temp2, 0b11110000
     ori temp2, (1 << PB2)
     out PORTB, temp2
-    ret
+    rcall delay_multiplex
 
-exibe_digito_2:
-    lds temp1, mode_1
-    ldi temp2, 10
-    call dividir
-    mov temp1, temp2
+    mov temp1, r25
     rcall enviar_para_cd4511
     in temp2, PORTB
-    sbrc temp2, PB4
-    ori temp2, (1 << PB4)
     andi temp2, 0b11110000
     ori temp2, (1 << PB1)
     out PORTB, temp2
-    ret
+    rcall delay_multiplex
 
-exibe_digito_3:
-    lds temp1, mode_1
-    ldi temp2, 10
-    call dividir
+    mov temp1, r26
     rcall enviar_para_cd4511
     in temp2, PORTB
-    sbrc temp2, PB4
-    ori temp2, (1 << PB4)
     andi temp2, 0b11110000
     ori temp2, (1 << PB0)
     out PORTB, temp2
+    rcall delay_multiplex
+
     ret
+
 
 enviar_para_cd4511:
     lsl temp1
@@ -561,3 +652,4 @@ div10_end:
     mov temp1, temp2
     pop temp2
     ret
+
