@@ -36,11 +36,9 @@
 
 <item itemtype="Push" CircId="Push-101" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-264" rotation="0" hflip="1" vflip="1" label="botao2_reset &#x3D d6" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
 
-<item itemtype="Push" CircId="Push-102" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-220" rotation="0" hflip="1" vflip="1" label="botao3_start &#x3D d7" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
+<item itemtype="Push" CircId="Push-102" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-208" rotation="0" hflip="1" vflip="1" label="botao3_start &#x3D d7" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
 
 <item itemtype="Rail" CircId="Rail-117" mainComp="false" ShowProp="Voltage" Show_id="false" Show_Val="true" Pos="-516,-452" rotation="90" hflip="1" vflip="1" label="Rail-117" idLabPos="-5,-10" labelrot="-90" valLabPos="-15.6304,6.0039" valLabRot="-90" Voltage="5 V" />
-
-<item itemtype="Voltimeter" CircId="Voltimeter-174" mainComp="false" Show_id="true" Show_Val="false" Pos="-120,-432" rotation="0" hflip="1" vflip="1" label="Voltimeter-174" idLabPos="-24,-40" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
 <item itemtype="Node" CircId="Node-15" mainComp="false" Pos="124,-244" />
 
@@ -96,11 +94,7 @@
 
 <item itemtype="Node" CircId="Node-172" mainComp="false" Pos="-444,-448" />
 
-<item itemtype="Node" CircId="Node-176" mainComp="false" Pos="-444,-396" />
-
 <item itemtype="Node" CircId="Node-182" mainComp="false" Pos="-444,-376" />
-
-<item itemtype="Node" CircId="Node-183" mainComp="false" Pos="-172,-416" />
 
 <item itemtype="Node" CircId="Node-184" mainComp="false" Pos="-740,-324" />
 
@@ -260,29 +254,17 @@
 
 <item itemtype="Connector" uid="Connector-516" startpinid="Ground-97-Gnd" endpinid="Node-172-0" pointList="-444,-448,-444,-448" />
 
-<item itemtype="Connector" uid="Connector-525" startpinid="Voltimeter-174-rPin" endpinid="Node-176-1" pointList="-112,-416,-112,-396,-444,-396" />
-
-<item itemtype="Connector" uid="Connector-526" startpinid="Node-172-2" endpinid="Node-176-0" pointList="-444,-448,-444,-396" />
-
 <item itemtype="Connector" uid="Connector-553" startpinid="Rail-117-outnod" endpinid="Node-124-1" pointList="-516,-436,-516,-188,-468,-188" />
 
 <item itemtype="Connector" uid="Connector-554" startpinid="Push-98-switch0pinN" endpinid="mega328-47-PORTB5" pointList="-672,-324,-180,-324,-180,-316" />
 
-<item itemtype="Connector" uid="Connector-556" startpinid="Node-176-2" endpinid="Node-182-0" pointList="-444,-396,-444,-376" />
-
 <item itemtype="Connector" uid="Connector-557" startpinid="Node-182-2" endpinid="Node-116-0" pointList="-444,-376,-444,-180" />
-
-<item itemtype="Connector" uid="Connector-558" startpinid="AudioOut-95-lPin" endpinid="Node-183-1" pointList="24,-492,-172,-492,-172,-416" />
-
-<item itemtype="Connector" uid="Connector-559" startpinid="Voltimeter-174-lPin" endpinid="Node-183-0" pointList="-128,-416,-172,-416" />
-
-<item itemtype="Connector" uid="Connector-560" startpinid="Node-183-2" endpinid="mega328-47-PORTB4" pointList="-172,-416,-172,-316" />
 
 <item itemtype="Connector" uid="Connector-562" startpinid="Push-98-pinP0" endpinid="Node-184-0" pointList="-704,-324,-740,-324" />
 
 <item itemtype="Connector" uid="Connector-563" startpinid="Node-184-2" endpinid="Node-182-1" pointList="-740,-324,-740,-376,-444,-376" />
 
-<item itemtype="Connector" uid="Connector-564" startpinid="Push-102-pinP0" endpinid="Node-185-1" pointList="-708,-220,-740,-220,-740,-264" />
+<item itemtype="Connector" uid="Connector-564" startpinid="Push-102-pinP0" endpinid="Node-185-1" pointList="-708,-208,-740,-208,-740,-264" />
 
 <item itemtype="Connector" uid="Connector-565" startpinid="Push-101-pinP0" endpinid="Node-185-0" pointList="-708,-264,-740,-264" />
 
@@ -290,6 +272,10 @@
 
 <item itemtype="Connector" uid="Connector-567" startpinid="Push-101-switch0pinN" endpinid="mega328-47-PORTD6" pointList="-676,-264,-164,-264,-164,-268" />
 
-<item itemtype="Connector" uid="Connector-568" startpinid="Push-102-switch0pinN" endpinid="mega328-47-PORTD7" pointList="-676,-220,-628,-220,-628,-252,-156,-252,-156,-268" />
+<item itemtype="Connector" uid="Connector-568" startpinid="Push-102-switch0pinN" endpinid="mega328-47-PORTD7" pointList="-676,-208,-628,-208,-628,-252,-156,-252,-156,-268" />
+
+<item itemtype="Connector" uid="Connector-569" startpinid="AudioOut-95-lPin" endpinid="mega328-47-PORTB4" pointList="24,-492,-172,-492,-172,-316" />
+
+<item itemtype="Connector" uid="Connector-570" startpinid="Node-172-2" endpinid="Node-182-0" pointList="-444,-448,-444,-376" />
 
 </circuit>
