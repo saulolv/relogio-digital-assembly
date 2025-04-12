@@ -280,13 +280,53 @@ OCI1A_ISR:
     push temp1
 
     ; --- Lógica de Atualização (Relógio/Cronômetro) ---
+    ; --- Atualiza relógio e cronômetro SEMPRE ---
+    rcall hora_atual
+    rcall cronometro
+
+    ; --- Envia pela UART APENAS conforme o modo atual ---
     cpi actual_mode, 1
-    breq update_and_send_mode1 ; Se Modo 1, atualiza relógio e envia serial
+    breq send_mode1
     cpi actual_mode, 2
-    breq update_and_send_mode2 ; Se Modo 2, atualiza cronômetro e envia serial
+    breq send_mode2
     cpi actual_mode, 3
-    breq send_mode3            ; Se Modo 3, só envia serial (tempo não avança)
-    rjmp isr_end               ; Modo inválido? Sai.
+    brne continuar_uart
+    rjmp send_mode3
+
+    continuar_uart:
+        rjmp isr_end
+
+    rjmp isr_end
+
+send_mode1:
+    ldi ZL, low(str_modo1<<1)
+    ldi ZH, high(str_modo1<<1)
+    rcall USART_Transmit_String
+    lds byte_val, mode_1
+    rcall Send_Decimal_Byte
+    ldi ZL, low(str_colon<<1)
+    ldi ZH, high(str_colon<<1)
+    rcall USART_Transmit_String
+    lds byte_val, mode_1+1
+    rcall Send_Decimal_Byte
+    rjmp send_newline_and_exit
+
+send_mode2:
+    lds temp1, mode_2+2
+    cpi temp1, 0
+    breq check_mode2_zero
+    ldi ZL, low(str_modo2_run<<1)
+    ldi ZH, high(str_modo2_run<<1)
+    rcall USART_Transmit_String
+    lds byte_val, mode_2
+    rcall Send_Decimal_Byte
+    ldi ZL, low(str_colon<<1)
+    ldi ZH, high(str_colon<<1)
+    rcall USART_Transmit_String
+    lds byte_val, mode_2+1
+    rcall Send_Decimal_Byte
+    rjmp send_newline_and_exit
+
 
 update_and_send_mode1:
     rcall hora_atual         ; Atualiza o relógio
