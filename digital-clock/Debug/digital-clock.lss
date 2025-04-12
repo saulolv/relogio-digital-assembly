@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Fri Apr 11 23:43:19 2025
+AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Sat Apr 12 00:42:02 2025
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
 C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
@@ -1052,6 +1052,7 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
 000100                           mode_1: .byte 2
 000102                           mode_2: .byte 3
 000105                           adjust_digit_selector: .byte 1 ; Variável para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
+000106                           trocar_modo_flag: .byte 1
                                  
                                  
                                  .cseg
@@ -1061,10 +1062,10 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
 000000 940c 008b                     jmp reset
                                  
                                  .org PCI0addr
-000006 940c 00ce                     jmp pcint0_isr
+000006 940c 00e4                     jmp pcint0_isr
                                  
                                  .org OC1Aaddr
-000016 940c 00d7                     jmp OCI1A_ISR
+000016 940c 00ee                     jmp OCI1A_ISR
                                  
                                  ; --- Strings para a Serial ---
 000018 4d5b
@@ -1254,42 +1255,68 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
 0000c4 9478                          sei                               ; Habilita interrupções globais
                                  
                                  main:
+                                     ; Verifica se a flag de troca de modo está setada
+0000c5 9100 0106                     lds temp1, trocar_modo_flag
+0000c7 3001                          cpi temp1, 1
+0000c8 f491                          brne continuar_exibicao
                                  
-                                 	
-0000c5 d0af                          rcall exibe_digito_0
-0000c6 d0f6                          rcall delay_multiplex
+                                     ; Beep
+0000c9 9a2c                          sbi PORTB, PB4
+0000ca d109                          rcall delay_multiplex
+0000cb d108                      	rcall delay_multiplex
+0000cc d107                      	rcall delay_multiplex
+0000cd d106                      	rcall delay_multiplex
+0000ce d105                      	rcall delay_multiplex
+0000cf d104                      	rcall delay_multiplex
+0000d0 d103                      	rcall delay_multiplex
+0000d1 982c                          cbi PORTB, PB4
                                  
-0000c7 d0bb                          rcall exibe_digito_1
-0000c8 d0f4                          rcall delay_multiplex
+                                     ; Troca modo
+0000d2 2f02                          mov temp1, actual_mode
+0000d3 9503                          inc temp1
+0000d4 3004                          cpi temp1, 4
+0000d5 f008                          brlo salva_novo_modo_main
+0000d6 e001                          ldi temp1, 1
+                                 	salva_novo_modo_main:
+0000d7 2f20                      		mov actual_mode, temp1
                                  
-0000c9 d0c6                          rcall exibe_digito_2
-0000ca d0f2                          rcall delay_multiplex
+                                 		; Limpa a flag
+0000d8 e000                      		ldi temp1, 0
+0000d9 9300 0106                 		sts trocar_modo_flag, temp1
                                  
-0000cb d0d2                          rcall exibe_digito_3
-0000cc d0f0                          rcall delay_multiplex
-                                    
+                                 	continuar_exibicao:
+                                 		; Multiplexação normal
+0000db d0b0                      		rcall exibe_digito_0
+0000dc d0f7                      		rcall delay_multiplex
+0000dd d0bc                      		rcall exibe_digito_1
+0000de d0f5                      		rcall delay_multiplex
+0000df d0c7                      		rcall exibe_digito_2
+0000e0 d0f3                      		rcall delay_multiplex
+0000e1 d0d3                      		rcall exibe_digito_3
+0000e2 d0f1                      		rcall delay_multiplex
                                  
+0000e3 cfe1                          rjmp main
                                  
-0000cd cff7                          rjmp main
                                  
                                  ; --- INTERRUPÇÃO PCINT0 ---
                                  pcint0_isr:
-0000ce 930f                          push r16
-0000cf b103                          in r16, PINB
-0000d0 ff05                          sbrs r16, PB5        ; Se PB5 está em nível alto → botão solto
-0000d1 c002                          rjmp beep
+0000e4 930f                          push temp1
                                  
-                                     ; Botão solto → desliga PB4
-0000d2 982c                          cbi PORTB, PB4
-0000d3 c001                          rjmp fim_pcint0_isr
+                                     ; Detecta botão pressionado
+0000e5 b103                          in temp1, PINB
+0000e6 ff05                          sbrs temp1, PB5
+0000e7 c001                          rjmp seta_flag_troca_modo
                                  
-                                 beep:
-                                     ; Botão pressionado → liga PB4
-0000d4 9a2c                          sbi PORTB, PB4
+0000e8 c003                          rjmp fim_interrupcao_pcint0
                                  
-                                 fim_pcint0_isr:
-0000d5 910f                          pop r16
-0000d6 9518                          reti
+                                 seta_flag_troca_modo:
+0000e9 e001                          ldi temp1, 1
+0000ea 9300 0106                     sts trocar_modo_flag, temp1  ; Marca a flag
+                                 fim_interrupcao_pcint0:
+0000ec 910f                          pop temp1
+0000ed 9518                          reti
+                                 
+                                 
                                  
                                  
                                  ; =========================================================================
@@ -1297,190 +1324,190 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
                                  ; =========================================================================
                                  OCI1A_ISR:
                                      ; --- Salvar Contexto ---
-0000d7 930f                          push temp1          ; r16
-0000d8 931f                          push temp2          ; r17
-0000d9 933f                          push r19            ; tx_byte (usado por USART_Transmit)
-0000da 934f                          push r20            ; byte_val (usado por Send_Decimal_Byte)
-0000db 935f                          push r21            ; ascii_H  (usado por Send_Decimal_Byte)
-0000dc 936f                          push r22            ; ascii_L  (usado por Send_Decimal_Byte)
-0000dd 93ef                          push r30            ; ZL (usado por USART_Transmit_String)
-0000de 93ff                          push r31            ; ZH (usado por USART_Transmit_String)
-0000df b70f                          in temp1, SREG      ; Salva SREG
-0000e0 930f                          push temp1
+0000ee 930f                          push temp1          ; r16
+0000ef 931f                          push temp2          ; r17
+0000f0 933f                          push r19            ; tx_byte (usado por USART_Transmit)
+0000f1 934f                          push r20            ; byte_val (usado por Send_Decimal_Byte)
+0000f2 935f                          push r21            ; ascii_H  (usado por Send_Decimal_Byte)
+0000f3 936f                          push r22            ; ascii_L  (usado por Send_Decimal_Byte)
+0000f4 93ef                          push r30            ; ZL (usado por USART_Transmit_String)
+0000f5 93ff                          push r31            ; ZH (usado por USART_Transmit_String)
+0000f6 b70f                          in temp1, SREG      ; Salva SREG
+0000f7 930f                          push temp1
                                  
                                      ; --- Lógica de Atualização (Relógio/Cronômetro) ---
-0000e1 3021                          cpi actual_mode, 1
-0000e2 f029                          breq update_and_send_mode1 ; Se Modo 1, atualiza relógio e envia serial
-0000e3 3022                          cpi actual_mode, 2
-0000e4 f089                          breq update_and_send_mode2 ; Se Modo 2, atualiza cronômetro e envia serial
-0000e5 3023                          cpi actual_mode, 3
-0000e6 f1c1                          breq send_mode3            ; Se Modo 3, só envia serial (tempo não avança)
-0000e7 c054                          rjmp isr_end               ; Modo inválido? Sai.
+0000f8 3021                          cpi actual_mode, 1
+0000f9 f029                          breq update_and_send_mode1 ; Se Modo 1, atualiza relógio e envia serial
+0000fa 3022                          cpi actual_mode, 2
+0000fb f089                          breq update_and_send_mode2 ; Se Modo 2, atualiza cronômetro e envia serial
+0000fc 3023                          cpi actual_mode, 3
+0000fd f1c1                          breq send_mode3            ; Se Modo 3, só envia serial (tempo não avança)
+0000fe c054                          rjmp isr_end               ; Modo inválido? Sai.
                                  
                                  update_and_send_mode1:
-0000e8 d05e                          rcall hora_atual         ; Atualiza o relógio
+0000ff d05e                          rcall hora_atual         ; Atualiza o relógio
                                      ; Enviar Serial Modo 1: "[MODO 1] MM:SS"
-0000e9 e3e0                          ldi ZL, low(str_modo1<<1)
-0000ea e0f0                          ldi ZH, high(str_modo1<<1)
-0000eb d0e3                          rcall USART_Transmit_String
-0000ec 9140 0100                     lds byte_val, mode_1      ; Carrega minutos
-0000ee d0ec                          rcall Send_Decimal_Byte   ; Envia MM
-0000ef e0ee                          ldi ZL, low(str_colon<<1)
-0000f0 e0f1                          ldi ZH, high(str_colon<<1)
-0000f1 d0dd                          rcall USART_Transmit_String ; Envia ":"
-0000f2 9140 0101                     lds byte_val, mode_1+1    ; Carrega segundos
-0000f4 d0e6                          rcall Send_Decimal_Byte   ; Envia SS
-0000f5 c043                          rjmp send_newline_and_exit
+000100 e3e0                          ldi ZL, low(str_modo1<<1)
+000101 e0f0                          ldi ZH, high(str_modo1<<1)
+000102 d0e3                          rcall USART_Transmit_String
+000103 9140 0100                     lds byte_val, mode_1      ; Carrega minutos
+000105 d0ec                          rcall Send_Decimal_Byte   ; Envia MM
+000106 e0ee                          ldi ZL, low(str_colon<<1)
+000107 e0f1                          ldi ZH, high(str_colon<<1)
+000108 d0dd                          rcall USART_Transmit_String ; Envia ":"
+000109 9140 0101                     lds byte_val, mode_1+1    ; Carrega segundos
+00010b d0e6                          rcall Send_Decimal_Byte   ; Envia SS
+00010c c043                          rjmp send_newline_and_exit
                                  
                                  update_and_send_mode2:
-0000f6 d065                          rcall cronometro         ; Atualiza o cronômetro (se ativo)
+00010d d065                          rcall cronometro         ; Atualiza o cronômetro (se ativo)
                                      ; Enviar Serial Modo 2
-0000f7 9100 0104                     lds temp1, mode_2+2      ; Carrega flag de ativação
-0000f9 3000                          cpi temp1, 0
-0000fa f069                          breq check_mode2_zero    ; Se flag=0 (parado), verifica se está zerado
+00010e 9100 0104                     lds temp1, mode_2+2      ; Carrega flag de ativação
+000110 3000                          cpi temp1, 0
+000111 f069                          breq check_mode2_zero    ; Se flag=0 (parado), verifica se está zerado
                                      ; Se chegou aqui, cronômetro está rodando
-0000fb e3ea                          ldi ZL, low(str_modo2_run<<1)
-0000fc e0f0                          ldi ZH, high(str_modo2_run<<1)
-0000fd d0d1                          rcall USART_Transmit_String
-0000fe 9140 0102                     lds byte_val, mode_2      ; Carrega minutos do cronômetro
-000100 d0da                          rcall Send_Decimal_Byte
-000101 e0ee                          ldi ZL, low(str_colon<<1)
-000102 e0f1                          ldi ZH, high(str_colon<<1)
-000103 d0cb                          rcall USART_Transmit_String ; Envia ":"
-000104 9140 0103                     lds byte_val, mode_2+1    ; Carrega segundos do cronômetro
-000106 d0d4                          rcall Send_Decimal_Byte
-000107 c031                          rjmp send_newline_and_exit
+000112 e3ea                          ldi ZL, low(str_modo2_run<<1)
+000113 e0f0                          ldi ZH, high(str_modo2_run<<1)
+000114 d0d1                          rcall USART_Transmit_String
+000115 9140 0102                     lds byte_val, mode_2      ; Carrega minutos do cronômetro
+000117 d0da                          rcall Send_Decimal_Byte
+000118 e0ee                          ldi ZL, low(str_colon<<1)
+000119 e0f1                          ldi ZH, high(str_colon<<1)
+00011a d0cb                          rcall USART_Transmit_String ; Envia ":"
+00011b 9140 0103                     lds byte_val, mode_2+1    ; Carrega segundos do cronômetro
+00011d d0d4                          rcall Send_Decimal_Byte
+00011e c031                          rjmp send_newline_and_exit
                                  
                                  check_mode2_zero:
-000108 9100 0102                     lds temp1, mode_2         ; Minutos
-00010a 9110 0103                     lds temp2, mode_2+1       ; Segundos
-00010c 2b01                          or temp1, temp2           ; Se ambos forem 0, resultado é 0
-00010d f421                          brne mode2_stopped        ; Se não for zero, está parado mas não zerado
+00011f 9100 0102                     lds temp1, mode_2         ; Minutos
+000121 9110 0103                     lds temp2, mode_2+1       ; Segundos
+000123 2b01                          or temp1, temp2           ; Se ambos forem 0, resultado é 0
+000124 f421                          brne mode2_stopped        ; Se não for zero, está parado mas não zerado
                                      ; Se chegou aqui, cronômetro está parado e zerado
-00010e e5ea                          ldi ZL, low(str_modo2_zero<<1)
-00010f e0f0                          ldi ZH, high(str_modo2_zero<<1)
-000110 d0be                          rcall USART_Transmit_String
-000111 c027                          rjmp send_newline_and_exit
+000125 e5ea                          ldi ZL, low(str_modo2_zero<<1)
+000126 e0f0                          ldi ZH, high(str_modo2_zero<<1)
+000127 d0be                          rcall USART_Transmit_String
+000128 c027                          rjmp send_newline_and_exit
                                  
                                  mode2_stopped:
                                      ; Cronômetro parado mas não zerado
-000112 e4e8                          ldi ZL, low(str_modo2_stop<<1)
-000113 e0f0                          ldi ZH, high(str_modo2_stop<<1)
-000114 d0ba                          rcall USART_Transmit_String
-000115 9140 0102                     lds byte_val, mode_2      ; Carrega minutos do cronômetro
-000117 d0c3                          rcall Send_Decimal_Byte
-000118 e0ee                          ldi ZL, low(str_colon<<1)
-000119 e0f1                          ldi ZH, high(str_colon<<1)
-00011a d0b4                          rcall USART_Transmit_String ; Envia ":"
-00011b 9140 0103                     lds byte_val, mode_2+1    ; Carrega segundos do cronômetro
-00011d d0bd                          rcall Send_Decimal_Byte
-00011e c01a                          rjmp send_newline_and_exit
+000129 e4e8                          ldi ZL, low(str_modo2_stop<<1)
+00012a e0f0                          ldi ZH, high(str_modo2_stop<<1)
+00012b d0ba                          rcall USART_Transmit_String
+00012c 9140 0102                     lds byte_val, mode_2      ; Carrega minutos do cronômetro
+00012e d0c3                          rcall Send_Decimal_Byte
+00012f e0ee                          ldi ZL, low(str_colon<<1)
+000130 e0f1                          ldi ZH, high(str_colon<<1)
+000131 d0b4                          rcall USART_Transmit_String ; Envia ":"
+000132 9140 0103                     lds byte_val, mode_2+1    ; Carrega segundos do cronômetro
+000134 d0bd                          rcall Send_Decimal_Byte
+000135 c01a                          rjmp send_newline_and_exit
                                  
                                  send_mode3:
                                      ; Enviar Serial Modo 3: Mensagem depende do dígito selecionado
-00011f 9100 0105                     lds temp1, adjust_digit_selector ; Carrega qual dígito está sendo ajustado
-000121 3000                          cpi temp1, 0
-000122 f039                          breq send_m3_su
-000123 3001                          cpi temp1, 1
-000124 f049                          breq send_m3_sd
-000125 3002                          cpi temp1, 2
-000126 f059                          breq send_m3_mu
-000127 3003                          cpi temp1, 3
-000128 f069                          breq send_m3_md
-000129 c00f                          rjmp send_newline_and_exit ; Se valor inválido, apenas envia newline
+000136 9100 0105                     lds temp1, adjust_digit_selector ; Carrega qual dígito está sendo ajustado
+000138 3000                          cpi temp1, 0
+000139 f039                          breq send_m3_su
+00013a 3001                          cpi temp1, 1
+00013b f049                          breq send_m3_sd
+00013c 3002                          cpi temp1, 2
+00013d f059                          breq send_m3_mu
+00013e 3003                          cpi temp1, 3
+00013f f069                          breq send_m3_md
+000140 c00f                          rjmp send_newline_and_exit ; Se valor inválido, apenas envia newline
                                  
                                  send_m3_su:
-00012a e6e8                          ldi ZL, low(str_modo3_su<<1)
-00012b e0f0                          ldi ZH, high(str_modo3_su<<1)
-00012c d0a2                          rcall USART_Transmit_String
-00012d c00b                          rjmp send_newline_and_exit
+000141 e6e8                          ldi ZL, low(str_modo3_su<<1)
+000142 e0f0                          ldi ZH, high(str_modo3_su<<1)
+000143 d0a2                          rcall USART_Transmit_String
+000144 c00b                          rjmp send_newline_and_exit
                                  send_m3_sd:
-00012e e9e2                          ldi ZL, low(str_modo3_sd<<1)
-00012f e0f0                          ldi ZH, high(str_modo3_sd<<1)
-000130 d09e                          rcall USART_Transmit_String
-000131 c007                          rjmp send_newline_and_exit
+000145 e9e2                          ldi ZL, low(str_modo3_sd<<1)
+000146 e0f0                          ldi ZH, high(str_modo3_sd<<1)
+000147 d09e                          rcall USART_Transmit_String
+000148 c007                          rjmp send_newline_and_exit
                                  send_m3_mu:
-000132 ebec                          ldi ZL, low(str_modo3_mu<<1)
-000133 e0f0                          ldi ZH, high(str_modo3_mu<<1)
-000134 d09a                          rcall USART_Transmit_String
-000135 c003                          rjmp send_newline_and_exit
+000149 ebec                          ldi ZL, low(str_modo3_mu<<1)
+00014a e0f0                          ldi ZH, high(str_modo3_mu<<1)
+00014b d09a                          rcall USART_Transmit_String
+00014c c003                          rjmp send_newline_and_exit
                                  send_m3_md:
-000136 eee6                          ldi ZL, low(str_modo3_md<<1)
-000137 e0f0                          ldi ZH, high(str_modo3_md<<1)
-000138 d096                          rcall USART_Transmit_String
+00014d eee6                          ldi ZL, low(str_modo3_md<<1)
+00014e e0f0                          ldi ZH, high(str_modo3_md<<1)
+00014f d096                          rcall USART_Transmit_String
                                      ;rjmp send_newline_and_exit ; Já vai para o próximo passo
                                  
                                  send_newline_and_exit:
                                      ; Envia Newline para finalizar a mensagem
-000139 e1e0                          ldi ZL, low(str_newline<<1)
-00013a e0f1                          ldi ZH, high(str_newline<<1)
-00013b d093                          rcall USART_Transmit_String
+000150 e1e0                          ldi ZL, low(str_newline<<1)
+000151 e0f1                          ldi ZH, high(str_newline<<1)
+000152 d093                          rcall USART_Transmit_String
                                  
                                  isr_end:
                                      ; --- Restaurar Contexto ---
-00013c 910f                          pop temp1
-00013d bf0f                          out SREG, temp1     ; Restaura SREG
-00013e 91ff                          pop r31             ; ZH
-00013f 91ef                          pop r30             ; ZL
-000140 916f                          pop r22             ; ascii_L
-000141 915f                          pop r21             ; ascii_H
-000142 914f                          pop r20             ; byte_val
-000143 913f                          pop r19             ; tx_byte
-000144 911f                          pop temp2           ; r17
-000145 910f                          pop temp1           ; r16
-000146 9518                          reti                ; Retorna da interrupção
+000153 910f                          pop temp1
+000154 bf0f                          out SREG, temp1     ; Restaura SREG
+000155 91ff                          pop r31             ; ZH
+000156 91ef                          pop r30             ; ZL
+000157 916f                          pop r22             ; ascii_L
+000158 915f                          pop r21             ; ascii_H
+000159 914f                          pop r20             ; byte_val
+00015a 913f                          pop r19             ; tx_byte
+00015b 911f                          pop temp2           ; r17
+00015c 910f                          pop temp1           ; r16
+00015d 9518                          reti                ; Retorna da interrupção
                                  
                                  ; =========================================================================
                                  ; FUNÇÕES DE ATUALIZAÇÃO
                                  ; =========================================================================
                                  hora_atual:
-000147 930f                          push temp1               ; Salva registradores temporários
-000148 931f                          push temp2
-000149 9110 0101                     lds temp2, mode_1 + 1    ; Carrega segundos atuais do relógio
-00014b 9513                          inc temp2                ; Incrementa 1 segundo
-00014c 331c                          cpi temp2, 60            ; Verifica se chegou a 60 segundos
-00014d f449                          brne save_seconds        ; Se não, só salva os segundos
+00015e 930f                          push temp1               ; Salva registradores temporários
+00015f 931f                          push temp2
+000160 9110 0101                     lds temp2, mode_1 + 1    ; Carrega segundos atuais do relógio
+000162 9513                          inc temp2                ; Incrementa 1 segundo
+000163 331c                          cpi temp2, 60            ; Verifica se chegou a 60 segundos
+000164 f449                          brne save_seconds        ; Se não, só salva os segundos
                                  atualiza_minuto_atual:
-00014e 9100 0100                     lds temp1, mode_1        ; Carrega minutos atuais
-000150 9503                          inc temp1                ; Incrementa minutos
-000151 330c                          cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional, depende se quer que vire 00:00)
-000152 f409                          brne save_minutes
-000153 e000                          ldi temp1, 0             ; Zera minutos se chegou a 60
+000165 9100 0100                     lds temp1, mode_1        ; Carrega minutos atuais
+000167 9503                          inc temp1                ; Incrementa minutos
+000168 330c                          cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional, depende se quer que vire 00:00)
+000169 f409                          brne save_minutes
+00016a e000                          ldi temp1, 0             ; Zera minutos se chegou a 60
                                  save_minutes:
-000154 9300 0100                     sts mode_1, temp1        ; Salva minutos atualizados
-000156 e010                          ldi temp2, 0             ; Zera os segundos
+00016b 9300 0100                     sts mode_1, temp1        ; Salva minutos atualizados
+00016d e010                          ldi temp2, 0             ; Zera os segundos
                                  save_seconds:
-000157 9310 0101                     sts mode_1 + 1, temp2    ; Salva segundos atualizados
-000159 911f                          pop temp2                ; Restaura registradores
-00015a 910f                          pop temp1
-00015b 9508                          ret                      ; Retorna da função
+00016e 9310 0101                     sts mode_1 + 1, temp2    ; Salva segundos atualizados
+000170 911f                          pop temp2                ; Restaura registradores
+000171 910f                          pop temp1
+000172 9508                          ret                      ; Retorna da função
                                  
                                  cronometro:
-00015c 930f                          push temp1               ; Salva registradores temporários
-00015d 931f                          push temp2
-00015e 9100 0104                     lds temp1, mode_2 + 2    ; Lê a flag de ativação do cronômetro
-000160 3000                          cpi temp1, 0
-000161 f081                          breq crono_end           ; Se for 0, cronômetro está desligado -> sai
+000173 930f                          push temp1               ; Salva registradores temporários
+000174 931f                          push temp2
+000175 9100 0104                     lds temp1, mode_2 + 2    ; Lê a flag de ativação do cronômetro
+000177 3000                          cpi temp1, 0
+000178 f081                          breq crono_end           ; Se for 0, cronômetro está desligado -> sai
                                      ; Se chegou aqui, cronômetro está ativo
-000162 9110 0103                     lds temp2, mode_2 + 1    ; Lê os segundos do cronômetro
-000164 9513                          inc temp2                ; Incrementa 1 segundo
-000165 331c                          cpi temp2, 60
-000166 f449                          brne crono_save_seconds  ; Se não chegou a 60, só salva os segundos
+000179 9110 0103                     lds temp2, mode_2 + 1    ; Lê os segundos do cronômetro
+00017b 9513                          inc temp2                ; Incrementa 1 segundo
+00017c 331c                          cpi temp2, 60
+00017d f449                          brne crono_save_seconds  ; Se não chegou a 60, só salva os segundos
                                  atualiza_minuto_cronometro:
-000167 9100 0102                     lds temp1, mode_2        ; Lê os minutos
-000169 9503                          inc temp1                ; Incrementa minutos
-00016a 330c                          cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional)
-00016b f409                          brne crono_save_minutes
-00016c e000                          ldi temp1, 0             ; Zera minutos se chegou a 60
+00017e 9100 0102                     lds temp1, mode_2        ; Lê os minutos
+000180 9503                          inc temp1                ; Incrementa minutos
+000181 330c                          cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional)
+000182 f409                          brne crono_save_minutes
+000183 e000                          ldi temp1, 0             ; Zera minutos se chegou a 60
                                  crono_save_minutes:
-00016d 9300 0102                     sts mode_2, temp1        ; Salva minutos atualizados
-00016f e010                          ldi temp2, 0             ; Zera os segundos
+000184 9300 0102                     sts mode_2, temp1        ; Salva minutos atualizados
+000186 e010                          ldi temp2, 0             ; Zera os segundos
                                  crono_save_seconds:
-000170 9310 0103                     sts mode_2 + 1, temp2    ; Salva os segundos atualizados
+000187 9310 0103                     sts mode_2 + 1, temp2    ; Salva os segundos atualizados
                                  crono_end:
-000172 911f                          pop temp2                ; Restaura registradores
-000173 910f                          pop temp1
-000174 9508                          ret                      ; Retorna da função
+000189 911f                          pop temp2                ; Restaura registradores
+00018a 910f                          pop temp1
+00018b 9508                          ret                      ; Retorna da função
                                  
                                  
                                  ; =========================================================================
@@ -1490,94 +1517,94 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
                                  
                                  
                                  exibe_digito_0:
-000175 9100 0101                     lds temp1, mode_1 + 1
-000177 e01a                          ldi temp2, 10
-000178 940e 01b2                     call dividir
-00017a 2f01                          mov temp1, temp2
-00017b d02f                          rcall enviar_para_cd4511
-00017c b115                          in temp2, PORTB
-00017d fd14                          sbrc temp2, PB4
-00017e 6110                              ori temp2, (1 << PB4)
-00017f 7f10                          andi temp2, 0b11110000
-000180 6018                          ori temp2, (1 << PB3)
-000181 b915                          out PORTB, temp2
-000182 9508                          ret
+00018c 9100 0101                     lds temp1, mode_1 + 1
+00018e e01a                          ldi temp2, 10
+00018f 940e 01c9                     call dividir
+000191 2f01                          mov temp1, temp2
+000192 d02f                          rcall enviar_para_cd4511
+000193 b115                          in temp2, PORTB
+000194 fd14                          sbrc temp2, PB4
+000195 6110                              ori temp2, (1 << PB4)
+000196 7f10                          andi temp2, 0b11110000
+000197 6018                          ori temp2, (1 << PB3)
+000198 b915                          out PORTB, temp2
+000199 9508                          ret
                                  
                                  exibe_digito_1:
-000183 9100 0101                     lds temp1, mode_1 + 1
-000185 e01a                          ldi temp2, 10
-000186 940e 01b2                     call dividir
-000188 d022                          rcall enviar_para_cd4511
-000189 b115                          in temp2, PORTB
-00018a fd14                          sbrc temp2, PB4
-00018b 6110                          ori temp2, (1 << PB4)
-00018c 7f10                          andi temp2, 0b11110000
-00018d 6014                          ori temp2, (1 << PB2)
-00018e b915                          out PORTB, temp2
-00018f 9508                          ret
+00019a 9100 0101                     lds temp1, mode_1 + 1
+00019c e01a                          ldi temp2, 10
+00019d 940e 01c9                     call dividir
+00019f d022                          rcall enviar_para_cd4511
+0001a0 b115                          in temp2, PORTB
+0001a1 fd14                          sbrc temp2, PB4
+0001a2 6110                          ori temp2, (1 << PB4)
+0001a3 7f10                          andi temp2, 0b11110000
+0001a4 6014                          ori temp2, (1 << PB2)
+0001a5 b915                          out PORTB, temp2
+0001a6 9508                          ret
                                  
                                  exibe_digito_2:
-000190 9100 0100                     lds temp1, mode_1
-000192 e01a                          ldi temp2, 10
-000193 940e 01b2                     call dividir
-000195 2f01                          mov temp1, temp2
-000196 d014                          rcall enviar_para_cd4511
-000197 b115                          in temp2, PORTB
-000198 fd14                          sbrc temp2, PB4
-000199 6110                          ori temp2, (1 << PB4)
-00019a 7f10                          andi temp2, 0b11110000
-00019b 6012                          ori temp2, (1 << PB1)
-00019c b915                          out PORTB, temp2
-00019d 9508                          ret
+0001a7 9100 0100                     lds temp1, mode_1
+0001a9 e01a                          ldi temp2, 10
+0001aa 940e 01c9                     call dividir
+0001ac 2f01                          mov temp1, temp2
+0001ad d014                          rcall enviar_para_cd4511
+0001ae b115                          in temp2, PORTB
+0001af fd14                          sbrc temp2, PB4
+0001b0 6110                          ori temp2, (1 << PB4)
+0001b1 7f10                          andi temp2, 0b11110000
+0001b2 6012                          ori temp2, (1 << PB1)
+0001b3 b915                          out PORTB, temp2
+0001b4 9508                          ret
                                  
                                  exibe_digito_3:
-00019e 9100 0100                     lds temp1, mode_1
-0001a0 e01a                          ldi temp2, 10
-0001a1 940e 01b2                     call dividir
-0001a3 d007                          rcall enviar_para_cd4511
-0001a4 b115                          in temp2, PORTB
-0001a5 fd14                          sbrc temp2, PB4
-0001a6 6110                          ori temp2, (1 << PB4)
-0001a7 7f10                          andi temp2, 0b11110000
-0001a8 6011                          ori temp2, (1 << PB0)
-0001a9 b915                          out PORTB, temp2
-0001aa 9508                          ret
+0001b5 9100 0100                     lds temp1, mode_1
+0001b7 e01a                          ldi temp2, 10
+0001b8 940e 01c9                     call dividir
+0001ba d007                          rcall enviar_para_cd4511
+0001bb b115                          in temp2, PORTB
+0001bc fd14                          sbrc temp2, PB4
+0001bd 6110                          ori temp2, (1 << PB4)
+0001be 7f10                          andi temp2, 0b11110000
+0001bf 6011                          ori temp2, (1 << PB0)
+0001c0 b915                          out PORTB, temp2
+0001c1 9508                          ret
                                  
                                  enviar_para_cd4511:
-0001ab 0f00                          lsl temp1
-0001ac 0f00                          lsl temp1
-0001ad b11b                          in temp2, PORTD
-0001ae 7c13                          andi temp2, 0b11000011
-0001af 2b10                          or temp2, temp1
-0001b0 b91b                          out PORTD, temp2
-0001b1 9508                          ret
+0001c2 0f00                          lsl temp1
+0001c3 0f00                          lsl temp1
+0001c4 b11b                          in temp2, PORTD
+0001c5 7c13                          andi temp2, 0b11000011
+0001c6 2b10                          or temp2, temp1
+0001c7 b91b                          out PORTD, temp2
+0001c8 9508                          ret
                                  
                                  dividir:
-0001b2 933f                          push r19
-0001b3 2733                          clr r19
+0001c9 933f                          push r19
+0001ca 2733                          clr r19
                                  div_loop:
-0001b4 1701                          cp temp1, temp2
-0001b5 f018                          brlo fim_div
-0001b6 1b01                          sub temp1, temp2
-0001b7 9533                          inc r19
-0001b8 cffb                          rjmp div_loop
+0001cb 1701                          cp temp1, temp2
+0001cc f018                          brlo fim_div
+0001cd 1b01                          sub temp1, temp2
+0001ce 9533                          inc r19
+0001cf cffb                          rjmp div_loop
                                  fim_div:
-0001b9 2f10                          mov temp2, temp1
-0001ba 2f03                          mov temp1, r19
-0001bb 913f                          pop r19
-0001bc 9508                          ret
+0001d0 2f10                          mov temp2, temp1
+0001d1 2f03                          mov temp1, r19
+0001d2 913f                          pop r19
+0001d3 9508                          ret
                                  
                                  delay_multiplex:
-0001bd 938f                          push r24
-0001be 939f                          push r25
-0001bf e193                          ldi r25, high(5000) ;SUJEITO A MUDANÇA
-0001c0 e888                          ldi r24, low(5000)
+0001d4 938f                          push r24
+0001d5 939f                          push r25
+0001d6 e193                          ldi r25, high(5000) ;SUJEITO A MUDANÇA
+0001d7 e888                          ldi r24, low(5000)
                                  delay_loop:
-0001c1 9701                          sbiw r24, 1
-0001c2 f7f1                          brne delay_loop
-0001c3 919f                          pop r25
-0001c4 918f                          pop r24
-0001c5 9508                          ret
+0001d8 9701                          sbiw r24, 1
+0001d9 f7f1                          brne delay_loop
+0001da 919f                          pop r25
+0001db 918f                          pop r24
+0001dc 9508                          ret
                                  
                                  
                                  ; =========================================================================
@@ -1588,34 +1615,34 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
                                  ; Envia um byte pela serial. Espera o buffer estar livre.
                                  ; Entrada: tx_byte (r19) contém o byte a ser enviado
                                  USART_Transmit:
-0001c6 930f                          push temp1          ; Salva r16
+0001dd 930f                          push temp1          ; Salva r16
                                  tx_wait_loop:
-0001c7 9100 00c0                     lds temp1, UCSR0A   ; Lê o status do USART
-0001c9 ff05                          sbrs temp1, UDRE0   ; Pula a próxima instrução se o bit UDRE0 (Data Register Empty) estiver setado (1)
-0001ca cffc                          rjmp tx_wait_loop   ; Se não estiver vazio (UDRE0=0), espera
-0001cb 9330 00c6                     sts UDR0, tx_byte   ; Coloca o byte no buffer de transmissão (envia)
-0001cd 910f                          pop temp1           ; Restaura r16
-0001ce 9508                          ret
+0001de 9100 00c0                     lds temp1, UCSR0A   ; Lê o status do USART
+0001e0 ff05                          sbrs temp1, UDRE0   ; Pula a próxima instrução se o bit UDRE0 (Data Register Empty) estiver setado (1)
+0001e1 cffc                          rjmp tx_wait_loop   ; Se não estiver vazio (UDRE0=0), espera
+0001e2 9330 00c6                     sts UDR0, tx_byte   ; Coloca o byte no buffer de transmissão (envia)
+0001e4 910f                          pop temp1           ; Restaura r16
+0001e5 9508                          ret
                                  
                                  ; --- USART_Transmit_String ---
                                  ; Envia uma string (terminada em NULL) localizada na memória de programa (Flash).
                                  ; Entrada: Z (r31:r30) aponta para o início da string na memória de programa.
                                  ; Usa: Z, tx_byte (r19), temp1 (r16)
                                  USART_Transmit_String:
-0001cf 930f                          push temp1          ; Salva r16
-0001d0 93ef                          push r30
-0001d1 93ff                          push r31
+0001e6 930f                          push temp1          ; Salva r16
+0001e7 93ef                          push r30
+0001e8 93ff                          push r31
                                  str_loop:
-0001d2 9135                          lpm tx_byte, Z+     ; Carrega byte da memória de programa no tx_byte e incrementa Z
-0001d3 2333                          tst tx_byte         ; Verifica se o byte carregado é zero (NULL terminator)
-0001d4 f011                          breq str_end        ; Se for zero, fim da string
-0001d5 dff0                          rcall USART_Transmit ; Envia o byte
-0001d6 cffb                          rjmp str_loop       ; Próximo caractere
+0001e9 9135                          lpm tx_byte, Z+     ; Carrega byte da memória de programa no tx_byte e incrementa Z
+0001ea 2333                          tst tx_byte         ; Verifica se o byte carregado é zero (NULL terminator)
+0001eb f011                          breq str_end        ; Se for zero, fim da string
+0001ec dff0                          rcall USART_Transmit ; Envia o byte
+0001ed cffb                          rjmp str_loop       ; Próximo caractere
                                  str_end:
-0001d7 91ff                          pop r31
-0001d8 91ef                          pop r30
-0001d9 910f                          pop temp1           ; Restaura r16
-0001da 9508                          ret
+0001ee 91ff                          pop r31
+0001ef 91ef                          pop r30
+0001f0 910f                          pop temp1           ; Restaura r16
+0001f1 9508                          ret
                                  
                                  ; --- Send_Decimal_Byte ---
                                  ; Converte um byte (0-99) em dois caracteres ASCII decimais e os envia pela serial.
@@ -1623,31 +1650,31 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
                                  ; Saída: Envia os dois caracteres ASCII pela serial
                                  ; Usa: byte_val (r20), ascii_H (r21), ascii_L (r22), tx_byte (r19), temp1 (r16)
                                  Send_Decimal_Byte:
-0001db 930f                          push temp1           ; Salva r16
-0001dc 931f                          push r17           ; Salva r17
-0001dd 934f                          push r20           ; Salva byte_val original se precisar depois
+0001f2 930f                          push temp1           ; Salva r16
+0001f3 931f                          push r17           ; Salva r17
+0001f4 934f                          push r20           ; Salva byte_val original se precisar depois
                                  
-0001de 2f04                          mov temp1, byte_val  ; Copia valor para temp1 (usado por div10)
-0001df d00c                          rcall div10          ; Chama sub-rotina de divisão por 10
+0001f5 2f04                          mov temp1, byte_val  ; Copia valor para temp1 (usado por div10)
+0001f6 d00c                          rcall div10          ; Chama sub-rotina de divisão por 10
                                                           ; Resultado: temp1=quociente (dezena), temp2=resto (unidade)
                                  
-0001e0 2f50                          mov ascii_H, temp1   ; Guarda a dezena
-0001e1 2f61                          mov ascii_L, temp2   ; Guarda a unidade
+0001f7 2f50                          mov ascii_H, temp1   ; Guarda a dezena
+0001f8 2f61                          mov ascii_L, temp2   ; Guarda a unidade
                                  
                                      ; Converte dezena para ASCII ('0' = 0x30)
-0001e2 5d50                          subi ascii_H, -0x30  ; Adiciona 0x30
-0001e3 2f35                          mov tx_byte, ascii_H ; Prepara para transmitir
-0001e4 dfe1                          rcall USART_Transmit ; Envia dígito das dezenas
+0001f9 5d50                          subi ascii_H, -0x30  ; Adiciona 0x30
+0001fa 2f35                          mov tx_byte, ascii_H ; Prepara para transmitir
+0001fb dfe1                          rcall USART_Transmit ; Envia dígito das dezenas
                                  
                                      ; Converte unidade para ASCII
-0001e5 5d60                          subi ascii_L, -0x30  ; Adiciona 0x30
-0001e6 2f36                          mov tx_byte, ascii_L ; Prepara para transmitir
-0001e7 dfde                          rcall USART_Transmit ; Envia dígito das unidades
+0001fc 5d60                          subi ascii_L, -0x30  ; Adiciona 0x30
+0001fd 2f36                          mov tx_byte, ascii_L ; Prepara para transmitir
+0001fe dfde                          rcall USART_Transmit ; Envia dígito das unidades
                                  
-0001e8 914f                          pop r20
-0001e9 911f                          pop r17
-0001ea 910f                          pop temp1
-0001eb 9508                          ret
+0001ff 914f                          pop r20
+000200 911f                          pop r17
+000201 910f                          pop temp1
+000202 9508                          ret
                                  
                                  
                                  ; --- div10 ---
@@ -1656,19 +1683,19 @@ C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-
                                  ; Saída: temp1 = quociente (Dezena), temp2 = resto (Unidade)
                                  ; Usa: temp1, temp2
                                  div10:
-0001ec 2711                          clr temp2           ; temp2 será o quociente (dezenas)
+000203 2711                          clr temp2           ; temp2 será o quociente (dezenas)
                                  div10_loop:
-0001ed 300a                          cpi temp1, 10       ; Compara com 10
-0001ee f018                          brlo div10_end      ; Se for menor, acabou
-0001ef 500a                          subi temp1, 10      ; Subtrai 10
-0001f0 9513                          inc temp2           ; Incrementa quociente
-0001f1 cffb                          rjmp div10_loop
+000204 300a                          cpi temp1, 10       ; Compara com 10
+000205 f018                          brlo div10_end      ; Se for menor, acabou
+000206 500a                          subi temp1, 10      ; Subtrai 10
+000207 9513                          inc temp2           ; Incrementa quociente
+000208 cffb                          rjmp div10_loop
                                  div10_end:
                                      ; No fim: temp1 tem o resto (unidade), temp2 tem o quociente (dezena)
                                      ; Troca para retornar como especificado (temp1=quociente, temp2=resto)
-0001f2 930f                          push temp1
-0001f3 2f01                          mov temp1, temp2
-0001f4 911f                          pop temp2
+000209 930f                          push temp1
+00020a 2f01                          mov temp1, temp2
+00020b 911f                          pop temp2
 
 
 RESOURCE USE INFORMATION
@@ -1688,7 +1715,7 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 101 r17:  62 r18:   4 r19:  12 r20:  11 
+r13:   0 r14:   0 r15:   0 r16: 112 r17:  62 r18:   6 r19:  12 r20:  11 
 r21:   5 r22:   5 r23:   0 r24:   4 r25:   3 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:  16 r31:  16 
 Registers used: 12 out of 35 (34.3%)
@@ -1697,29 +1724,29 @@ Registers used: 12 out of 35 (34.3%)
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   5 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :  10 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   2 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   3 brlt  :   0 brmi  :   0 
+brne  :   7 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   4 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   0 
-cpi   :  14 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   7 inc   :   6 jmp   :   3 
-ld    :   0 ldd   :   0 ldi   :  52 lds   :  20 lpm   :   1 lsl   :   2 
-lsr   :   0 mov   :  10 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+cpi   :  16 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   7 inc   :   7 jmp   :   3 
+ld    :   0 ldd   :   0 ldi   :  55 lds   :  21 lpm   :   1 lsl   :   2 
+lsr   :   0 mov   :  12 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   2 ori   :   8 out   :  11 pop   :  25 
-push  :  25 rcall :  36 ret   :  13 reti  :   2 rjmp  :  16 rol   :   0 
+push  :  25 rcall :  43 ret   :  13 reti  :   2 rjmp  :  16 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   1 sbr   :   0 sbrc  :   4 sbrs  :   2 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  22 
+sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  24 
 sub   :   1 subi  :   3 swap  :   0 tst   :   1 wdr   :   0 
 Instructions used: 35 out of 113 (31.0%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0003ec    738    230    968   32768   3.0%
-[.dseg] 0x000100 0x000106      0      6      6    2048   0.3%
+[.cseg] 0x000000 0x00041a    784    230   1014   32768   3.1%
+[.dseg] 0x000100 0x000107      0      7      7    2048   0.3%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
 Assembly complete, 0 errors, 0 warnings

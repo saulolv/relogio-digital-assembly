@@ -21,6 +21,7 @@
 mode_1: .byte 2
 mode_2: .byte 3
 adjust_digit_selector: .byte 1 ; Variável para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
+trocar_modo_flag: .byte 1
 
 
 .cseg
@@ -118,42 +119,68 @@ reset:
     sei                               ; Habilita interrupções globais
 
 main:
+    ; Verifica se a flag de troca de modo está setada
+    lds temp1, trocar_modo_flag
+    cpi temp1, 1
+    brne continuar_exibicao
 
-	
-    rcall exibe_digito_0
+    ; Beep
+    sbi PORTB, PB4
     rcall delay_multiplex
+	rcall delay_multiplex
+	rcall delay_multiplex
+	rcall delay_multiplex
+	rcall delay_multiplex
+	rcall delay_multiplex
+	rcall delay_multiplex
+    cbi PORTB, PB4
 
-    rcall exibe_digito_1
-    rcall delay_multiplex
+    ; Troca modo
+    mov temp1, actual_mode
+    inc temp1
+    cpi temp1, 4
+    brlo salva_novo_modo_main
+    ldi temp1, 1
+	salva_novo_modo_main:
+		mov actual_mode, temp1
 
-    rcall exibe_digito_2
-    rcall delay_multiplex
+		; Limpa a flag
+		ldi temp1, 0
+		sts trocar_modo_flag, temp1
 
-    rcall exibe_digito_3
-    rcall delay_multiplex
-   
-
+	continuar_exibicao:
+		; Multiplexação normal
+		rcall exibe_digito_0
+		rcall delay_multiplex
+		rcall exibe_digito_1
+		rcall delay_multiplex
+		rcall exibe_digito_2
+		rcall delay_multiplex
+		rcall exibe_digito_3
+		rcall delay_multiplex
 
     rjmp main
 
+
 ; --- INTERRUPÇÃO PCINT0 ---
 pcint0_isr:
-    push r16
-    in r16, PINB
-    sbrs r16, PB5        ; Se PB5 está em nível alto → botão solto
-    rjmp beep
+    push temp1
 
-    ; Botão solto → desliga PB4
-    cbi PORTB, PB4
-    rjmp fim_pcint0_isr
+    ; Detecta botão pressionado
+    in temp1, PINB
+    sbrs temp1, PB5
+    rjmp seta_flag_troca_modo
 
-beep:
-    ; Botão pressionado → liga PB4
-    sbi PORTB, PB4
+    rjmp fim_interrupcao_pcint0
 
-fim_pcint0_isr:
-    pop r16
+seta_flag_troca_modo:
+    ldi temp1, 1
+    sts trocar_modo_flag, temp1  ; Marca a flag
+fim_interrupcao_pcint0:
+    pop temp1
     reti
+
+
 
 
 ; =========================================================================
