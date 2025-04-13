@@ -1,71 +1,53 @@
-.include "m328pdef.inc"          ; Inclui definições específicas do ATmega328P
+.include "m328pdef.inc" ; Inclui definições do ATmega328P
 
-; ============================================================
-; DEFINIÇÕES DE CONSTANTES E MACROS
-; ============================================================
-#define CLOCK 16000000            ; Velocidade do clock = 16 MHz
-#define DELAY 1                   ; Constante de delay (usada no Timer) -> 1 segundo
-#define BAUD 9600                 ; Taxa de transmissão da serial = 9600 baud
-#define UBRR_VALUE (((CLOCK / (BAUD * 16.0)) + 0.5) - 1) ; Cálculo do valor UBRR para configuração do USART
+#define CLOCK 16000000 ;clock speed
+#define DELAY 1
+#define BAUD 9600       ; Define a taxa de baud da serial
+#define UBRR_VALUE (((CLOCK / (BAUD * 16.0)) + 0.5) - 1) ; Calcula UBRR
+;#define DELAY_ms 10
+;.equ DELAY_CYCLES = int(CLOCK * DELAY_ms) / 1000
 
-; ============================================================
-; DEFINIÇÃO DE REGISTRADORES DE TRABALHO (DEF)
-; ============================================================
-.def actual_mode = r18        ; r18: Armazena o modo atual de operação (1=Relógio, 2=Cronômetro, 3=Ajuste)
-.def temp1 = r16              ; r16: Variável temporária (uso geral)
-.def temp2 = r17              ; r17: Variável temporária (uso geral)
-.def tx_byte = r19            ; r19: Byte que será transmitido pela serial
-.def byte_val = r20           ; r20: Byte a ser convertido para formato ASCII decimal
-.def ascii_H = r21            ; r21: Dígito ASCII referente à dezena
-.def ascii_L = r22            ; r22: Dígito ASCII referente à unidade
-; R23, R24, R25, R26: Usados para armazenar dígitos para o display
-; Registrador Z (r31:r30): Ponteiro para strings na memória de programa
+.def actual_mode = r18  ; Armazena o modo atual de operação (relógio, cronômetro, ajuste...)
+.def temp1 = r16        ; Variavel temporaria
+.def temp2 = r17        ; Variavel temporaria
+.def tx_byte = r19      ; Byte a ser transmitido pela serial
+.def byte_val = r20     ; Byte a ser convertido para ASCII decimal
+.def ascii_H = r21      ; Digito ASCII das dezenas
+.def ascii_L = r22      ; Digito ASCII das unidades
+; Usaremos Z (r31:r30) como ponteiro para strings na memória de programa
 
-; ============================================================
-; DEFINIÇÃO DE VARIÁVEIS NA MEMÓRIA DE DADOS (DSEG)
-; ============================================================
+
 .dseg
-mode_1: .byte 2              ; Reserva 2 bytes: [0]=Minutos, [1]=Segundos (Relógio)
-mode_2: .byte 3              ; Reserva 3 bytes: [0]=Minutos, [1]=Segundos, [2]=Flag Ativo (Cronômetro)
-adjust_digit_selector: .byte 1 ; Reserva 1 byte para o dígito a ajustar no modo 3:
-                              ; (0=Seg Unidade, 1=Seg Dezena, 2=Min Unidade, 3=Min Dezena)
-trocar_modo_flag: .byte 1      ; Flag para indicar a troca de modo
+mode_1: .byte 2
+mode_2: .byte 3
+adjust_digit_selector: .byte 1 ; Variável para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
+trocar_modo_flag: .byte 1
 
-; ============================================================
-; INÍCIO DO CÓDIGO (CSEG)
-; ============================================================
+
 .cseg
-
-; ------------------------------------------------------------
-; Vetores de Interrupção
-; ------------------------------------------------------------
+; --- Vetores de Interrupção ---
+.cseg
 .org 0x0000
-    jmp reset                ; Vetor de reset
+    jmp reset
 
 .org PCI0addr
-    jmp pcint0_isr           ; Vetor da interrupção PCINT0 (Botão MODE - PB5)
+    jmp pcint0_isr
 
 .org OC1Aaddr
-    jmp OCI1A_ISR            ; Vetor da interrupção Timer1 Compare A (1 segundo)
+    jmp OCI1A_ISR
 
-; ------------------------------------------------------------
-; Strings para a comunicação Serial (memória de programa)
-; ------------------------------------------------------------
+; --- Strings para a Serial ---
 str_modo1: .db "[MODO 1] ", 0
-str_modo2_run: .db "[MODO 2] START", 0 ; Alterado para corresponder ao requisito
-str_modo2_stop: .db "[MODO 2] STOPPED ", 0 ; Mantido para clareza, mas não pedido explicitamente
+str_modo2_run: .db "[MODO 2] RUN ", 0
+str_modo2_stop: .db "[MODO 2] STOPPED ", 0
 str_modo2_zero: .db "[MODO 2] ZERO", 0
 str_modo3_su: .db "[MODO 3] Ajustando a unidade dos segundos", 0
 str_modo3_sd: .db "[MODO 3] Ajustando a dezena dos segundos ", 0
 str_modo3_mu: .db "[MODO 3] Ajustando a unidade dos minutos ", 0
 str_modo3_md: .db "[MODO 3] Ajustando a dezena dos minutos", 0
-str_modo2_reset: .db "[MODO 2] RESET", 0 ; ;; --- NOVO --- String para Reset no modo 2
 str_colon: .db ":", 0
-str_newline: .db "\r\n", 0   ; Removido espaço extra
+str_newline: .db "\r\n ", 0 ; Envia Carriage Return e Line Feed para compatibilidade
 
-; ============================================================
-; ROTINA DE RESET (Inicialização)
-; ============================================================
 reset:
     ; --- Inicialização da Pilha ---
     ldi r16, low(RAMEND)
@@ -73,506 +55,645 @@ reset:
     ldi r16, high(RAMEND)
     out SPH, r16
 
-    ; --- Configuração PORTB ---
-    ; PB0-3 Saída (Seletores Display), PB4 Saída (Buzzer), PB5 Entrada (Botão MODE c/ Pull-up)
-    ldi r16, (1<<DDB4)|(1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0) ; PB0-4 como saída
+	; PB4 como saída
+    ldi r16, (1 << PB4)
     out DDRB, r16
-    ldi r16, (1<<PORTB5) ; Ativa Pull-up em PB5
+
+    ; Ativa pull-up interno em PB5
+    ldi r16, (1 << PB5)
     out PORTB, r16
 
-    ; --- Configuração PORTD ---
-    ; PD2-5 Saída (Dados CD4511), PD6 Entrada (RESET c/ Pull-up), PD7 Entrada (START c/ Pull-up)
-    ldi r16, (1<<DDD5)|(1<<DDD4)|(1<<DDD3)|(1<<DDD2) ; PD2-5 como saída
-    out DDRD, r16
-    ldi r16, (1<<PORTD7)|(1<<PORTD6) ; Ativa Pull-up em PD6 e PD7
-    out PORTD, r16
-
-    ; --- Interrupção PCINT0 (para PB5 - MODE) ---
-    ldi r16, (1 << PCIE0)   ; Habilita PCINT0-7 (PORTB)
+    ; Habilita interrupção de mudança de pino PCINT0 (PORTB)
+    ldi r16, (1 << PCIE0)
     sts PCICR, r16
-    ldi r16, (1 << PCINT5)  ; Habilita máscara para PCINT5 (PB5)
+
+    ; Habilita interrupção para PB5 (PCINT5)
+    ldi r16, (1 << PCINT5)
     sts PCMSK0, r16
 
+
+    in temp1, PORTD
+    ori temp1, (1 << PD6) | (1 << PD7)
+    out PORTD, temp1
+
+    ; Ativa pull-up em PD6 (RESET) e PD7 (START)
+    in temp1, DDRD
+    andi temp1, 0b00111111     ; PD6 e PD7 como entrada
+    out DDRD, temp1
+
+	ldi temp1, 0b00011111     ; PB0–PB4 como saída
+	out DDRB, temp1
+
+	
     ; --- Inicialização das Variáveis ---
-    ldi temp1, 0
-    sts mode_1, temp1         ; Zera Minutos Relógio
-    sts mode_1 + 1, temp1     ; Zera Segundos Relógio
-    sts mode_2, temp1         ; Zera Minutos Cronômetro
-    sts mode_2 + 1, temp1     ; Zera Segundos Cronômetro
-    sts mode_2 + 2, temp1     ; Zera Flag Cronômetro (Parado)
-    sts adjust_digit_selector, temp1 ; Zera Seletor de Ajuste
-    sts trocar_modo_flag, temp1 ; Zera Flag Troca Modo
+    ldi temp1, 0              ; Carrega o valor 0 no registrador temp1 (r16)
+	sts mode_1, temp1         ; Zera os minutos atuais do relógio (mode_1 = 0)
+	sts mode_1 + 1, temp1     ; Zera os segundos atuais do relógio (mode_1 + 1 = 0)
+	sts mode_2, temp1         ; Zera os minutos do cronômetro (mode_2 = 0)
+	sts mode_2 + 1, temp1     ; Zera os segundos do cronômetro (mode_2 + 1 = 0)
+	sts mode_2 + 2, temp1     ; Zera a flag de ativação do cronômetro (mode_2 + 2 = 0)
+    sts adjust_digit_selector, temp1 ; Zera seletor de ajuste
 
-    ; --- Configuração do Timer1 (CTC, Prescaler 256, Interrupção a cada 1 segundo) ---
-    ldi temp1, (1 << OCIE1A)  ; Habilita interrupção Compare A
-    sts TIMSK1, temp1
-    .equ PRESCALE = 0b100     ; CS12=1, CS11=0, CS10=0 => Prescaler 256
-    .equ PRESCALE_DIV = 256
-    .equ WGM = 0b0100         ; Modo CTC (OCR1A como TOP)
-    ; TOP = Clock / Prescaler * Delay_Segundos = 16MHz / 256 * 1 = 62500
-    .equ TOP = 62500
 
-    ldi temp1, high(TOP-1)    ; OCR1A = TOP - 1
-    sts OCR1AH, temp1
-    ldi temp1, low(TOP-1)
-    sts OCR1AL, temp1
-    ldi temp1, ((WGM & 0b11) << WGM10) ; Configura WGM11:10 em TCCR1A
-    sts TCCR1A, temp1
-    ldi temp1, (((WGM >> 2) & 0b11) << WGM12) | (PRESCALE << CS10) ; Configura WGM13:12 e Prescaler em TCCR1B
-    sts TCCR1B, temp1
+    ; --- Configuração do Timer1 (Mantido do original) ---
+    ldi temp1, (1 << OCIE1A)  ; Carrega no registrador temp1 um valor com o bit OCIE1A ativado (bit que habilita a interrupção do Timer1 Compare Match A)
+	sts TIMSK1, temp1         ; Escreve esse valor no registrador TIMSK1, ativando a interrupção do Timer1 (Canal A)
+    .equ PRESCALE = 0b100           ; Seleciona o prescaler do Timer1 como 256 (CS12:CS10 = 100)
+	.equ PRESCALE_DIV = 256         ; Valor real do prescaler (divisor de clock)
+	.equ WGM = 0b0100               ; Define o modo de operação do Timer1 como CTC (Clear Timer on Compare Match)
+	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
 
-    ; --- Configuração do USART (Serial) ---
+	ldi temp1, high(TOP)              ; Carrega o byte mais significativo do valor TOP no registrador temp1
+	sts OCR1AH, temp1                 ; Armazena esse valor no registrador OCR1AH (parte alta do valor de comparação do Timer1)
+	ldi temp1, low(TOP)               ; Carrega o byte menos significativo do valor TOP no registrador temp1
+	sts OCR1AL, temp1                 ; Armazena esse valor no registrador OCR1AL (parte baixa do valor de comparação do Timer1)
+	ldi temp1, ((WGM & 0b11) << WGM10) ; Extrai os 2 bits menos significativos de WGM e posiciona em WGM10/WGM11
+	sts TCCR1A, temp1                 ; Configura os bits de modo de operação do Timer1 no registrador TCCR1A
+	ldi temp1, ((WGM >> 2) << WGM12) | (PRESCALE << CS10)
+	sts TCCR1B, temp1                 ; Configura modo CTC e ativa o prescaler de 256 no registrador TCCR1B
+	
+    ; --- Configuração do USART ---
     ldi temp1, high(int(UBRR_VALUE))
     sts UBRR0H, temp1
     ldi temp1, low(int(UBRR_VALUE))
     sts UBRR0L, temp1
-    ldi temp1, (1 << TXEN0)   ; Habilita transmissor
+    ; Habilita transmissor (TXEN0)
+    ldi temp1, (1 << TXEN0)
     sts UCSR0B, temp1
-    ldi temp1, (1 << UCSZ01) | (1 << UCSZ00) ; Frame: 8 data bits, 1 stop bit
+    ; Configura formato do frame: 8 bits de dados (UCSZ00, UCSZ01), 1 stop bit (padrão)
+    ldi temp1, (1 << UCSZ01) | (1 << UCSZ00)
     sts UCSR0C, temp1
 
-    ; --- Estado Inicial e Habilitação Global de Interrupções ---
-    ldi actual_mode, 1       ; Começa no Modo 1
-    sei                      ; Habilita interrupções
+    ; --- Estado Inicial e Interrupções ---
+    ldi actual_mode, 1                ; Define o modo inicial como 1 (Relógio)
+    sei                               ; Habilita interrupções globais
 
-; ============================================================
-; LOOP PRINCIPAL
-; ============================================================
 main:
-    ; Verifica se a flag de troca de modo foi acionada pela interrupção PCINT0
+    ; Verifica flag de troca de modo
     lds temp1, trocar_modo_flag
     cpi temp1, 1
-    brne verificar_botoes ; Se não, verifica outros botões
+    brne verificar_botoes
 
-    ; Se a flag está acionada, troca o modo e faz o beep
-    rcall beep_modo       ; Beep para indicar a troca
-    rcall trocar_modo     ; Executa a lógica de troca de modo
+    ; Beep e troca de modo
+    rcall beep_modo
+    rcall trocar_modo
 
-; ============================
 ; CONTROLE DE MODO E VERIFICAÇÃO DE BOTÕES
 ; ============================
 verificar_botoes:
-    ; Verifica em qual modo estamos para chamar a rotina de botões correta
-    cpi actual_mode, 2
-    breq chamar_verif_modo2 ; Se MODO 2, verifica START/RESET do cronômetro
-    cpi actual_mode, 3
-    breq chamar_verif_modo3 ; ;; --- ALTERADO --- Se MODO 3, verifica START/RESET do ajuste
-    rjmp continuar_loop     ; Se MODO 1 (ou outro), não há botões START/RESET ativos
+    ; Verifica qual modo está ativo para chamar a rotina apropriada
+    cpi actual_mode, 2           ; Compara o modo atual com 2
+    breq handle_modo2            ; Se for modo 2, pula para handle_modo2
+    cpi actual_mode, 3           ; Compara o modo atual com 3
+    breq handle_modo3            ; Se for modo 3, pula para handle_modo3
+    rjmp continuar               ; Se não for modo 2 nem 3, pula para continuar
 
-chamar_verif_modo2:
-    rcall verifica_botoes_modo2
-    rjmp continuar_loop
+handle_modo2:
+    rcall verifica_botoes_modo2  ; Chama a rotina de verificação de botões do modo 2
+    rjmp continuar               ; Pula para continuar após verificar
 
-;; --- NOVO --- Bloco para chamar verificação do Modo 3
-chamar_verif_modo3:
-    rcall verifica_botoes_modo3
-    rjmp continuar_loop
+handle_modo3:
+    rcall verifica_botoes_modo3  ; Chama a rotina de verificação de botões do modo 3
+    rjmp continuar               ; Pula para continuar após verificar
 
-continuar_loop:
-    ; Multiplexação para atualizar os displays de 7 segmentos
-    rcall multiplexar_display
-    rjmp main             ; Volta para o início do loop
+continuar:
+    ; Multiplexação diferente para o modo 3 (com efeito de piscar)
+    cpi actual_mode, 3           ; Verifica se está no modo 3
+    breq multiplex_modo3         ; Se for modo 3, usa multiplexação com efeito de piscar
+    rcall multiplexar_display    ; Se não for modo 3, usa multiplexação normal
+    rjmp main                    ; Retorna para o início do loop principal
+
+multiplex_modo3:
+    rcall multiplexar_display_modo3 ; Chama a rotina de multiplexação especial para modo 3
+    rjmp main                     ; Retorna para o início do loop principal
+
+
+
+verifica_botoes_modo3:
+    ; Verifica se o botão START (PD7) foi pressionado para navegar entre os dígitos
+    sbic PIND, PD7          ; Se o bit PD7 estiver limpo (botão pressionado), prossegue
+    rjmp verifica_reset_modo3 ; Caso contrário, pula para verificar o botão RESET
+    rcall navegar_digitos    ; Se START foi pressionado, aciona a rotina de navegação
+    rcall beep_modo         ; Emite beep para indicar a ação
+esperar_soltar_start_modo3:
+    sbis PIND, PD7          ; Aguarda que o botão START seja solto
+    rjmp esperar_soltar_start_modo3
+
+verifica_reset_modo3:
+    ; Verifica se o botão RESET (PD6) foi pressionado para ajustar o valor do dígito selecionado
+    sbic PIND, PD6          ; Se o bit PD6 estiver limpo (pressionado), prossegue
+    rjmp fim_verificacao_botoes_modo3 ; Se não, pula para o fim da verificação
+    rcall ajustar_digito    ; Se RESET for pressionado, chama a rotina de ajuste
+    rcall beep_modo         ; Emite beep para indicar a ação
+esperar_soltar_reset_modo3:
+    sbis PIND, PD6          ; Aguarda que o botão RESET seja solto
+    rjmp esperar_soltar_reset_modo3
+
+fim_verificacao_botoes_modo3:
+    ret                     ; Retorna da função
 
 ; ============================================================
-; FUNÇÃO: beep_modo
-; Finalidade: Emite um beep curto usando PB4.
+; FUNÇÃO: navegar_digitos
+; Finalidade: Avança para o próximo dígito a ser ajustado no Modo 3
 ; ============================================================
+navegar_digitos:
+    lds temp1, adjust_digit_selector  ; Carrega o valor atual do seletor de dígitos
+    inc temp1                        ; Incrementa para o próximo dígito
+    cpi temp1, 4                     ; Verifica se chegou ao limite (4 dígitos: 0,1,2,3)
+    brlo salvar_digito_atual         ; Se for menor que 4, salva o novo valor
+    ldi temp1, 0                     ; Se chegou a 4, volta para o primeiro dígito (0)
+salvar_digito_atual:
+    sts adjust_digit_selector, temp1  ; Salva o novo valor do seletor de dígitos
+
+    ; Envia mensagem de navegação conforme o dígito selecionado
+    cpi temp1, 0
+    breq envia_msg_su
+    cpi temp1, 1
+    breq envia_msg_sd
+    cpi temp1, 2
+    breq envia_msg_mu
+    cpi temp1, 3
+    breq envia_msg_md
+    ret                              ; Retorna da função em caso de valor inválido
+
+envia_msg_su:
+    ldi ZL, low(str_modo3_su<<1)     ; Prepara a string "Ajustando a unidade dos segundos"
+    ldi ZH, high(str_modo3_su<<1)
+    rcall USART_Transmit_String
+    rjmp enviar_nl_fin_dig
+envia_msg_sd:
+    ldi ZL, low(str_modo3_sd<<1)     ; Prepara a string "Ajustando a dezena dos segundos"
+    ldi ZH, high(str_modo3_sd<<1)
+    rcall USART_Transmit_String
+    rjmp enviar_nl_fin_dig
+envia_msg_mu:
+    ldi ZL, low(str_modo3_mu<<1)     ; Prepara a string "Ajustando a unidade dos minutos"
+    ldi ZH, high(str_modo3_mu<<1)
+    rcall USART_Transmit_String
+    rjmp enviar_nl_fin_dig
+envia_msg_md:
+    ldi ZL, low(str_modo3_md<<1)     ; Prepara a string "Ajustando a dezena dos minutos"
+    ldi ZH, high(str_modo3_md<<1)
+    rcall USART_Transmit_String
+
+enviar_nl_fin_dig:
+    ldi ZL, low(str_newline<<1)      ; Prepara string de nova linha
+    ldi ZH, high(str_newline<<1)
+    rcall USART_Transmit_String
+    ret                              ; Retorna da função
+
+; Funções de ajuste corrigidas para o modo 3
+; ============================================================
+; FUNÇÃO: ajustar_digito
+; Finalidade: Ajusta o valor do dígito selecionado no Modo 3
+; ============================================================
+ajustar_digito:
+    lds temp1, adjust_digit_selector  ; Carrega o seletor de dígitos atual
+    cpi temp1, 0                      ; Verifica qual dígito está selecionado
+    breq ajustar_su                   ; Unidade dos segundos
+    cpi temp1, 1
+    breq ajustar_sd                   ; Dezena dos segundos
+    cpi temp1, 2
+    breq ajustar_mu                   ; Unidade dos minutos
+    cpi temp1, 3
+    breq ajustar_md                   ; Dezena dos minutos
+    ret                               ; Retorna se valor inválido
+
+ajustar_su:
+    ; Ajusta a unidade dos segundos
+    lds temp1, mode_1 + 1             ; Carrega os segundos atuais
+    ldi temp2, 10
+    rcall dividir                     ; temp1 = dezena, temp2 = unidade
+    inc temp2                         ; Incrementa a unidade
+    cpi temp2, 10                     ; Verifica se passou de 9
+    brlo salvar_su                    ; Se não passou, salva
+    ldi temp2, 0                      ; Se passou, volta para 0
+salvar_su:
+    ; Recalcula o valor binário: dezena*10 + unidade
+    ldi r23, 10
+    mul temp1, r23                    ; r1:r0 = dezena * 10
+    mov temp1, r0                     ; temp1 = dezena * 10
+    add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
+    sts mode_1 + 1, temp1             ; Salva o novo valor dos segundos
+    ret
+
+ajustar_sd:
+    ; Ajusta a dezena dos segundos
+    lds temp1, mode_1 + 1             ; Carrega os segundos atuais
+    ldi temp2, 10
+    rcall dividir                     ; temp1 = dezena, temp2 = unidade
+    inc temp1                         ; Incrementa a dezena
+    cpi temp1, 6                      ; Verifica se passou de 5
+    brlo salvar_sd                    ; Se não passou, salva
+    ldi temp1, 0                      ; Se passou, volta para 0
+salvar_sd:
+    ; Recalcula o valor binário: dezena*10 + unidade
+    ldi r23, 10
+    mul temp1, r23                    ; r1:r0 = dezena * 10
+    mov temp1, r0                     ; temp1 = dezena * 10
+    add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
+    sts mode_1 + 1, temp1             ; Salva o novo valor dos segundos
+    ret
+
+ajustar_mu:
+    ; Ajusta a unidade dos minutos
+    lds temp1, mode_1                 ; Carrega os minutos atuais
+    ldi temp2, 10
+    rcall dividir                     ; temp1 = dezena, temp2 = unidade
+    inc temp2                         ; Incrementa a unidade
+    cpi temp2, 10                     ; Verifica se passou de 9
+    brlo salvar_mu                    ; Se não passou, salva
+    ldi temp2, 0                      ; Se passou, volta para 0
+salvar_mu:
+    ; Recalcula o valor binário: dezena*10 + unidade
+    ldi r23, 10
+    mul temp1, r23                    ; r1:r0 = dezena * 10
+    mov temp1, r0                     ; temp1 = dezena * 10
+    add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
+    sts mode_1, temp1                 ; Salva o novo valor dos minutos
+    ret
+
+ajustar_md:
+    ; Ajusta a dezena dos minutos
+    lds temp1, mode_1                 ; Carrega os minutos atuais
+    ldi temp2, 10
+    rcall dividir                     ; temp1 = dezena, temp2 = unidade
+    inc temp1                         ; Incrementa a dezena
+    cpi temp1, 6                      ; Verifica se passou de 5
+    brlo salvar_md                    ; Se não passou, salva
+    ldi temp1, 0                      ; Se passou, volta para 0
+salvar_md:
+    ; Recalcula o valor binário: dezena*10 + unidade
+    ldi r23, 10
+    mul temp1, r23                    ; r1:r0 = dezena * 10
+    mov temp1, r0                     ; temp1 = dezena * 10
+    add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
+    sts mode_1, temp1                 ; Salva o novo valor dos minutos
+    ret
+; ============================================================
+; FUNÇÃO: multiplexar_display_modo3
+; Finalidade: Multiplexação do display com efeito de piscar no dígito selecionado (Modo 3)
+; ============================================================
+multiplexar_display_modo3:
+    ; Carrega valores atuais do relógio
+    lds temp1, mode_1 + 1    ; Carrega os segundos do relógio
+    ldi temp2, 10
+    call dividir             ; Divide em dezena e unidade
+    mov r23, temp2           ; Unidade dos segundos em r23
+    mov r24, temp1           ; Dezena dos segundos em r24
+
+    lds temp1, mode_1        ; Carrega os minutos do relógio
+    ldi temp2, 10
+    call dividir             ; Divide em dezena e unidade
+    mov r25, temp2           ; Unidade dos minutos em r25
+    mov r26, temp1           ; Dezena dos minutos em r26
+
+    ; Verifica o contador de pisca para criar efeito de piscada
+    in temp1, TCNT0          ; Usa o contador do Timer0 como base para piscar
+    andi temp1, 0x80         ; Usa o bit mais significativo para alternar (~2Hz)
+    breq exibe_normal        ; Se for 0, exibe normal
+
+	ldi temp1, (1 << CS02) | (0 << CS01) | (1 << CS00)  ; Prescaler = 1024
+    out TCCR0B, temp1                                   ; Configura o Timer0
+    ldi temp1, 0                                         ; Inicializa o contador
+    out TCNT0, temp1                                     ; Zera o contador do Timer0
+
+    
+    ; Se for 1, apaga o dígito selecionado (efeito de piscar)
+    lds temp1, adjust_digit_selector
+    cpi temp1, 0              ; Verifica qual dígito está selecionado
+    breq apaga_su             ; Unidade dos segundos
+    cpi temp1, 1
+    breq apaga_sd             ; Dezena dos segundos
+    cpi temp1, 2
+    breq apaga_mu             ; Unidade dos minutos
+    cpi temp1, 3
+    breq apaga_md             ; Dezena dos minutos
+    rjmp exibe_normal         ; Se não for nenhum, exibe normal
+
+apaga_su:
+    ldi r23, 10              ; Valor 10 não será exibido (apaga)
+    rjmp exibe_normal
+apaga_sd:
+    ldi r24, 10              ; Apaga dezena dos segundos
+    rjmp exibe_normal
+apaga_mu:
+    ldi r25, 10              ; Apaga unidade dos minutos
+    rjmp exibe_normal
+apaga_md:
+    ldi r26, 10              ; Apaga dezena dos minutos
+
+exibe_normal:
+    ; Exibe cada dígito
+    mov temp1, r23           ; Unidade dos segundos
+    cpi temp1, 10            ; Verifica se é para apagar (valor 10)
+    breq desliga_display_su  ; Se for 10, desliga esse dígito
+    rcall enviar_para_cd4511 ; Senão, envia para o display
+    in temp2, PORTB
+    andi temp2, 0b11110000   ; Zera os 4 bits inferiores
+    ori temp2, (1 << PB3)    ; Ativa o display da unidade dos segundos (PB3)
+    out PORTB, temp2
+    rjmp continua_sd
+
+desliga_display_su:
+    in temp2, PORTB          ; Lê PORTB
+    andi temp2, 0b11110111   ; Desliga o bit PB3 (apaga o display)
+    out PORTB, temp2
+
+continua_sd:
+    rcall delay_multiplex    ; Delay para estabilização
+
+    mov temp1, r24           ; Dezena dos segundos
+    cpi temp1, 10            ; Verifica se é para apagar
+    breq desliga_display_sd
+    rcall enviar_para_cd4511
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB2)
+    out PORTB, temp2
+    rjmp continua_mu
+
+desliga_display_sd:
+    in temp2, PORTB
+    andi temp2, 0b11111011   ; Desliga o bit PB2
+    out PORTB, temp2
+
+continua_mu:
+    rcall delay_multiplex
+
+    mov temp1, r25           ; Unidade dos minutos
+    cpi temp1, 10
+    breq desliga_display_mu
+    rcall enviar_para_cd4511
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB1)
+    out PORTB, temp2
+    rjmp continua_md
+
+desliga_display_mu:
+    in temp2, PORTB
+    andi temp2, 0b11111101   ; Desliga o bit PB1
+    out PORTB, temp2
+
+continua_md:
+    rcall delay_multiplex
+
+    mov temp1, r26           ; Dezena dos minutos
+    cpi temp1, 10
+    breq desliga_display_md
+    rcall enviar_para_cd4511
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB0)
+    out PORTB, temp2
+    rjmp fim_multiplex_modo3
+
+desliga_display_md:
+    in temp2, PORTB
+    andi temp2, 0b11111110   ; Desliga o bit PB0
+    out PORTB, temp2
+
+fim_multiplex_modo3:
+    rcall delay_multiplex
+    ret
+
+
+; --- Função: Emitir beep curto (PB4) ---
 beep_modo:
-    sbi PORTB, PB4          ; Liga Buzzer (PB4)
-    rcall delay_50ms        ; ;; --- NOVO --- Pequeno delay para o beep
-    cbi PORTB, PB4          ; Desliga Buzzer
+    sbi PORTB, PB4
+    rcall delay_multiplex
+    cbi PORTB, PB4
     ret
 
-; ;; --- NOVO --- Função de Delay (aproximado)
-delay_50ms:
-    push r24
-    push r25
-    ldi r25, high(16000) ; ~50ms delay loop count (ajustar se necessário)
-    ldi r24, low(16000)
-delay_50ms_loop:
-    sbiw r24, 1
-    brne delay_50ms_loop
-    pop r25
-    pop r24
-    ret
 
-; ============================================================
-; FUNÇÃO: trocar_modo
-; Finalidade: Troca o modo de operação (1 -> 2 -> 3 -> 1) e inicializa estados.
-; ============================================================
+; --- Função: Trocar modo atual (1 → 2 → 3 → 1) ---
 trocar_modo:
     mov temp1, actual_mode
-    inc temp1               ; Próximo modo
-    cpi temp1, 4            ; Chegou ao fim (depois do 3)?
+    inc temp1
+    cpi temp1, 4
     brlo modo_ok
-    ldi temp1, 1            ; Volta para o modo 1
+    ldi temp1, 1
 modo_ok:
-    mov actual_mode, temp1  ; Atualiza o modo
-
-    ldi temp2, 0            ; Zera o registrador temporário
-    sts trocar_modo_flag, temp2 ; Limpa a flag de troca de modo
-
-    ; ;; --- ALTERADO --- Inicializações específicas ao entrar em um modo
-    cpi actual_mode, 2      ; Entrando no modo 2?
-    brne check_enter_mode3
-    ; Zera display do cronômetro (valores de mode_2 já são zerados no reset,
-    ; mas pode ser bom zerar aqui também se necessário)
-    sts mode_2, temp2        ; Zera minutos cronômetro
-    sts mode_2 + 1, temp2    ; Zera segundos cronômetro
-    sts mode_2 + 2, temp2    ; Garante que cronômetro começa parado
-    rjmp trocar_modo_end
-
-check_enter_mode3:
-    cpi actual_mode, 3      ; Entrando no modo 3?
-    brne trocar_modo_end
-    sts adjust_digit_selector, temp2 ; ;; --- NOVO --- Zera o seletor de dígito ao entrar no modo 3
-
-trocar_modo_end:
+    mov actual_mode, temp1
+    ldi temp1, 0
+    sts trocar_modo_flag, temp1
     ret
 
-; ============================================================
-; FUNÇÃO: verifica_botoes_modo2
-; Finalidade: Verifica botões START (PD7) e RESET (PD6) no Modo 2 (Cronômetro).
-; ============================================================
+
+
+; --- Função: Verificar botões START (PD7) e RESET (PD6) ---
 verifica_botoes_modo2:
-    ; Debounce simples por espera após detecção
-    rcall delay_50ms ; Pequeno delay para debounce inicial
+    ; Verifica botão START (PD7)
+    sbic PIND, PD7
+    rjmp verifica_reset
+    rcall aciona_start
+esperar_soltar_start:
+    sbis PIND, PD7
+    rjmp esperar_soltar_start
 
-    ; Verifica START (PD7) - Ativo em nível baixo (pressionado)
-    sbic PIND, PD7          ; Pula se PD7 estiver ALTO (não pressionado)
-    rjmp verifica_reset_modo2 ; Se não pressionado, verifica RESET
-    ; START está pressionado
-    rcall aciona_start_modo2 ; Chama a ação do START
-    ; Espera o botão ser solto
-esperar_soltar_start_m2:
-    sbis PIND, PD7          ; Pula se PD7 estiver BAIXO (ainda pressionado)
-    rjmp esperar_soltar_start_m2 ; Continua esperando
-    rcall delay_50ms ; Delay após soltar para debounce
-    rjmp fim_verificacao_botoes_m2 ; Já tratou um botão, sai
+verifica_reset:
+    ; Verifica botão RESET (PD6)
+    sbic PIND, PD6
+    rjmp fim_verifica_botoes
+    rcall aciona_reset
+esperar_soltar_reset:
+    sbis PIND, PD6
+    rjmp esperar_soltar_reset
 
-verifica_reset_modo2:
-    ; Verifica RESET (PD6) - Ativo em nível baixo
-    sbic PIND, PD6          ; Pula se PD6 estiver ALTO (não pressionado)
-    rjmp fim_verificacao_botoes_m2 ; Se não pressionado, termina
-    ; RESET está pressionado
-    rcall aciona_reset_modo2 ; Chama a ação do RESET
-    ; Espera o botão ser solto
-esperar_soltar_reset_m2:
-    sbis PIND, PD6          ; Pula se PD6 estiver BAIXO (ainda pressionado)
-    rjmp esperar_soltar_reset_m2 ; Continua esperando
-    rcall delay_50ms ; Delay após soltar
-
-fim_verificacao_botoes_m2:
+fim_verifica_botoes:
     ret
 
-; ============================================================
-; FUNÇÃO: aciona_start_modo2
-; Finalidade: Inicia/Para o cronômetro (Modo 2), faz beep e envia msg serial.
-; ============================================================
-aciona_start_modo2:
-    lds temp1, mode_2+2      ; Lê flag de ativação
-    ldi temp2, 1
-    eor temp1, temp2         ; Inverte a flag (0->1 ou 1->0)
-    sts mode_2+2, temp1      ; Salva nova flag
-    rcall beep_modo          ; Beep
 
-    ; Envia "[MODO 2] START" via serial (Requisito)
+; --- Função: Inverter flag do cronômetro e avisar "[MODO 2] START" ---
+aciona_start:
+    lds temp1, mode_2+2
+    ldi temp2, 1
+    eor temp1, temp2
+    sts mode_2+2, temp1
+
+    rcall beep_modo
+
     ldi ZL, low(str_modo2_run<<1)
     ldi ZH, high(str_modo2_run<<1)
     rcall USART_Transmit_String
     ldi ZL, low(str_newline<<1)
     ldi ZH, high(str_newline<<1)
     rcall USART_Transmit_String
+
     ret
 
-; ============================================================
-; FUNÇÃO: aciona_reset_modo2
-; Finalidade: Zera o cronômetro (Modo 2) se estiver parado, faz beep e envia msg serial.
-; ============================================================
-aciona_reset_modo2:
-    lds temp1, mode_2+2      ; Lê flag de ativação
-    cpi temp1, 0             ; Está parado (flag == 0)?
-    brne reset_m2_nop        ; Se não estiver parado, não faz nada
-    ; Se está parado, zera os valores
-    ldi temp1, 0
-    sts mode_2, temp1        ; Zera minutos
-    sts mode_2+1, temp1      ; Zera segundos
-    rcall beep_modo          ; Beep
 
-    ; Envia "[MODO 2] RESET" via serial (Requisito)
-    ldi ZL, low(str_modo2_reset<<1)
-    ldi ZH, high(str_modo2_reset<<1)
+; --- Função: Resetar cronômetro (se parado) e avisar "[MODO 2] RESET" ---
+aciona_reset:
+    lds temp1, mode_2+2
+    cpi temp1, 0
+    brne reset_nop
+
+    ldi temp1, 0
+    sts mode_2, temp1
+    sts mode_2+1, temp1
+
+    rcall beep_modo
+
+    ldi ZL, low(str_modo2_stop<<1)
+    ldi ZH, high(str_modo2_stop<<1)
     rcall USART_Transmit_String
     ldi ZL, low(str_newline<<1)
     ldi ZH, high(str_newline<<1)
     rcall USART_Transmit_String
-reset_m2_nop:
+
+reset_nop:
     ret
 
-; ============================================================
-; ;; --- NOVO --- FUNÇÕES PARA O MODO 3
-; ============================================================
 
-; ============================================================
-; FUNÇÃO: verifica_botoes_modo3
-; Finalidade: Verifica botões START (PD7) e RESET (PD6) no Modo 3 (Ajuste).
-; ============================================================
-verifica_botoes_modo3:
-    ; Debounce simples por espera após detecção
-    rcall delay_50ms
-
-    ; Verifica START (PD7) - Seleciona próximo dígito
-    sbic PIND, PD7
-    rjmp verifica_reset_modo3
-    ; START pressionado
-    rcall aciona_start_modo3
-esperar_soltar_start_m3:
-    sbis PIND, PD7
-    rjmp esperar_soltar_start_m3
-    rcall delay_50ms
-    rjmp fim_verificacao_botoes_m3
-
-verifica_reset_modo3:
-    ; Verifica RESET (PD6) - Incrementa dígito selecionado
-    sbic PIND, PD6
-    rjmp fim_verificacao_botoes_m3
-    ; RESET pressionado
-    rcall aciona_reset_modo3
-esperar_soltar_reset_m3:
-    sbis PIND, PD6
-    rjmp esperar_soltar_reset_m3
-    rcall delay_50ms
-
-fim_verificacao_botoes_m3:
-    ret
-
-; ============================================================
-; FUNÇÃO: aciona_start_modo3
-; Finalidade: Avança o seletor de dígito (0->1->2->3->0) no Modo 3.
-; ============================================================
-aciona_start_modo3:
-    push temp1
-    lds temp1, adjust_digit_selector
-    inc temp1
-    cpi temp1, 4       ; Chegou a 4? (Após dígito 3)
-    brne start_m3_store
-    ldi temp1, 0       ; Volta para o dígito 0 (Unidade Segundos)
-start_m3_store:
-    sts adjust_digit_selector, temp1
-    ; Não faz beep aqui para diferenciar do RESET
-    pop temp1
-    ret
-
-; ============================================================
-; FUNÇÃO: aciona_reset_modo3
-; Finalidade: Incrementa o dígito selecionado do relógio (mode_1) no Modo 3.
-;             Trata wrap-around (0-9 para unidades, 0-5 para dezenas).
-; Usa: r20 (selector), r21 (tens), r22 (units), temp1, temp2
-; ============================================================
-aciona_reset_modo3:
-    push temp1
-    push temp2
-    push r20
-    push r21
-    push r22
-
-    ; Carrega o seletor atual
-    lds r20, adjust_digit_selector ; r20 = selector (0..3)
-
-    ; Determina se estamos ajustando segundos (0, 1) ou minutos (2, 3)
-    cpi r20, 2
-    brlo reset_m3_processa_segundos ; Se for 0 ou 1, vai para segundos
-
-; --- Processa Ajuste dos Minutos ---
-reset_m3_processa_minutos:
-    lds temp1, mode_1       ; Carrega byte dos minutos
-    rcall div10             ; Divide por 10 -> temp1=dezena, temp2=unidade
-    mov r21, temp1          ; r21 = dezena minutos
-    mov r22, temp2          ; r22 = unidade minutos
-
-    ; Verifica se ajusta unidade (2) ou dezena (3)
-    cpi r20, 2
-    breq reset_m3_inc_unidade_min
-
-reset_m3_inc_dezena_min: ; Ajustando dezena dos minutos (selector = 3)
-    inc r21                 ; Incrementa dezena
-    cpi r21, 6              ; Dezena de minutos vai de 0 a 5
-    brlo reset_m3_recombina_min ; Se < 6, ok
-    ldi r21, 0              ; Se 6, volta para 0
-    rjmp reset_m3_recombina_min
-
-reset_m3_inc_unidade_min: ; Ajustando unidade dos minutos (selector = 2)
-    inc r22                 ; Incrementa unidade
-    cpi r22, 10             ; Unidade vai de 0 a 9
-    brlo reset_m3_recombina_min ; Se < 10, ok
-    ldi r22, 0              ; Se 10, volta para 0
-
-reset_m3_recombina_min:
-    ; Recombina dezena e unidade: valor = dezena * 10 + unidade
-    mov temp1, r21          ; temp1 = dezena
-    rcall mult10            ; temp1 = dezena * 10 (usa temp2 internamente)
-    add temp1, r22          ; temp1 = dezena * 10 + unidade
-    sts mode_1, temp1       ; Salva o novo valor dos minutos
-    rjmp reset_m3_fim
-
-; --- Processa Ajuste dos Segundos ---
-reset_m3_processa_segundos:
-    lds temp1, mode_1+1     ; Carrega byte dos segundos
-    rcall div10             ; Divide por 10 -> temp1=dezena, temp2=unidade
-    mov r21, temp1          ; r21 = dezena segundos
-    mov r22, temp2          ; r22 = unidade segundos
-
-    ; Verifica se ajusta unidade (0) ou dezena (1)
-    cpi r20, 0
-    breq reset_m3_inc_unidade_sec
-
-reset_m3_inc_dezena_sec: ; Ajustando dezena dos segundos (selector = 1)
-    inc r21                 ; Incrementa dezena
-    cpi r21, 6              ; Dezena de segundos vai de 0 a 5
-    brlo reset_m3_recombina_sec
-    ldi r21, 0              ; Se 6, volta para 0
-    rjmp reset_m3_recombina_sec
-
-reset_m3_inc_unidade_sec: ; Ajustando unidade dos segundos (selector = 0)
-    inc r22                 ; Incrementa unidade
-    cpi r22, 10             ; Unidade vai de 0 a 9
-    brlo reset_m3_recombina_sec
-    ldi r22, 0              ; Se 10, volta para 0
-
-reset_m3_recombina_sec:
-    ; Recombina dezena e unidade: valor = dezena * 10 + unidade
-    mov temp1, r21          ; temp1 = dezena
-    rcall mult10            ; temp1 = dezena * 10
-    add temp1, r22          ; temp1 = dezena * 10 + unidade
-    sts mode_1+1, temp1     ; Salva o novo valor dos segundos
-
-reset_m3_fim:
-    rcall beep_modo         ; Beep para indicar que o ajuste foi feito
-    pop r22
-    pop r21
-    pop r20
-    pop temp2
-    pop temp1
-    ret
-
-; ============================================================
-; INTERRUPÇÃO PCINT0 (Botão MODE - PB5)
-; ============================================================
+; --- INTERRUPÇÃO PCINT0 ---
 pcint0_isr:
-    ; Debounce muito simples: apenas checa se está baixo
-    push temp1
-    in temp1, SREG          ; Salva SREG
     push temp1
 
+    ; Detecta botão pressionado
     in temp1, PINB
-    sbrc temp1, PB5         ; Pula se PB5 estiver ALTO (não pressionado)
-    rjmp seta_flag_troca_modo ; Se BAIXO (pressionado), seta a flag
+    sbrs temp1, PB5
+    rjmp seta_flag_troca_modo
 
+    rjmp fim_interrupcao_pcint0
+
+seta_flag_troca_modo:
+    ldi temp1, 1
+    sts trocar_modo_flag, temp1  ; Marca a flag
 fim_interrupcao_pcint0:
-    pop temp1
-    out SREG, temp1         ; Restaura SREG
     pop temp1
     reti
 
-seta_flag_troca_modo:
-    ; Verifica se a flag já está setada para evitar múltiplas trocas rápidas
-    lds temp1, trocar_modo_flag
-    cpi temp1, 1
-    breq fim_interrupcao_pcint0 ; Se já está 1, não faz nada
 
-    ldi temp1, 1            ; Seta a flag para 1
-    sts trocar_modo_flag, temp1
-    rjmp fim_interrupcao_pcint0 ; Vai para o fim (não precisa pular de novo)
 
-; ============================================================
-; INTERRUPÇÃO DO TIMER 1 (OCI1A_ISR - 1 Segundo)
-; ============================================================
+
+; =========================================================================
+; ROTINA DE INTERRUPÇÃO DO TIMER 1 - EXECUTADA A CADA SEGUNDO
+; =========================================================================
 OCI1A_ISR:
     ; --- Salvar Contexto ---
-    push temp1
-    push temp2
-    push r19 ; tx_byte
-    push r20 ; byte_val
-    push r21 ; ascii_H
-    push r22 ; ascii_L
-    push r30 ; ZL
-    push r31 ; ZH
-    in temp1, SREG
+    push temp1          ; r16
+    push temp2          ; r17
+    push r19            ; tx_byte (usado por USART_Transmit)
+    push r20            ; byte_val (usado por Send_Decimal_Byte)
+    push r21            ; ascii_H  (usado por Send_Decimal_Byte)
+    push r22            ; ascii_L  (usado por Send_Decimal_Byte)
+    push r30            ; ZL (usado por USART_Transmit_String)
+    push r31            ; ZH (usado por USART_Transmit_String)
+    in temp1, SREG      ; Salva SREG
     push temp1
 
-    ; --- Atualiza Relógio e Cronômetro ---
-    rcall hora_atual        ; Atualiza mode_1 (sempre)
-    rcall cronometro        ; Atualiza mode_2 (se ativo)
+    ; --- Lógica de Atualização (Relógio/Cronômetro) ---
+    ; --- Atualiza relógio e cronômetro SEMPRE ---
+    rcall hora_atual
+    rcall cronometro
 
-    ; --- Envia dados pela USART conforme o modo atual ---
+    ; --- Envia pela UART APENAS conforme o modo atual ---
     cpi actual_mode, 1
     breq send_mode1
     cpi actual_mode, 2
     breq send_mode2
     cpi actual_mode, 3
-    breq send_mode3      ; ;; --- ALTERADO --- Vai direto para send_mode3 se for modo 3
-    rjmp isr_end           ; Se não for 1, 2 ou 3 (não deve acontecer), apenas sai
+    brne continuar_uart
+    rjmp send_mode3
 
-; --- Envio Serial no Modo 1 ---
+    continuar_uart:
+        rjmp isr_end
+
+    rjmp isr_end
+
 send_mode1:
     ldi ZL, low(str_modo1<<1)
     ldi ZH, high(str_modo1<<1)
     rcall USART_Transmit_String
-    lds byte_val, mode_1     ; Minutos
+    lds byte_val, mode_1
     rcall Send_Decimal_Byte
     ldi ZL, low(str_colon<<1)
     ldi ZH, high(str_colon<<1)
     rcall USART_Transmit_String
-    lds byte_val, mode_1+1    ; Segundos
+    lds byte_val, mode_1+1
     rcall Send_Decimal_Byte
     rjmp send_newline_and_exit
 
-; --- Envio Serial no Modo 2 ---
 send_mode2:
-    lds temp1, mode_2+2      ; Flag ativo?
+    lds temp1, mode_2+2
     cpi temp1, 0
-    breq check_mode2_zero    ; Se parado, verifica se é zero
-    ; Se rodando:
-    ldi ZL, low(str_modo2_run<<1) ; Mensagem "START"
+    breq check_mode2_zero
+    ldi ZL, low(str_modo2_run<<1)
     ldi ZH, high(str_modo2_run<<1)
     rcall USART_Transmit_String
-    ; Adiciona o tempo atual do cronômetro após "START"
-    lds byte_val, mode_2     ; Minutos
+    lds byte_val, mode_2
     rcall Send_Decimal_Byte
     ldi ZL, low(str_colon<<1)
     ldi ZH, high(str_colon<<1)
     rcall USART_Transmit_String
-    lds byte_val, mode_2+1   ; Segundos
+    lds byte_val, mode_2+1
+    rcall Send_Decimal_Byte
+    rjmp send_newline_and_exit
+
+
+update_and_send_mode1:
+    rcall hora_atual         ; Atualiza o relógio
+    ; Enviar Serial Modo 1: "[MODO 1] MM:SS"
+    ldi ZL, low(str_modo1<<1)
+    ldi ZH, high(str_modo1<<1)
+    rcall USART_Transmit_String
+    lds byte_val, mode_1      ; Carrega minutos
+    rcall Send_Decimal_Byte   ; Envia MM
+    ldi ZL, low(str_colon<<1)
+    ldi ZH, high(str_colon<<1)
+    rcall USART_Transmit_String ; Envia ":"
+    lds byte_val, mode_1+1    ; Carrega segundos
+    rcall Send_Decimal_Byte   ; Envia SS
+    rjmp send_newline_and_exit
+
+update_and_send_mode2:
+    rcall cronometro         ; Atualiza o cronômetro (se ativo)
+    ; Enviar Serial Modo 2
+    lds temp1, mode_2+2      ; Carrega flag de ativação
+    cpi temp1, 0
+    breq check_mode2_zero    ; Se flag=0 (parado), verifica se está zerado
+    ; Se chegou aqui, cronômetro está rodando
+    ldi ZL, low(str_modo2_run<<1)
+    ldi ZH, high(str_modo2_run<<1)
+    rcall USART_Transmit_String
+    lds byte_val, mode_2      ; Carrega minutos do cronômetro
+    rcall Send_Decimal_Byte
+    ldi ZL, low(str_colon<<1)
+    ldi ZH, high(str_colon<<1)
+    rcall USART_Transmit_String ; Envia ":"
+    lds byte_val, mode_2+1    ; Carrega segundos do cronômetro
     rcall Send_Decimal_Byte
     rjmp send_newline_and_exit
 
 check_mode2_zero:
-    lds temp1, mode_2        ; Minutos
-    lds temp2, mode_2+1      ; Segundos
-    or temp1, temp2          ; Se ambos 0, resultado é 0
-    brne mode2_stopped       ; Se não for zero, está parado mas não zerado
-    ; Se ambos zero:
-    ldi ZL, low(str_modo2_zero<<1) ; Mensagem "ZERO"
+    lds temp1, mode_2         ; Minutos
+    lds temp2, mode_2+1       ; Segundos
+    or temp1, temp2           ; Se ambos forem 0, resultado é 0
+    brne mode2_stopped        ; Se não for zero, está parado mas não zerado
+    ; Se chegou aqui, cronômetro está parado e zerado
+    ldi ZL, low(str_modo2_zero<<1)
     ldi ZH, high(str_modo2_zero<<1)
     rcall USART_Transmit_String
     rjmp send_newline_and_exit
 
 mode2_stopped:
-    ; Parado e não zerado (Opcional, não explicitamente pedido, mas útil)
-    ldi ZL, low(str_modo2_stop<<1) ; Mensagem "STOPPED"
+    ; Cronômetro parado mas não zerado
+    ldi ZL, low(str_modo2_stop<<1)
     ldi ZH, high(str_modo2_stop<<1)
     rcall USART_Transmit_String
-    lds byte_val, mode_2      ; Minutos
+    lds byte_val, mode_2      ; Carrega minutos do cronômetro
     rcall Send_Decimal_Byte
     ldi ZL, low(str_colon<<1)
     ldi ZH, high(str_colon<<1)
-    rcall USART_Transmit_String
-    lds byte_val, mode_2+1    ; Segundos
+    rcall USART_Transmit_String ; Envia ":"
+    lds byte_val, mode_2+1    ; Carrega segundos do cronômetro
     rcall Send_Decimal_Byte
     rjmp send_newline_and_exit
 
-; --- Envio Serial no Modo 3 ---
 send_mode3:
+    ; Enviar Serial Modo 3: Mensagem depende do dígito selecionado
     lds temp1, adjust_digit_selector ; Carrega qual dígito está sendo ajustado
     cpi temp1, 0
     breq send_m3_su
@@ -582,7 +703,7 @@ send_mode3:
     breq send_m3_mu
     cpi temp1, 3
     breq send_m3_md
-    rjmp send_newline_and_exit ; Caso inválido
+    rjmp send_newline_and_exit ; Se valor inválido, apenas envia newline
 
 send_m3_su:
     ldi ZL, low(str_modo3_su<<1)
@@ -603,9 +724,10 @@ send_m3_md:
     ldi ZL, low(str_modo3_md<<1)
     ldi ZH, high(str_modo3_md<<1)
     rcall USART_Transmit_String
-    ; Cai direto para send_newline_and_exit
+    ;rjmp send_newline_and_exit ; Já vai para o próximo passo
 
 send_newline_and_exit:
+    ; Envia Newline para finalizar a mensagem
     ldi ZL, low(str_newline<<1)
     ldi ZH, high(str_newline<<1)
     rcall USART_Transmit_String
@@ -613,287 +735,266 @@ send_newline_and_exit:
 isr_end:
     ; --- Restaurar Contexto ---
     pop temp1
-    out SREG, temp1
-    pop r31 ; ZH
-    pop r30 ; ZL
-    pop r22 ; ascii_L
-    pop r21 ; ascii_H
-    pop r20 ; byte_val
-    pop r19 ; tx_byte
-    pop temp2
-    pop temp1
-    reti
+    out SREG, temp1     ; Restaura SREG
+    pop r31             ; ZH
+    pop r30             ; ZL
+    pop r22             ; ascii_L
+    pop r21             ; ascii_H
+    pop r20             ; byte_val
+    pop r19             ; tx_byte
+    pop temp2           ; r17
+    pop temp1           ; r16
+    reti                ; Retorna da interrupção
 
-; ============================================================
-; FUNÇÃO: hora_atual
-; Finalidade: Atualiza relógio (mode_1) a cada segundo.
-; ============================================================
+; =========================================================================
+; FUNÇÕES DE ATUALIZAÇÃO
+; =========================================================================
 hora_atual:
-    push temp1
+    push temp1               ; Salva registradores temporários
     push temp2
-    lds temp2, mode_1 + 1   ; Segundos atuais
-    inc temp2
-    cpi temp2, 60
-    brne save_seconds
-; Atualiza minuto se segundos == 60
-    lds temp1, mode_1       ; Minutos atuais
-    inc temp1
-    cpi temp1, 60
+    lds temp2, mode_1 + 1    ; Carrega segundos atuais do relógio
+    inc temp2                ; Incrementa 1 segundo
+    cpi temp2, 60            ; Verifica se chegou a 60 segundos
+    brne save_seconds        ; Se não, só salva os segundos
+atualiza_minuto_atual:
+    lds temp1, mode_1        ; Carrega minutos atuais
+    inc temp1                ; Incrementa minutos
+    cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional, depende se quer que vire 00:00)
     brne save_minutes
-    ldi temp1, 0           ; Zera minutos se == 60
+    ldi temp1, 0             ; Zera minutos se chegou a 60
 save_minutes:
-    sts mode_1, temp1      ; Salva minutos
-    ldi temp2, 0           ; Zera segundos
+    sts mode_1, temp1        ; Salva minutos atualizados
+    ldi temp2, 0             ; Zera os segundos
 save_seconds:
-    sts mode_1 + 1, temp2  ; Salva segundos
-    pop temp2
+    sts mode_1 + 1, temp2    ; Salva segundos atualizados
+    pop temp2                ; Restaura registradores
     pop temp1
-    ret
+    ret                      ; Retorna da função
 
-; ============================================================
-; FUNÇÃO: cronometro
-; Finalidade: Atualiza cronômetro (mode_2) se estiver ativo.
-; ============================================================
 cronometro:
-    push temp1
+    push temp1               ; Salva registradores temporários
     push temp2
-    lds temp1, mode_2 + 2   ; Flag ativo?
+    lds temp1, mode_2 + 2    ; Lê a flag de ativação do cronômetro
     cpi temp1, 0
-    breq crono_end         ; Se não ativo, sai
-; Se ativo:
-    lds temp2, mode_2 + 1   ; Segundos cronômetro
-    inc temp2
+    breq crono_end           ; Se for 0, cronômetro está desligado -> sai
+    ; Se chegou aqui, cronômetro está ativo
+    lds temp2, mode_2 + 1    ; Lê os segundos do cronômetro
+    inc temp2                ; Incrementa 1 segundo
     cpi temp2, 60
-    brne crono_save_seconds
-; Atualiza minuto cronômetro se segundos == 60
-    lds temp1, mode_2       ; Minutos cronômetro
-    inc temp1
-    cpi temp1, 60
+    brne crono_save_seconds  ; Se não chegou a 60, só salva os segundos
+atualiza_minuto_cronometro:
+    lds temp1, mode_2        ; Lê os minutos
+    inc temp1                ; Incrementa minutos
+    cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional)
     brne crono_save_minutes
-    ldi temp1, 0           ; Zera minutos se == 60
+    ldi temp1, 0             ; Zera minutos se chegou a 60
 crono_save_minutes:
-    sts mode_2, temp1      ; Salva minutos cronômetro
-    ldi temp2, 0           ; Zera segundos cronômetro
+    sts mode_2, temp1        ; Salva minutos atualizados
+    ldi temp2, 0             ; Zera os segundos
 crono_save_seconds:
-    sts mode_2 + 1, temp2  ; Salva segundos cronômetro
+    sts mode_2 + 1, temp2    ; Salva os segundos atualizados
 crono_end:
-    pop temp2
+    pop temp2                ; Restaura registradores
     pop temp1
-    ret
+    ret                      ; Retorna da função
 
-; ============================================================
-; FUNÇÃO: multiplexar_display
-; Finalidade: Atualiza display 7 segmentos com valor do modo atual.
-;             Exibe mode_1 nos modos 1 e 3, mode_2 no modo 2.
-; Usa: r23(SegU), r24(SegD), r25(MinU), r26(MinD)
-; ============================================================
+
+; =========================================================================
+; FUNÇÕES DE DISPLAY
+; =========================================================================
 multiplexar_display:
-    push temp1
-    push temp2
-    push r23
-    push r24
-    push r25
-    push r26
-
-    ; Seleciona dados baseado no modo
+    ; Seleciona os dados corretos conforme o modo
     cpi actual_mode, 2
     breq usa_dados_cronometro
 
-; --- Usa dados do Relógio (Modo 1 ou 3) ---
 usa_dados_relogio:
-    lds temp1, mode_1 + 1    ; Segundos (mode_1[1])
-    rcall div10              ; temp1=dezena, temp2=unidade
-    mov r24, temp1           ; Dezena Segundos -> r24
-    mov r23, temp2           ; Unidade Segundos -> r23
+    lds temp1, mode_1 + 1    ; Segundos
+    ldi temp2, 10
+    call dividir             ; temp1 = dezena, temp2 = unidade
+    mov r23, temp2           ; Sec Unid
+    mov r24, temp1           ; Sec Dez
 
-    lds temp1, mode_1        ; Minutos (mode_1[0])
-    rcall div10
-    mov r26, temp1           ; Dezena Minutos -> r26
-    mov r25, temp2           ; Unidade Minutos -> r25
+    lds temp1, mode_1        ; Minutos
+    ldi temp2, 10
+    call dividir
+    mov r25, temp2           ; Min Unid
+    mov r26, temp1           ; Min Dez
     rjmp exibir_valores
 
-; --- Usa dados do Cronômetro (Modo 2) ---
 usa_dados_cronometro:
-    lds temp1, mode_2 + 1    ; Segundos (mode_2[1])
-    rcall div10
-    mov r24, temp1           ; Dezena Segundos -> r24
-    mov r23, temp2           ; Unidade Segundos -> r23
+    lds temp1, mode_2 + 1
+    ldi temp2, 10
+    call dividir
+    mov r23, temp2
+    mov r24, temp1
 
-    lds temp1, mode_2        ; Minutos (mode_2[0])
-    rcall div10
-    mov r26, temp1           ; Dezena Minutos -> r26
-    mov r25, temp2           ; Unidade Minutos -> r25
+    lds temp1, mode_2
+    ldi temp2, 10
+    call dividir
+    mov r25, temp2
+    mov r26, temp1
 
 exibir_valores:
-    ; Ativa Dígito Unidade Segundos (PB3)
-    mov temp1, r23         ; Valor Unidade Segundos
+    mov temp1, r23
     rcall enviar_para_cd4511
-    sbi PORTB, PB3         ; Ativa seletor do dígito
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB3)
+    out PORTB, temp2
     rcall delay_multiplex
-    cbi PORTB, PB3         ; Desativa seletor
 
-    ; Ativa Dígito Dezena Segundos (PB2)
-    mov temp1, r24         ; Valor Dezena Segundos
+    mov temp1, r24
     rcall enviar_para_cd4511
-    sbi PORTB, PB2
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB2)
+    out PORTB, temp2
     rcall delay_multiplex
-    cbi PORTB, PB2
 
-    ; Ativa Dígito Unidade Minutos (PB1)
-    mov temp1, r25         ; Valor Unidade Minutos
+    mov temp1, r25
     rcall enviar_para_cd4511
-    sbi PORTB, PB1
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB1)
+    out PORTB, temp2
     rcall delay_multiplex
-    cbi PORTB, PB1
 
-    ; Ativa Dígito Dezena Minutos (PB0)
-    mov temp1, r26         ; Valor Dezena Minutos
+    mov temp1, r26
     rcall enviar_para_cd4511
-    sbi PORTB, PB0
+    in temp2, PORTB
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB0)
+    out PORTB, temp2
     rcall delay_multiplex
-    cbi PORTB, PB0
 
-    pop r26
-    pop r25
-    pop r24
-    pop r23
-    pop temp2
-    pop temp1
     ret
 
-; ============================================================
-; FUNÇÃO: enviar_para_cd4511
-; Finalidade: Envia valor BCD (em temp1) para PD5, PD4, PD3, PD2.
-; ============================================================
+
 enviar_para_cd4511:
-    ; Assume que temp1 contém o dígito (0-9)
-    ; Mapeamento: PD5=D, PD4=C, PD3=B, PD2=A
-    push temp2
-    in temp2, PORTD        ; Lê estado atual de PORTD
-    andi temp2, 0b11000011 ; Zera bits PD2, PD3, PD4, PD5
-    ; Isola bits de temp1 e desloca para posições corretas
-    ; Bit 0 (A) -> PD2
-    sbrc temp1, 0
-    ori temp2, (1<<PD2)
-    ; Bit 1 (B) -> PD3
-    sbrc temp1, 1
-    ori temp2, (1<<PD3)
-    ; Bit 2 (C) -> PD4
-    sbrc temp1, 2
-    ori temp2, (1<<PD4)
-    ; Bit 3 (D) -> PD5
-    sbrc temp1, 3
-    ori temp2, (1<<PD5)
-    out PORTD, temp2       ; Escreve valor BCD em PORTD
-    pop temp2
+    lsl temp1
+    lsl temp1
+    in temp2, PORTD
+    andi temp2, 0b11000011
+    or temp2, temp1
+    out PORTD, temp2
     ret
 
-; ============================================================
-; FUNÇÃO: dividir (Já existente, renomeada se necessário)
-; Finalidade: Divisão inteira temp1 / temp2. Retorna: temp1=quociente, temp2=resto.
-;             A subrotina div10 é mais específica e talvez mais eficiente aqui.
-; ============================================================
-; Se precisar da função 'dividir' genérica, inclua-a aqui.
-; Caso contrário, confie na 'div10' que já existe.
+dividir:
+    push r19
+    clr r19
+div_loop:
+    cp temp1, temp2
+    brlo fim_div
+    sub temp1, temp2
+    inc r19
+    rjmp div_loop
+fim_div:
+    mov temp2, temp1
+    mov temp1, r19
+    pop r19
+    ret
 
-; ============================================================
-; FUNÇÃO: delay_multiplex
-; Finalidade: Pequeno delay para a multiplexação do display (~5ms).
-; ============================================================
 delay_multiplex:
     push r24
     push r25
-    ldi r25, high(1000) ; Ajuste este valor para o tempo desejado (~5ms)
-    ldi r24, low(1000)
-delay_mux_loop:
+    ldi r25, high(5000) ;SUJEITO A MUDANÇA
+    ldi r24, low(5000)
+delay_loop:
     sbiw r24, 1
-    brne delay_mux_loop
+    brne delay_loop
     pop r25
     pop r24
     ret
 
-; ============================================================
-; FUNÇÕES DE TRANSMISSÃO SERIAL (USART) - Sem alterações
-; ============================================================
+
+; =========================================================================
+; FUNÇÕES DA SERIAL
+; =========================================================================
+
+; --- USART_Transmit ---
+; Envia um byte pela serial. Espera o buffer estar livre.
+; Entrada: tx_byte (r19) contém o byte a ser enviado
 USART_Transmit:
-    push temp1
+    push temp1          ; Salva r16
 tx_wait_loop:
-    lds temp1, UCSR0A
-    sbrs temp1, UDRE0
-    rjmp tx_wait_loop
-    sts UDR0, tx_byte
-    pop temp1
+    lds temp1, UCSR0A   ; Lê o status do USART
+    sbrs temp1, UDRE0   ; Pula a próxima instrução se o bit UDRE0 (Data Register Empty) estiver setado (1)
+    rjmp tx_wait_loop   ; Se não estiver vazio (UDRE0=0), espera
+    sts UDR0, tx_byte   ; Coloca o byte no buffer de transmissão (envia)
+    pop temp1           ; Restaura r16
     ret
 
+; --- USART_Transmit_String ---
+; Envia uma string (terminada em NULL) localizada na memória de programa (Flash).
+; Entrada: Z (r31:r30) aponta para o início da string na memória de programa.
+; Usa: Z, tx_byte (r19), temp1 (r16)
 USART_Transmit_String:
-    push temp1
+    push temp1          ; Salva r16
     push r30
     push r31
 str_loop:
-    lpm tx_byte, Z+
-    tst tx_byte
-    breq str_end
-    rcall USART_Transmit
-    rjmp str_loop
+    lpm tx_byte, Z+     ; Carrega byte da memória de programa no tx_byte e incrementa Z
+    tst tx_byte         ; Verifica se o byte carregado é zero (NULL terminator)
+    breq str_end        ; Se for zero, fim da string
+    rcall USART_Transmit ; Envia o byte
+    rjmp str_loop       ; Próximo caractere
 str_end:
     pop r31
     pop r30
-    pop temp1
+    pop temp1           ; Restaura r16
     ret
 
+; --- Send_Decimal_Byte ---
+; Converte um byte (0-99) em dois caracteres ASCII decimais e os envia pela serial.
+; Entrada: byte_val (r20) contém o valor (0-99)
+; Saída: Envia os dois caracteres ASCII pela serial
+; Usa: byte_val (r20), ascii_H (r21), ascii_L (r22), tx_byte (r19), temp1 (r16)
 Send_Decimal_Byte:
-    push temp1
-    push temp2 ; Salva temp2 também, pois div10 o modifica
-    push r20   ; Salva byte_val
-    mov temp1, byte_val
-    rcall div10 ; temp1=dezena, temp2=resto(unidade)
-    mov ascii_H, temp1 ; Dezena
-    mov ascii_L, temp2 ; Unidade
+    push temp1           ; Salva r16
+    push r17           ; Salva r17
+    push r20           ; Salva byte_val original se precisar depois
 
-    subi ascii_H, -'0' ; Converte dezena para ASCII
-    mov tx_byte, ascii_H
-    rcall USART_Transmit
-    subi ascii_L, -'0' ; Converte unidade para ASCII
-    mov tx_byte, ascii_L
-    rcall USART_Transmit
+    mov temp1, byte_val  ; Copia valor para temp1 (usado por div10)
+    rcall div10          ; Chama sub-rotina de divisão por 10
+                         ; Resultado: temp1=quociente (dezena), temp2=resto (unidade)
+
+    mov ascii_H, temp1   ; Guarda a dezena
+    mov ascii_L, temp2   ; Guarda a unidade
+
+    ; Converte dezena para ASCII ('0' = 0x30)
+    subi ascii_H, -0x30  ; Adiciona 0x30
+    mov tx_byte, ascii_H ; Prepara para transmitir
+    rcall USART_Transmit ; Envia dígito das dezenas
+
+    ; Converte unidade para ASCII
+    subi ascii_L, -0x30  ; Adiciona 0x30
+    mov tx_byte, ascii_L ; Prepara para transmitir
+    rcall USART_Transmit ; Envia dígito das unidades
+
     pop r20
-    pop temp2 ; Restaura temp2
+    pop r17
     pop temp1
     ret
 
-; ============================================================
-; FUNÇÃO: div10
-; Finalidade: Divide temp1 por 10. Saída: temp1=resto, temp2=quociente.
-;             (Nota: A implementação original retornava quociente em temp1 e resto em temp2.
-;              Ajustei para corresponder ao uso em Send_Decimal_Byte e aciona_reset_modo3)
-; ============================================================
+
+; --- div10 ---
+; Sub-rotina simples para dividir por 10 (útil para BCD/ASCII)
+; Entrada: temp1 = valor (0-99)
+; Saída: temp1 = quociente (Dezena), temp2 = resto (Unidade)
+; Usa: temp1, temp2
 div10:
-    clr temp2              ; Zera quociente (temp2)
+    clr temp2           ; temp2 será o quociente (dezenas)
 div10_loop:
-    cpi temp1, 10          ; Compara dividendo (temp1) com 10
-    brlo div10_end         ; Se < 10, temp1 é o resto, fim.
-    subi temp1, 10         ; Subtrai 10 do dividendo
-    inc temp2              ; Incrementa quociente
-    rjmp div10_loop        ; Repete
+    cpi temp1, 10       ; Compara com 10
+    brlo div10_end      ; Se for menor, acabou
+    subi temp1, 10      ; Subtrai 10
+    inc temp2           ; Incrementa quociente
+    rjmp div10_loop
 div10_end:
-    ; No final: temp1 = resto, temp2 = quociente
-    ; Troca para retornar como esperado pelas rotinas que chamam:
-    push temp1             ; Salva resto
-    mov temp1, temp2       ; temp1 = quociente
-    pop temp2              ; temp2 = resto
+    ; No fim: temp1 tem o resto (unidade), temp2 tem o quociente (dezena)
+    ; Troca para retornar como especificado (temp1=quociente, temp2=resto)
+    push temp1
+    mov temp1, temp2
+    pop temp2
     ret
 
-; ============================================================
-; ;; --- NOVO --- FUNÇÃO: mult10
-; Finalidade: Multiplica temp1 por 10.
-; Entrada: temp1
-; Saída: temp1 = temp1 * 10
-; Usa: temp2 (como temporário)
-; ============================================================
-mult10:
-    mov temp2, temp1   ; temp2 = x
-    lsl temp1          ; temp1 = x * 2
-    lsl temp1          ; temp1 = x * 4
-    add temp1, temp2   ; temp1 = x * 4 + x = x * 5
-    lsl temp1          ; temp1 = x * 5 * 2 = x * 10
-    ret
