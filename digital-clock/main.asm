@@ -22,6 +22,8 @@ mode_1: .byte 2
 mode_2: .byte 3
 adjust_digit_selector: .byte 1 ; Variável para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
 trocar_modo_flag: .byte 1
+blink_counter: .byte 1       ; Novo contador para controle da piscagem
+
 
 
 .cseg
@@ -54,6 +56,12 @@ reset:
     out SPL, r16
     ldi r16, high(RAMEND)
     out SPH, r16
+
+
+	; Inicializa contador de piscagem
+    ldi temp1, 0
+    sts blink_counter, temp1
+
 
 	; PB4 como saída
     ldi r16, (1 << PB4)
@@ -330,9 +338,10 @@ salvar_md:
     add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
     sts mode_1, temp1                 ; Salva o novo valor dos minutos
     ret
+
 ; ============================================================
 ; FUNÇÃO: multiplexar_display_modo3
-; Finalidade: Multiplexação do display com efeito de piscar no dígito selecionado (Modo 3)
+; Finalidade: Multiplexação do display com efeito de piscar APENAS no dígito selecionado (Modo 3)
 ; ============================================================
 multiplexar_display_modo3:
     ; Carrega valores atuais do relógio
@@ -348,63 +357,67 @@ multiplexar_display_modo3:
     mov r25, temp2           ; Unidade dos minutos em r25
     mov r26, temp1           ; Dezena dos minutos em r26
 
-    ; Verifica o contador de pisca para criar efeito de piscada
-    in temp1, TCNT0          ; Usa o contador do Timer0 como base para piscar
-    andi temp1, 0x80         ; Usa o bit mais significativo para alternar (~2Hz)
-    breq exibe_normal        ; Se for 0, exibe normal
+    ; Incrementar o contador de piscagem
+    lds temp1, blink_counter
+    inc temp1
+    cpi temp1, 20            ; Ajuste esse valor para alterar a velocidade da piscagem
+                             ; Valores maiores = pisca mais devagar
+    brlo salvar_contador
+    ldi temp1, 0             ; Reseta o contador quando atinge o limite
+salvar_contador:
+    sts blink_counter, temp1
 
-	ldi temp1, (1 << CS02) | (0 << CS01) | (1 << CS00)  ; Prescaler = 1024
-    out TCCR0B, temp1                                   ; Configura o Timer0
-    ldi temp1, 0                                         ; Inicializa o contador
-    out TCNT0, temp1                                     ; Zera o contador do Timer0
-
+    ; Verificar se deve piscar baseado no contador
+    cpi temp1, 10            ; Metade do tempo ligado, metade desligado
+    brlo exibe_normal        ; Se contador < 10, exibe o dígito normalmente
     
-    ; Se for 1, apaga o dígito selecionado (efeito de piscar)
+    ; Se contador >= 10, apaga o dígito selecionado
     lds temp1, adjust_digit_selector
-    cpi temp1, 0              ; Verifica qual dígito está selecionado
-    breq apaga_su             ; Unidade dos segundos
+    cpi temp1, 0
+    brne testa_sd
+    ldi r23, 10              ; Apaga apenas unidade dos segundos
+    rjmp exibe_normal
+testa_sd:
     cpi temp1, 1
-    breq apaga_sd             ; Dezena dos segundos
+    brne testa_mu
+    ldi r24, 10              ; Apaga apenas dezena dos segundos
+    rjmp exibe_normal
+testa_mu:
     cpi temp1, 2
-    breq apaga_mu             ; Unidade dos minutos
+    brne testa_md
+    ldi r25, 10              ; Apaga apenas unidade dos minutos
+    rjmp exibe_normal
+testa_md:
     cpi temp1, 3
-    breq apaga_md             ; Dezena dos minutos
-    rjmp exibe_normal         ; Se não for nenhum, exibe normal
-
-apaga_su:
-    ldi r23, 10              ; Valor 10 não será exibido (apaga)
-    rjmp exibe_normal
-apaga_sd:
-    ldi r24, 10              ; Apaga dezena dos segundos
-    rjmp exibe_normal
-apaga_mu:
-    ldi r25, 10              ; Apaga unidade dos minutos
-    rjmp exibe_normal
-apaga_md:
-    ldi r26, 10              ; Apaga dezena dos minutos
+    brne exibe_normal
+    ldi r26, 10              ; Apaga apenas dezena dos minutos
 
 exibe_normal:
+    ; Configura o Timer0 para próxima alternância
+    ldi temp1, (1 << CS02) | (0 << CS01) | (1 << CS00)  ; Prescaler = 1024
+    out TCCR0B, temp1
+
     ; Exibe cada dígito
-    mov temp1, r23           ; Unidade dos segundos
+	mov temp1, r23           ; Unidade dos segundos
     cpi temp1, 10            ; Verifica se é para apagar (valor 10)
-    breq desliga_display_su  ; Se for 10, desliga esse dígito
-    rcall enviar_para_cd4511 ; Senão, envia para o display
+    breq desliga_display_su
+    rcall enviar_para_cd4511
     in temp2, PORTB
-    andi temp2, 0b11110000   ; Zera os 4 bits inferiores
-    ori temp2, (1 << PB3)    ; Ativa o display da unidade dos segundos (PB3)
+    andi temp2, 0b11110000
+    ori temp2, (1 << PB3)
     out PORTB, temp2
     rjmp continua_sd
 
 desliga_display_su:
-    in temp2, PORTB          ; Lê PORTB
+    in temp2, PORTB
     andi temp2, 0b11110111   ; Desliga o bit PB3 (apaga o display)
     out PORTB, temp2
 
 continua_sd:
-    rcall delay_multiplex    ; Delay para estabilização
+    rcall delay_multiplex
 
     mov temp1, r24           ; Dezena dos segundos
-    cpi temp1, 10            ; Verifica se é para apagar
+    cpi temp1, 10
     breq desliga_display_sd
     rcall enviar_para_cd4511
     in temp2, PORTB
@@ -457,7 +470,6 @@ desliga_display_md:
 fim_multiplex_modo3:
     rcall delay_multiplex
     ret
-
 
 ; --- Função: Emitir beep curto (PB4) ---
 beep_modo:
