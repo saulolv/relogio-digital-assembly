@@ -360,7 +360,7 @@ multiplexar_display_modo3:
     ; Incrementar o contador de piscagem
     lds temp1, blink_counter
     inc temp1
-    cpi temp1, 20            ; Ajuste esse valor para alterar a velocidade da piscagem
+    cpi temp1, 150            ; Ajuste esse valor para alterar a velocidade da piscagem
                              ; Valores maiores = pisca mais devagar
     brlo salvar_contador
     ldi temp1, 0             ; Reseta o contador quando atinge o limite
