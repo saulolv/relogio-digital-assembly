@@ -80,10 +80,16 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AsmFile1.asm">
+    <Compile Include="display.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="modes.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="uart.asm">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
