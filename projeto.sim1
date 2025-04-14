@@ -32,11 +32,11 @@
 
 <item itemtype="Ground" CircId="Ground-97" mainComp="false" Show_id="false" Show_Val="false" Pos="-460,-448" rotation="90" hflip="1" vflip="1" label="Ground-97" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
-<item itemtype="Push" CircId="Push-98" mainComp="false" Show_id="true" Show_Val="false" Pos="-688,-324" rotation="0" hflip="1" vflip="1" label="botao1_mode &#x3D b5" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
+<item itemtype="Push" CircId="Push-98" mainComp="false" Show_id="true" Show_Val="false" Pos="-688,-324" rotation="0" hflip="1" vflip="1" label="botao1_mode &#x3D b5" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" Key="M" />
 
-<item itemtype="Push" CircId="Push-101" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-264" rotation="0" hflip="1" vflip="1" label="botao2_reset &#x3D d6" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
+<item itemtype="Push" CircId="Push-101" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-264" rotation="0" hflip="1" vflip="1" label="botao2_reset &#x3D d6" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" Key="R" />
 
-<item itemtype="Push" CircId="Push-102" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-208" rotation="0" hflip="1" vflip="1" label="botao3_start &#x3D d7" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
+<item itemtype="Push" CircId="Push-102" mainComp="false" Show_id="true" Show_Val="false" Pos="-692,-208" rotation="0" hflip="1" vflip="1" label="botao3_start &#x3D d7" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" Key="S" />
 
 <item itemtype="Rail" CircId="Rail-117" mainComp="false" ShowProp="Voltage" Show_id="false" Show_Val="true" Pos="-516,-452" rotation="90" hflip="1" vflip="1" label="Rail-117" idLabPos="-5,-10" labelrot="-90" valLabPos="-15.6304,6.0039" valLabRot="-90" Voltage="5 V" />
 
