@@ -1,22 +1,22 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.8</VERSION>
  <DEVICE>"ATmega328P"</DEVICE>
- <WORKING_DIR>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\Debug</WORKING_DIR>
+ <WORKING_DIR>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\Debug</WORKING_DIR>
  <INCLUDE_PATH>
   <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc</FILE>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc</FILE>
-  <FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE>
-  <FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE>
-  <FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE>
+  <FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE>
+  <FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE>
+  <FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\Debug\digital-clock.obj</FILE>
+  <FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\Debug\digital-clock.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>digital-clock.hex</FILE>
@@ -26,119 +26,119 @@
   <FILE>digital-clock.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <hora_atual><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>4</LINE></hora_atual>
-  <mode_1><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>29</LINE></mode_1>
-  <save_seconds><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>20</LINE></save_seconds>
-  <atualiza_minuto_atual><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>11</LINE></atualiza_minuto_atual>
-  <save_minutes><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>17</LINE></save_minutes>
-  <cronometro><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>26</LINE></cronometro>
-  <mode_2><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>30</LINE></mode_2>
-  <crono_end><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>48</LINE></crono_end>
-  <crono_save_seconds><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>46</LINE></crono_save_seconds>
-  <atualiza_minuto_cronometro><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>37</LINE></atualiza_minuto_cronometro>
-  <crono_save_minutes><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>43</LINE></crono_save_minutes>
-  <handle_start_modo2><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>53</LINE></handle_start_modo2>
-  <handle_reset_modo2><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>66</LINE></handle_reset_modo2>
-  <pass_reset><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>79</LINE></pass_reset>
-  <beep_modo><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>310</LINE></beep_modo>
-  <handle_start_modo3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>84</LINE></handle_start_modo3>
-  <navegar_digitos><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>104</LINE></navegar_digitos>
-  <handle_reset_modo3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>94</LINE></handle_reset_modo3>
-  <ajustar_digito><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>120</LINE></ajustar_digito>
-  <adjust_digit_selector><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>31</LINE></adjust_digit_selector>
-  <salvar_digito_atual><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>110</LINE></salvar_digito_atual>
-  <ajustar_su><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>132</LINE></ajustar_su>
-  <ajustar_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>150</LINE></ajustar_sd>
-  <ajustar_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>168</LINE></ajustar_mu>
-  <ajustar_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>186</LINE></ajustar_md>
-  <dividir><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>84</LINE></dividir>
-  <salvar_su><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>141</LINE></salvar_su>
-  <salvar_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>159</LINE></salvar_sd>
-  <salvar_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>177</LINE></salvar_mu>
-  <salvar_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>195</LINE></salvar_md>
-  <multiplexar_display><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>4</LINE></multiplexar_display>
-  <usa_dados_cronometro><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>26</LINE></usa_dados_cronometro>
-  <usa_dados_relogio><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>12</LINE></usa_dados_relogio>
-  <multiplexar_display_modo3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>113</LINE></multiplexar_display_modo3>
-  <exibir_valores><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>39</LINE></exibir_valores>
-  <enviar_para_cd4511><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>75</LINE></enviar_para_cd4511>
-  <delay_multiplex><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>99</LINE></delay_multiplex>
-  <div_loop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>87</LINE></div_loop>
-  <fim_div><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>93</LINE></fim_div>
-  <delay_loop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>104</LINE></delay_loop>
-  <blink_counter><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>33</LINE></blink_counter>
-  <salvar_contador><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>134</LINE></salvar_contador>
-  <exibe_normal><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>162</LINE></exibe_normal>
-  <testa_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>147</LINE></testa_sd>
-  <testa_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>152</LINE></testa_mu>
-  <testa_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>157</LINE></testa_md>
-  <desliga_display_su><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>178</LINE></desliga_display_su>
-  <continua_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>183</LINE></continua_sd>
-  <desliga_display_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>196</LINE></desliga_display_sd>
-  <continua_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>201</LINE></continua_mu>
-  <desliga_display_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>214</LINE></desliga_display_mu>
-  <continua_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>219</LINE></continua_md>
-  <desliga_display_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>232</LINE></desliga_display_md>
-  <fim_multiplex_modo3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>237</LINE></fim_multiplex_modo3>
-  <uart_buffer><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>7</LINE></uart_buffer>
-  <uart_head><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>8</LINE></uart_head>
-  <uart_tail><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>9</LINE></uart_tail>
-  <uart_sending><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>10</LINE></uart_sending>
-  <UART_Enqueue_Byte><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>31</LINE></UART_Enqueue_Byte>
-  <no_wrap_uart><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>43</LINE></no_wrap_uart>
-  <uart_enqueue_exit><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>63</LINE></uart_enqueue_exit>
-  <USART_Transmit_String_Async><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>76</LINE></USART_Transmit_String_Async>
-  <str_async_loop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>79</LINE></str_async_loop>
-  <str_async_end><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>85</LINE></str_async_end>
-  <uart_udre_isr><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>95</LINE></uart_udre_isr>
-  <uart_buffer_empty><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>126</LINE></uart_buffer_empty>
-  <no_wrap_read><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>114</LINE></no_wrap_read>
-  <uart_isr_exit><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>132</LINE></uart_isr_exit>
-  <Send_Decimal_Byte_Async><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>146</LINE></Send_Decimal_Byte_Async>
-  <div10><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>269</LINE></div10>
-  <send_mode1><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>174</LINE></send_mode1>
-  <str_modo1><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>56</LINE></str_modo1>
-  <str_colon><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>64</LINE></str_colon>
-  <send_newline_and_exit><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>263</LINE></send_newline_and_exit>
-  <send_mode2><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>191</LINE></send_mode2>
-  <check_mode2_zero><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>207</LINE></check_mode2_zero>
-  <str_modo2_run><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>57</LINE></str_modo2_run>
-  <mode2_stopped><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>217</LINE></mode2_stopped>
-  <str_modo2_zero><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>59</LINE></str_modo2_zero>
-  <str_modo2_stop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>58</LINE></str_modo2_stop>
-  <send_mode3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>230</LINE></send_mode3>
-  <send_m3_su><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>242</LINE></send_m3_su>
-  <send_m3_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>247</LINE></send_m3_sd>
-  <send_m3_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>252</LINE></send_m3_mu>
-  <send_m3_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>257</LINE></send_m3_md>
-  <str_modo3_su><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>60</LINE></str_modo3_su>
-  <str_modo3_sd><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>61</LINE></str_modo3_sd>
-  <str_modo3_mu><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>62</LINE></str_modo3_mu>
-  <str_modo3_md><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>63</LINE></str_modo3_md>
-  <str_newline><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>65</LINE></str_newline>
-  <div10_loop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>271</LINE></div10_loop>
-  <div10_end><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>277</LINE></div10_end>
-  <trocar_modo_flag><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>32</LINE></trocar_modo_flag>
-  <reset><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>70</LINE></reset>
-  <pcint0_isr><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>224</LINE></pcint0_isr>
-  <pcint2_isr><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>150</LINE></pcint2_isr>
-  <OCI1A_ISR><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>262</LINE></OCI1A_ISR>
-  <main_loop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>143</LINE></main_loop>
-  <verifica_pd7><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>184</LINE></verifica_pd7>
-  <verifica_pd6><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>163</LINE></verifica_pd6>
-  <checa_reset_modo3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>176</LINE></checa_reset_modo3>
-  <fim_acao_pd6><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>181</LINE></fim_acao_pd6>
-  <end_pcint2_isr><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>212</LINE></end_pcint2_isr>
-  <verifica_pd7_loop><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>190</LINE></verifica_pd7_loop>
-  <pass_start_modo2><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>205</LINE></pass_start_modo2>
-  <pass_start_modo3><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>210</LINE></pass_start_modo3>
-  <end_isr><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>250</LINE></end_isr>
-  <verifica_pb5><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>235</LINE></verifica_pb5>
-  <passa_hora><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>276</LINE></passa_hora>
-  <pass_cronometro><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>282</LINE></pass_cronometro>
-  <pass_uart_mode1><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>289</LINE></pass_uart_mode1>
-  <pass_uart_mode2><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>295</LINE></pass_uart_mode2>
-  <continuar_uart><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>300</LINE></continuar_uart>
-  <isr_end><FILE>C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>301</LINE></isr_end>
+  <hora_atual><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>5</LINE></hora_atual>
+  <mode_1><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>29</LINE></mode_1>
+  <save_seconds><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>29</LINE></save_seconds>
+  <atualiza_minuto_atual><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>18</LINE></atualiza_minuto_atual>
+  <save_minutes><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>25</LINE></save_minutes>
+  <cronometro><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>37</LINE></cronometro>
+  <mode_2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>30</LINE></mode_2>
+  <crono_end><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>71</LINE></crono_end>
+  <crono_save_seconds><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>68</LINE></crono_save_seconds>
+  <atualiza_minuto_cronometro><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>57</LINE></atualiza_minuto_cronometro>
+  <crono_save_minutes><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>64</LINE></crono_save_minutes>
+  <handle_start_modo2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>75</LINE></handle_start_modo2>
+  <handle_reset_modo2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>94</LINE></handle_reset_modo2>
+  <pass_reset><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>111</LINE></pass_reset>
+  <beep_modo><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>310</LINE></beep_modo>
+  <handle_start_modo3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>118</LINE></handle_start_modo3>
+  <navegar_digitos><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>148</LINE></navegar_digitos>
+  <handle_reset_modo3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>134</LINE></handle_reset_modo3>
+  <ajustar_digito><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>172</LINE></ajustar_digito>
+  <adjust_digit_selector><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>31</LINE></adjust_digit_selector>
+  <salvar_digito_atual><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>162</LINE></salvar_digito_atual>
+  <ajustar_su><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>190</LINE></ajustar_su>
+  <ajustar_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>214</LINE></ajustar_sd>
+  <ajustar_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>238</LINE></ajustar_mu>
+  <ajustar_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>262</LINE></ajustar_md>
+  <dividir><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>145</LINE></dividir>
+  <salvar_su><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>203</LINE></salvar_su>
+  <salvar_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>227</LINE></salvar_sd>
+  <salvar_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>251</LINE></salvar_mu>
+  <salvar_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm</FILE><LINE>275</LINE></salvar_md>
+  <multiplexar_display><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>4</LINE></multiplexar_display>
+  <usa_dados_cronometro><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>43</LINE></usa_dados_cronometro>
+  <usa_dados_relogio><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>12</LINE></usa_dados_relogio>
+  <multiplexar_display_modo3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>192</LINE></multiplexar_display_modo3>
+  <exibir_valores><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>79</LINE></exibir_valores>
+  <enviar_para_cd4511><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>135</LINE></enviar_para_cd4511>
+  <delay_multiplex><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>178</LINE></delay_multiplex>
+  <div_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>153</LINE></div_loop>
+  <fim_div><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>164</LINE></fim_div>
+  <delay_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>183</LINE></delay_loop>
+  <blink_counter><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>33</LINE></blink_counter>
+  <salvar_contador><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>229</LINE></salvar_contador>
+  <exibe_normal><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>288</LINE></exibe_normal>
+  <testa_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>255</LINE></testa_sd>
+  <testa_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>266</LINE></testa_mu>
+  <testa_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>277</LINE></testa_md>
+  <desliga_display_su><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>313</LINE></desliga_display_su>
+  <continua_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>322</LINE></continua_sd>
+  <desliga_display_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>341</LINE></desliga_display_sd>
+  <continua_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>350</LINE></continua_mu>
+  <desliga_display_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>369</LINE></desliga_display_mu>
+  <continua_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>378</LINE></continua_md>
+  <desliga_display_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>397</LINE></desliga_display_md>
+  <fim_multiplex_modo3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm</FILE><LINE>406</LINE></fim_multiplex_modo3>
+  <uart_buffer><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>7</LINE></uart_buffer>
+  <uart_head><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>8</LINE></uart_head>
+  <uart_tail><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>9</LINE></uart_tail>
+  <uart_sending><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>10</LINE></uart_sending>
+  <UART_Enqueue_Byte><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>31</LINE></UART_Enqueue_Byte>
+  <no_wrap_uart><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>43</LINE></no_wrap_uart>
+  <uart_enqueue_exit><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>63</LINE></uart_enqueue_exit>
+  <USART_Transmit_String_Async><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>77</LINE></USART_Transmit_String_Async>
+  <str_async_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>81</LINE></str_async_loop>
+  <str_async_end><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>88</LINE></str_async_end>
+  <uart_udre_isr><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>98</LINE></uart_udre_isr>
+  <uart_buffer_empty><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>135</LINE></uart_buffer_empty>
+  <no_wrap_read><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>120</LINE></no_wrap_read>
+  <uart_isr_exit><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>144</LINE></uart_isr_exit>
+  <Send_Decimal_Byte_Async><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>159</LINE></Send_Decimal_Byte_Async>
+  <div10><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>357</LINE></div10>
+  <send_mode1><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>188</LINE></send_mode1>
+  <str_modo1><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>56</LINE></str_modo1>
+  <str_colon><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>64</LINE></str_colon>
+  <send_newline_and_exit><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>345</LINE></send_newline_and_exit>
+  <send_mode2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>226</LINE></send_mode2>
+  <check_mode2_zero><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>251</LINE></check_mode2_zero>
+  <str_modo2_run><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>57</LINE></str_modo2_run>
+  <mode2_stopped><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>267</LINE></mode2_stopped>
+  <str_modo2_zero><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>59</LINE></str_modo2_zero>
+  <str_modo2_stop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>58</LINE></str_modo2_stop>
+  <send_mode3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>292</LINE></send_mode3>
+  <send_m3_su><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>304</LINE></send_m3_su>
+  <send_m3_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>313</LINE></send_m3_sd>
+  <send_m3_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>322</LINE></send_m3_mu>
+  <send_m3_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>331</LINE></send_m3_md>
+  <str_modo3_su><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>60</LINE></str_modo3_su>
+  <str_modo3_sd><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>61</LINE></str_modo3_sd>
+  <str_modo3_mu><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>62</LINE></str_modo3_mu>
+  <str_modo3_md><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>63</LINE></str_modo3_md>
+  <str_newline><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>65</LINE></str_newline>
+  <div10_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>359</LINE></div10_loop>
+  <div10_end><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm</FILE><LINE>366</LINE></div10_end>
+  <trocar_modo_flag><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>32</LINE></trocar_modo_flag>
+  <reset><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>70</LINE></reset>
+  <pcint0_isr><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>224</LINE></pcint0_isr>
+  <pcint2_isr><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>150</LINE></pcint2_isr>
+  <OCI1A_ISR><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>262</LINE></OCI1A_ISR>
+  <main_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>143</LINE></main_loop>
+  <verifica_pd7><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>184</LINE></verifica_pd7>
+  <verifica_pd6><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>163</LINE></verifica_pd6>
+  <checa_reset_modo3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>176</LINE></checa_reset_modo3>
+  <fim_acao_pd6><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>181</LINE></fim_acao_pd6>
+  <end_pcint2_isr><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>212</LINE></end_pcint2_isr>
+  <verifica_pd7_loop><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>190</LINE></verifica_pd7_loop>
+  <pass_start_modo2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>205</LINE></pass_start_modo2>
+  <pass_start_modo3><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>210</LINE></pass_start_modo3>
+  <end_isr><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>250</LINE></end_isr>
+  <verifica_pb5><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>235</LINE></verifica_pb5>
+  <passa_hora><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>276</LINE></passa_hora>
+  <pass_cronometro><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>282</LINE></pass_cronometro>
+  <pass_uart_mode1><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>289</LINE></pass_uart_mode1>
+  <pass_uart_mode2><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>295</LINE></pass_uart_mode2>
+  <continuar_uart><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>300</LINE></continuar_uart>
+  <isr_end><FILE>C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm</FILE><LINE>301</LINE></isr_end>
  </LABELS>
 </ASSEMBLER_INFO>

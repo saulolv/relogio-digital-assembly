@@ -14,7 +14,7 @@
 ; Registradores
 ; ============================
 .def zero = r1            ; Registrador sempre zerado para adc
-.def actual_mode = r18  ; Armazena o modo atual de operação (relógio, cronômetro, ajuste...)
+.def actual_mode = r18  ; Armazena o modo atual de operaï¿½ï¿½o (relï¿½gio, cronï¿½metro, ajuste...)
 .def temp1 = r16        ; Variavel temporaria
 .def temp2 = r17        ; Variavel temporaria
 .def temp3  = r20       ; Variavel temporaria
@@ -28,25 +28,25 @@
 .dseg
 mode_1: .byte 2
 mode_2: .byte 3
-adjust_digit_selector: .byte 1 ; Variável para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
+adjust_digit_selector: .byte 1 ; Variï¿½vel para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
 trocar_modo_flag: .byte 1
 blink_counter: .byte 1       ; Novo contador para controle da piscagem
 
 .cseg
 ; ============================
-; Vetores de Interrupção
+; Vetores de Interrupï¿½ï¿½o
 ; ============================
 .org 0x0000
     jmp reset
 
 .org PCI0addr
-    jmp pcint0_isr     ; Interrupção do PB5 (PORTB)
+    jmp pcint0_isr     ; Interrupï¿½ï¿½o do PB5 (PORTB)
 
 .org PCI2addr
-    jmp pcint2_isr     ; Interrupção do PD6 e PD7 (PORTD)
+    jmp pcint2_isr     ; Interrupï¿½ï¿½o do PD6 e PD7 (PORTD)
 
 .org OC1Aaddr
-    jmp OCI1A_ISR      ; Interrupção TIMER
+    jmp OCI1A_ISR      ; Interrupï¿½ï¿½o TIMER
 
 .org UDREaddr
     jmp uart_udre_isr
@@ -68,16 +68,16 @@ str_newline: .db "\r\n ", 0 ; Envia Carriage Return e Line Feed para compatibili
 ; Reset
 ; ============================
 reset:
-	; --- Inicialização das Variáveis ---
+	; --- Inicializaï¿½ï¿½o das Variï¿½veis ---
     ldi temp1, 0              ; Carrega o valor 0 no registrador temp1 (r16)
-	sts mode_1, temp1         ; Zera os minutos atuais do relógio (mode_1 = 0)
-	sts mode_1 + 1, temp1     ; Zera os segundos atuais do relógio (mode_1 + 1 = 0)
-	sts mode_2, temp1         ; Zera os minutos do cronômetro (mode_2 = 0)
-	sts mode_2 + 1, temp1     ; Zera os segundos do cronômetro (mode_2 + 1 = 0)
-	sts mode_2 + 2, temp1     ; Zera a flag de ativação do cronômetro (mode_2 + 2 = 0)
+	sts mode_1, temp1         ; Zera os minutos atuais do relï¿½gio (mode_1 = 0)
+	sts mode_1 + 1, temp1     ; Zera os segundos atuais do relï¿½gio (mode_1 + 1 = 0)
+	sts mode_2, temp1         ; Zera os minutos do cronï¿½metro (mode_2 = 0)
+	sts mode_2 + 1, temp1     ; Zera os segundos do cronï¿½metro (mode_2 + 1 = 0)
+	sts mode_2 + 2, temp1     ; Zera a flag de ativaï¿½ï¿½o do cronï¿½metro (mode_2 + 2 = 0)
     sts adjust_digit_selector, temp1 ; Zera seletor de ajuste
 
-	ldi temp1, 0b00011111     ; PB0–PB4 como saída
+	ldi temp1, 0b00011111     ; PB0ï¿½PB4 como saï¿½da
 	out DDRB, temp1
 
     ; ========== Configura PD6 e PD7 ==========
@@ -110,20 +110,20 @@ reset:
     ldi temp1, (1 << PCIE2) | (1 << PCIE0)
     sts PCICR, temp1
 
-	 ; --- Configuração do Timer1 (Mantido do original) ---
-    ldi temp1, (1 << OCIE1A)  ; Carrega no registrador temp1 um valor com o bit OCIE1A ativado (bit que habilita a interrupção do Timer1 Compare Match A)
-	sts TIMSK1, temp1         ; Escreve esse valor no registrador TIMSK1, ativando a interrupção do Timer1 (Canal A)
+	 ; --- Configuraï¿½ï¿½o do Timer1 (Mantido do original) ---
+    ldi temp1, (1 << OCIE1A)  ; Carrega no registrador temp1 um valor com o bit OCIE1A ativado (bit que habilita a interrupï¿½ï¿½o do Timer1 Compare Match A)
+	sts TIMSK1, temp1         ; Escreve esse valor no registrador TIMSK1, ativando a interrupï¿½ï¿½o do Timer1 (Canal A)
     .equ PRESCALE = 0b100           ; Seleciona o prescaler do Timer1 como 256 (CS12:CS10 = 100)
 	.equ PRESCALE_DIV = 256         ; Valor real do prescaler (divisor de clock)
-	.equ WGM = 0b0100               ; Define o modo de operação do Timer1 como CTC (Clear Timer on Compare Match)
+	.equ WGM = 0b0100               ; Define o modo de operaï¿½ï¿½o do Timer1 como CTC (Clear Timer on Compare Match)
 	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
 
 	ldi temp1, high(TOP)              ; Carrega o byte mais significativo do valor TOP no registrador temp1
-	sts OCR1AH, temp1                 ; Armazena esse valor no registrador OCR1AH (parte alta do valor de comparação do Timer1)
+	sts OCR1AH, temp1                 ; Armazena esse valor no registrador OCR1AH (parte alta do valor de comparaï¿½ï¿½o do Timer1)
 	ldi temp1, low(TOP)               ; Carrega o byte menos significativo do valor TOP no registrador temp1
-	sts OCR1AL, temp1                 ; Armazena esse valor no registrador OCR1AL (parte baixa do valor de comparação do Timer1)
+	sts OCR1AL, temp1                 ; Armazena esse valor no registrador OCR1AL (parte baixa do valor de comparaï¿½ï¿½o do Timer1)
 	ldi temp1, ((WGM & 0b11) << WGM10) ; Extrai os 2 bits menos significativos de WGM e posiciona em WGM10/WGM11
-	sts TCCR1A, temp1                 ; Configura os bits de modo de operação do Timer1 no registrador TCCR1A
+	sts TCCR1A, temp1                 ; Configura os bits de modo de operaï¿½ï¿½o do Timer1 no registrador TCCR1A
 	ldi temp1, ((WGM >> 2) << WGM12) | (PRESCALE << CS10)
 	sts TCCR1B, temp1                 ; Configura modo CTC e ativa o prescaler de 256 no registrador TCCR1B
 
@@ -131,14 +131,14 @@ reset:
 	sts UBRR0H, temp1
 	ldi temp1, low(UBRR_VALUE)
 	sts UBRR0L, temp1
-	ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; TX habilitado + interrupção
+	ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; TX habilitado + interrupï¿½ï¿½o
 	sts UCSR0B, temp1
 	ldi temp1, (1 << UCSZ01) | (1 << UCSZ00)
 	sts UCSR0C, temp1
 
-    ; --- Estado Inicial e Interrupções ---
-    ldi actual_mode, 1                ; Define o modo inicial como 1 (Relógio)
-    sei                               ; Habilita interrupções globais
+    ; --- Estado Inicial e Interrupï¿½ï¿½es ---
+    ldi actual_mode, 1                ; Define o modo inicial como 1 (Relï¿½gio)
+    sei                               ; Habilita interrupï¿½ï¿½es globais
 
 main_loop:
 	rcall multiplexar_display
@@ -167,7 +167,7 @@ verifica_pd6:
     dec temp3
     brne verifica_pd6
 
-	;; AÇÃO PD6 | reset
+	;; Aï¿½ï¿½O PD6 | reset
 	cpi actual_mode, 2
 	brne checa_reset_modo3
 	rcall handle_reset_modo2
@@ -194,7 +194,7 @@ verifica_pd7_loop:
     dec temp3
     brne verifica_pd7_loop
 
-	;; AÇÃO PD7 | start
+	;; Aï¿½ï¿½O PD7 | start
 
 	cpi actual_mode, 2
 	brne pass_start_modo2
@@ -239,7 +239,7 @@ verifica_pb5:
     dec temp3
     brne verifica_pb5
 
-    ;; ---------- AÇÃO
+    ;; ---------- Aï¿½ï¿½O
 	rcall beep_modo
     inc actual_mode
     cpi actual_mode, 4
@@ -257,7 +257,7 @@ end_isr:
     reti
 
 ; =========================================================================
-; ROTINA DE INTERRUPÇÃO DO TIMER 1 - EXECUTADA A CADA SEGUNDO
+; ROTINA DE INTERRUPï¿½ï¿½O DO TIMER 1 - EXECUTADA A CADA SEGUNDO
 ; =========================================================================
 OCI1A_ISR:
     ; --- Salvar Contexto ---
@@ -267,7 +267,7 @@ OCI1A_ISR:
     in temp1, SREG          
     push temp1
 
-    ; --- Lógica de Atualização ---
+    ; --- Lï¿½gica de Atualizaï¿½ï¿½o ---
     cpi actual_mode, 3     
     breq passa_hora
 

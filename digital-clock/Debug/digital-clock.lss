@@ -1,16 +1,16 @@
 
-AVRASM ver. 2.2.8  C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm Mon Apr 14 02:10:48 2025
+AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Mon Apr 14 10:13:02 2025
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(9): Including file 'C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(10): Including file 'C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(9): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(10): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(9): Including file 'C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\modes.asm'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(10): Including file 'C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\display.asm'
-C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-clock\uart.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(9): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(10): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm'
                                  
                                  .include "m328pdef.inc"
                                  
@@ -1045,209 +1045,290 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
                                  .org 0x200
                                  .INCLUDE "modes.asm"
                                  
-                                 ; FUN��ES DE ATUALIZA��O
+                                 ; FUNÇÕES DE ATUALIZAÇÃO
                                  ; =========================================================================
+                                 
                                  hora_atual:
-000200 930f                          push temp1               ; Salva registradores tempor�rios
-000201 931f                          push temp2
-000202 9110 0144                     lds temp2, mode_1 + 1    ; Carrega segundos atuais do rel�gio
-000204 9513                          inc temp2                ; Incrementa 1 segundo
-000205 331c                          cpi temp2, 60            ; Verifica se chegou a 60 segundos
-000206 f449                          brne save_seconds        ; Se n�o, s� salva os segundos
+                                     ; ================================
+                                     ; Atualiza os segundos e minutos do relógio (modo 1)
+                                     ; ================================
+                                 
+000200 930f                          push temp1                  ; Salva registrador temp1 na pilha
+000201 931f                          push temp2                  ; Salva registrador temp2 na pilha
+                                 
+000202 9110 0144                     lds temp2, mode_1 + 1       ; Carrega os segundos atuais do relógio
+000204 9513                          inc temp2                   ; Incrementa 1 segundo
+000205 331c                          cpi temp2, 60               ; Verifica se chegou a 60 segundos
+000206 f449                          brne save_seconds           ; Se ainda não chegou a 60, salva e retorna
+                                 
                                  atualiza_minuto_atual:
-000207 9100 0143                     lds temp1, mode_1        ; Carrega minutos atuais
-000209 9503                          inc temp1                ; Incrementa minutos
-00020a 330c                          cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional, depende se quer que vire 00:00)
-00020b f409                          brne save_minutes
-00020c e000                          ldi temp1, 0             ; Zera minutos se chegou a 60
+000207 9100 0143                     lds temp1, mode_1           ; Carrega os minutos atuais
+000209 9503                          inc temp1                   ; Incrementa 1 minuto
+00020a 330c                          cpi temp1, 60               ; Verifica se chegou a 60 minutos
+00020b f409                          brne save_minutes           ; Se não chegou, salva o valor
+00020c e000                          ldi temp1, 0                ; Zera os minutos se chegou a 60
+                                 
                                  save_minutes:
-00020d 9300 0143                     sts mode_1, temp1        ; Salva minutos atualizados
-00020f e010                          ldi temp2, 0             ; Zera os segundos
+00020d 9300 0143                     sts mode_1, temp1           ; Salva os minutos atualizados
+00020f e010                          ldi temp2, 0                ; Zera os segundos (novo minuto iniciado)
+                                 
                                  save_seconds:
-000210 9310 0144                     sts mode_1 + 1, temp2    ; Salva segundos atualizados
-000212 911f                          pop temp2                ; Restaura registradores
-000213 910f                          pop temp1
-000214 9508                          ret                      ; Retorna da fun��o
+000210 9310 0144                     sts mode_1 + 1, temp2       ; Salva os segundos atualizados
+000212 911f                          pop temp2                   ; Restaura temp2
+000213 910f                          pop temp1                   ; Restaura temp1
+000214 9508                          ret                         ; Retorna da sub-rotina
+                                 
+                                 ; -------------------------------------------------------------------------
                                  
                                  cronometro:
-000215 930f                          push temp1               ; Salva registradores tempor�rios
-000216 931f                          push temp2
-000217 9100 0147                     lds temp1, mode_2 + 2    ; L� a flag de ativa��o do cron�metro
+                                     ; ================================
+                                     ; Atualiza os segundos e minutos do cronômetro (modo 2)
+                                     ; Só atualiza se a flag estiver ativada
+                                     ; ================================
+                                 
+000215 930f                          push temp1                  ; Salva registrador temp1
+000216 931f                          push temp2                  ; Salva registrador temp2
+                                 
+000217 9100 0147                     lds temp1, mode_2 + 2       ; Lê a flag de ativação do cronômetro (0 = parado, 1 = contando)
 000219 3000                          cpi temp1, 0
-00021a f081                          breq crono_end           ; Se for 0, cron�metro est� desligado -> sai
-                                     ; Se chegou aqui, cron�metro est� ativo
-00021b 9110 0146                     lds temp2, mode_2 + 1    ; L� os segundos do cron�metro
-00021d 9513                          inc temp2                ; Incrementa 1 segundo
-00021e 331c                          cpi temp2, 60
-00021f f449                          brne crono_save_seconds  ; Se n�o chegou a 60, s� salva os segundos
+00021a f081                          breq crono_end              ; Se estiver parado, sai da função
+                                 
+                                     ; Se chegou aqui, o cronômetro está ativo
+                                 
+00021b 9110 0146                     lds temp2, mode_2 + 1       ; Lê os segundos atuais do cronômetro
+00021d 9513                          inc temp2                   ; Incrementa 1 segundo
+00021e 331c                          cpi temp2, 60               ; Verifica se chegou a 60 segundos
+00021f f449                          brne crono_save_seconds     ; Se ainda não chegou a 60, apenas salva
+                                 
                                  atualiza_minuto_cronometro:
-000220 9100 0145                     lds temp1, mode_2        ; L� os minutos
-000222 9503                          inc temp1                ; Incrementa minutos
-000223 330c                          cpi temp1, 60            ; Verifica se chegou a 60 minutos (opcional)
-000224 f409                          brne crono_save_minutes
-000225 e000                          ldi temp1, 0             ; Zera minutos se chegou a 60
+000220 9100 0145                     lds temp1, mode_2           ; Lê os minutos atuais do cronômetro
+000222 9503                          inc temp1                   ; Incrementa 1 minuto
+000223 330c                          cpi temp1, 60               ; Verifica se chegou a 60 minutos
+000224 f409                          brne crono_save_minutes     ; Se não, salva o novo valor
+000225 e000                          ldi temp1, 0                ; Zera os minutos se passou de 59
+                                 
                                  crono_save_minutes:
-000226 9300 0145                     sts mode_2, temp1        ; Salva minutos atualizados
-000228 e010                          ldi temp2, 0             ; Zera os segundos
+000226 9300 0145                     sts mode_2, temp1           ; Salva os minutos atualizados
+000228 e010                          ldi temp2, 0                ; Zera os segundos para o novo minuto
+                                 
                                  crono_save_seconds:
-000229 9310 0146                     sts mode_2 + 1, temp2    ; Salva os segundos atualizados
+000229 9310 0146                     sts mode_2 + 1, temp2       ; Salva os segundos atualizados
+                                 
                                  crono_end:
-00022b 911f                          pop temp2                ; Restaura registradores
-00022c 910f                          pop temp1
-00022d 9508                          ret                      ; Retorna da fun��o
-                                 
+00022b 911f                          pop temp2                   ; Restaura temp2
+00022c 910f                          pop temp1                   ; Restaura temp1
+00022d 9508                          ret                         ; Retorna da sub-rotina
                                  handle_start_modo2:
-00022e 930f                          push temp1
-00022f 931f                          push temp2
+                                     ; ================================
+                                     ; Alterna a flag de ativação do cronômetro (modo 2)
+                                     ; ================================
                                  
-000230 9100 0147                     lds temp1, mode_2 + 2    ; Carrega flag de ativa��o do cron�metro
+00022e 930f                          push temp1                   ; Salva registrador temp1
+00022f 931f                          push temp2                   ; Salva registrador temp2
+                                 
+000230 9100 0147                     lds temp1, mode_2 + 2        ; Lê a flag de ativação (0 = parado, 1 = contando)
 000232 e011                          ldi temp2, 1
-000233 2701                          eor temp1, temp2         ; Inverte entre 0 ? 1
-000234 9300 0147                     sts mode_2 + 2, temp1    ; Salva de volta na posi��o correta
+000233 2701                          eor temp1, temp2             ; Inverte o bit (XOR com 1 → alterna 0↔1)
+000234 9300 0147                     sts mode_2 + 2, temp1        ; Salva o novo valor da flag
                                  
-000236 911f                          pop temp2
-000237 910f                          pop temp1
-000238 9508                          ret
+000236 911f                          pop temp2                    ; Restaura temp2
+000237 910f                          pop temp1                    ; Restaura temp1
+000238 9508                          ret                          ; Retorna da sub-rotina
+                                 
+                                 ; -------------------------------------------------------------------------
                                  
                                  handle_reset_modo2:
+                                     ; ================================
+                                     ; Reseta o cronômetro (modo 2) somente se estiver parado
+                                     ; ================================
+                                 
 000239 930f                          push temp1
-00023a 931f                      	push temp2
+00023a 931f                          push temp2
                                  
-00023b 9100 0147                 	lds temp1, mode_2 + 2 
-00023d 3000                      	cpi temp1, 0
-00023e f431                      	brne pass_reset
+00023b 9100 0147                     lds temp1, mode_2 + 2        ; Lê a flag de ativação do cronômetro
+00023d 3000                          cpi temp1, 0
+00023e f431                          brne pass_reset              ; Se estiver rodando, não reseta
                                  
-00023f e010                      	ldi temp2, 0
-000240 9310 0145                 	sts mode_2, temp2         ; Zera os minutos do cron�metro (mode_2 = 0)
-000242 9310 0146                 	sts mode_2 + 1, temp2     ; Zera os segundos do cron�metro (mode_2 + 1 = 0)
-000244 defa                      	rcall beep_modo
+00023f e010                          ldi temp2, 0
+000240 9310 0145                     sts mode_2, temp2            ; Zera os minutos
+000242 9310 0146                     sts mode_2 + 1, temp2        ; Zera os segundos
+000244 defa                          rcall beep_modo              ; Emite beep de confirmação
                                  
-                                 	pass_reset:
-000245 911f                      	pop temp2
-000246 910f                      	pop temp1
+                                 pass_reset:
+000245 911f                          pop temp2
+000246 910f                          pop temp1
 000247 9508                          ret
                                  
+                                 ; -------------------------------------------------------------------------
+                                 
                                  handle_start_modo3:
+                                     ; ================================
+                                     ; Avança para o próximo dígito a ser ajustado (modo 3)
+                                     ; ================================
+                                 
 000248 930f                          push temp1
-000249 931f                      	push temp2
+000249 931f                          push temp2
                                  
-00024a d009                      	rcall navegar_digitos
+00024a d009                          rcall navegar_digitos        ; Muda o seletor de ajuste (0 → 1 → 2 → 3 → 0)
                                  
-00024b 911f                      	pop temp2
-00024c 910f                      	pop temp1
+00024b 911f                          pop temp2
+00024c 910f                          pop temp1
 00024d 9508                          ret
                                  
+                                 ; -------------------------------------------------------------------------
+                                 
                                  handle_reset_modo3:
-00024e 930f                      	push temp1
-00024f 931f                      	push temp2
+                                     ; ================================
+                                     ; Incrementa o valor do dígito selecionado (modo 3)
+                                     ; ================================
                                  
-000250 d00c                          rcall ajustar_digito
+00024e 930f                          push temp1
+00024f 931f                          push temp2
                                  
-000251 911f                      	pop temp2
-000252 910f                      	pop temp1
+000250 d00c                          rcall ajustar_digito         ; Incrementa o dígito conforme o seletor atual
+                                 
+000251 911f                          pop temp2
+000252 910f                          pop temp1
 000253 9508                          ret
                                  
-                                 navegar_digitos:
-000254 9100 0148                     lds temp1, adjust_digit_selector  ; Carrega o valor atual do seletor de d�gitos
-000256 9503                          inc temp1                        ; Incrementa para o pr�ximo d�gito
-000257 3004                          cpi temp1, 4                     ; Verifica se chegou ao limite (4 d�gitos: 0,1,2,3)
-000258 f008                          brlo salvar_digito_atual         ; Se for menor que 4, salva o novo valor
-000259 e000                          ldi temp1, 0                     ; Se chegou a 4, volta para o primeiro d�gito (0)
+                                     navegar_digitos:
+                                     ; ================================
+                                     ; Avança para o próximo dígito a ser ajustado (modo 3)
+                                     ; Ciclo: 0 → 1 → 2 → 3 → 0
+                                     ; ================================
+                                 
+000254 9100 0148                     lds temp1, adjust_digit_selector  ; Carrega o valor atual do seletor de dígitos (0 a 3)
+000256 9503                          inc temp1                         ; Avança para o próximo dígito
+                                 
+000257 3004                          cpi temp1, 4                      ; Verifica se passou do último (existem 4 dígitos: 0,1,2,3)
+000258 f008                          brlo salvar_digito_atual          ; Se for menor que 4, continua normalmente
+                                 
+000259 e000                          ldi temp1, 0                      ; Se chegou a 4, reinicia o ciclo para o dígito 0
+                                 
                                  salvar_digito_atual:
-00025a 9300 0148                     sts adjust_digit_selector, temp1  ; Salva o novo valor do seletor de d�gitos
-00025c 9508                      	ret
+00025a 9300 0148                     sts adjust_digit_selector, temp1  ; Salva o novo dígito selecionado
+00025c 9508                          ret                               ; Retorna da sub-rotina
                                  
                                  
-                                 ; Fun��es de ajuste corrigidas para o modo 3
                                  ; ============================================================
-                                 ; FUN��O: ajustar_digito
-                                 ; Finalidade: Ajusta o valor do d�gito selecionado no Modo 3
+                                 ; FUNÇÃO: ajustar_digito
+                                 ; Finalidade: Ajusta o valor do dígito selecionado no Modo 3
                                  ; ============================================================
+                                 
                                  ajustar_digito:
-00025d 9100 0148                     lds temp1, adjust_digit_selector  ; Carrega o seletor de d�gitos atual
-00025f 3000                          cpi temp1, 0                      ; Verifica qual d�gito est� selecionado
-000260 f039                          breq ajustar_su                   ; Unidade dos segundos
-000261 3001                          cpi temp1, 1
-000262 f0a1                          breq ajustar_sd                   ; Dezena dos segundos
-000263 3002                          cpi temp1, 2
-000264 f109                          breq ajustar_mu                   ; Unidade dos minutos
-000265 3003                          cpi temp1, 3
-000266 f171                          breq ajustar_md                   ; Dezena dos minutos
-000267 9508                          ret                               ; Retorna se valor inv�lido
+                                     ; ================================
+                                     ; Verifica qual dígito está sendo ajustado (0 a 3)
+                                     ; ================================
+                                 
+00025d 9100 0148                     lds temp1, adjust_digit_selector  ; Carrega o seletor de dígitos atual
+00025f 3000                          cpi temp1, 0                      ; Verifica se é a unidade dos segundos
+000260 f039                          breq ajustar_su
+000261 3001                          cpi temp1, 1                      ; Verifica se é a dezena dos segundos
+000262 f0a1                          breq ajustar_sd
+000263 3002                          cpi temp1, 2                      ; Verifica se é a unidade dos minutos
+000264 f109                          breq ajustar_mu
+000265 3003                          cpi temp1, 3                      ; Verifica se é a dezena dos minutos
+000266 f171                          breq ajustar_md
+000267 9508                          ret                               ; Retorna se o valor for inválido
+                                 
+                                 ; -------------------------------------------------------------------------
                                  
                                  ajustar_su:
+                                     ; ================================
                                      ; Ajusta a unidade dos segundos
+                                     ; ================================
+                                 
 000268 9100 0144                     lds temp1, mode_1 + 1             ; Carrega os segundos atuais
 00026a e01a                          ldi temp2, 10
-00026b d07e                          rcall dividir                     ; temp1 = dezena, temp2 = unidade
+00026b d07e                          rcall dividir                     ; → temp1 = dezena, temp2 = unidade
 00026c 9513                          inc temp2                         ; Incrementa a unidade
-00026d 301a                          cpi temp2, 10                     ; Verifica se passou de 9
-00026e f008                          brlo salvar_su                    ; Se n�o passou, salva
-00026f e010                          ldi temp2, 0                      ; Se passou, volta para 0
+00026d 301a                          cpi temp2, 10
+00026e f008                          brlo salvar_su                    ; Se < 10, continua
+00026f e010                          ldi temp2, 0                      ; Se passou, reinicia em 0
+                                 
                                  salvar_su:
-                                     ; Recalcula o valor bin�rio: dezena*10 + unidade
+                                     ; Recalcula segundos: dezena*10 + unidade
 000270 e07a                          ldi r23, 10
 000271 9f07                          mul temp1, r23                    ; r1:r0 = dezena * 10
-000272 2d00                          mov temp1, r0                     ; temp1 = dezena * 10
+000272 2d00                          mov temp1, r0                     ; temp1 = resultado (parte baixa)
 000273 0f01                          add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
-000274 9300 0144                     sts mode_1 + 1, temp1             ; Salva o novo valor dos segundos
+000274 9300 0144                     sts mode_1 + 1, temp1             ; Salva segundos atualizados
 000276 9508                          ret
                                  
+                                 ; -------------------------------------------------------------------------
+                                 
                                  ajustar_sd:
+                                     ; ================================
                                      ; Ajusta a dezena dos segundos
-000277 9100 0144                     lds temp1, mode_1 + 1             ; Carrega os segundos atuais
+                                     ; ================================
+                                 
+000277 9100 0144                     lds temp1, mode_1 + 1
 000279 e01a                          ldi temp2, 10
-00027a d06f                          rcall dividir                     ; temp1 = dezena, temp2 = unidade
+00027a d06f                          rcall dividir                     ; → temp1 = dezena, temp2 = unidade
 00027b 9503                          inc temp1                         ; Incrementa a dezena
-00027c 3006                          cpi temp1, 6                      ; Verifica se passou de 5
-00027d f008                          brlo salvar_sd                    ; Se n�o passou, salva
+00027c 3006                          cpi temp1, 6                      ; Máximo: 5 (para 59 segundos)
+00027d f008                          brlo salvar_sd
 00027e e000                          ldi temp1, 0                      ; Se passou, volta para 0
+                                 
                                  salvar_sd:
-                                     ; Recalcula o valor bin�rio: dezena*10 + unidade
+                                     ; Recalcula segundos: dezena*10 + unidade
 00027f e07a                          ldi r23, 10
-000280 9f07                          mul temp1, r23                    ; r1:r0 = dezena * 10
-000281 2d00                          mov temp1, r0                     ; temp1 = dezena * 10
-000282 0f01                          add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
-000283 9300 0144                     sts mode_1 + 1, temp1             ; Salva o novo valor dos segundos
+000280 9f07                          mul temp1, r23
+000281 2d00                          mov temp1, r0
+000282 0f01                          add temp1, temp2
+000283 9300 0144                     sts mode_1 + 1, temp1
 000285 9508                          ret
                                  
+                                 ; -------------------------------------------------------------------------
+                                 
                                  ajustar_mu:
+                                     ; ================================
                                      ; Ajusta a unidade dos minutos
-000286 9100 0143                     lds temp1, mode_1                 ; Carrega os minutos atuais
+                                     ; ================================
+                                 
+000286 9100 0143                     lds temp1, mode_1
 000288 e01a                          ldi temp2, 10
-000289 d060                          rcall dividir                     ; temp1 = dezena, temp2 = unidade
-00028a 9513                          inc temp2                         ; Incrementa a unidade
-00028b 301a                          cpi temp2, 10                     ; Verifica se passou de 9
-00028c f008                          brlo salvar_mu                    ; Se n�o passou, salva
-00028d e010                          ldi temp2, 0                      ; Se passou, volta para 0
+000289 d060                          rcall dividir                     ; → temp1 = dezena, temp2 = unidade
+00028a 9513                          inc temp2
+00028b 301a                          cpi temp2, 10
+00028c f008                          brlo salvar_mu
+00028d e010                          ldi temp2, 0
+                                 
                                  salvar_mu:
-                                     ; Recalcula o valor bin�rio: dezena*10 + unidade
+                                     ; Recalcula minutos: dezena*10 + unidade
 00028e e07a                          ldi r23, 10
-00028f 9f07                          mul temp1, r23                    ; r1:r0 = dezena * 10
-000290 2d00                          mov temp1, r0                     ; temp1 = dezena * 10
-000291 0f01                          add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
-000292 9300 0143                     sts mode_1, temp1                 ; Salva o novo valor dos minutos
+00028f 9f07                          mul temp1, r23
+000290 2d00                          mov temp1, r0
+000291 0f01                          add temp1, temp2
+000292 9300 0143                     sts mode_1, temp1
 000294 9508                          ret
                                  
+                                 ; -------------------------------------------------------------------------
+                                 
                                  ajustar_md:
+                                     ; ================================
                                      ; Ajusta a dezena dos minutos
-000295 9100 0143                     lds temp1, mode_1                 ; Carrega os minutos atuais
+                                     ; ================================
+                                 
+000295 9100 0143                     lds temp1, mode_1
 000297 e01a                          ldi temp2, 10
-000298 d051                          rcall dividir                     ; temp1 = dezena, temp2 = unidade
-000299 9503                          inc temp1                         ; Incrementa a dezena
-00029a 3006                          cpi temp1, 6                      ; Verifica se passou de 5
-00029b f008                          brlo salvar_md                    ; Se n�o passou, salva
-00029c e000                          ldi temp1, 0                      ; Se passou, volta para 0
+000298 d051                          rcall dividir                     ; → temp1 = dezena, temp2 = unidade
+000299 9503                          inc temp1
+00029a 3006                          cpi temp1, 6                      ; Máximo: 5 (para 59 minutos)
+00029b f008                          brlo salvar_md
+00029c e000                          ldi temp1, 0
+                                 
                                  salvar_md:
-                                     ; Recalcula o valor bin�rio: dezena*10 + unidade
+                                     ; Recalcula minutos: dezena*10 + unidade
 00029d e07a                          ldi r23, 10
-00029e 9f07                          mul temp1, r23                    ; r1:r0 = dezena * 10
-00029f 2d00                          mov temp1, r0                     ; temp1 = dezena * 10
-0002a0 0f01                          add temp1, temp2                  ; temp1 = (dezena * 10) + unidade
-0002a1 9300 0143                     sts mode_1, temp1                 ; Salva o novo valor dos minutos
+00029e 9f07                          mul temp1, r23
+00029f 2d00                          mov temp1, r0
+0002a0 0f01                          add temp1, temp2
+0002a1 9300 0143                     sts mode_1, temp1
+0002a3 9508                          ret
                                  .INCLUDE "display.asm"
-0002a3 9508                      
-                                 ; FUN��ES DE DISPLAY
+                                 
+                                 ; FUN��ES DE DISPLAY
                                  ; =========================================================================
                                  multiplexar_display:
                                      ; Seleciona os dados corretos conforme o modo
@@ -1258,96 +1339,175 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 0002a8 c055                      	rjmp multiplexar_display_modo3
                                  
                                  usa_dados_relogio:
-0002a9 9100 0144                     lds temp1, mode_1 + 1    ; Segundos
-0002ab e01a                          ldi temp2, 10
-0002ac 940e 02ea                     call dividir             ; temp1 = dezena, temp2 = unidade
-0002ae 2f71                          mov r23, temp2           ; Sec Unid
-0002af 2f80                          mov r24, temp1           ; Sec Dez
+                                     ; ================================
+                                     ; Separa os dígitos dos SEGUNDOS
+                                     ; ================================
                                  
-0002b0 9100 0143                     lds temp1, mode_1        ; Minutos
-0002b2 e01a                          ldi temp2, 10
-0002b3 940e 02ea                     call dividir
-0002b5 2f91                          mov r25, temp2           ; Min Unid
-0002b6 2fa0                          mov r26, temp1           ; Min Dez
-0002b7 c00e                          rjmp exibir_valores
+0002a9 9100 0144                     lds temp1, mode_1 + 1        ; Carrega os segundos do relógio em temp1
+0002ab e01a                          ldi temp2, 10                ; Carrega o número 10 em temp2 (divisor)
+0002ac 940e 02ea                     call dividir                 ; Divide temp1 por 10:
+                                                                  ; → temp1 = dezena (quociente)
+                                                                  ; → temp2 = unidade (resto)
+0002ae 2f71                          mov r23, temp2               ; Armazena a unidade dos segundos em r23 (segundos unidade)
+0002af 2f80                          mov r24, temp1               ; Armazena a dezena dos segundos em r24 (segundos dezena)
+                                 
+                                     ; ================================
+                                     ; Separa os dígitos dos MINUTOS
+                                     ; ================================
+                                 
+0002b0 9100 0143                     lds temp1, mode_1            ; Carrega os minutos do relógio em temp1
+0002b2 e01a                          ldi temp2, 10                ; Carrega o número 10 novamente em temp2
+0002b3 940e 02ea                     call dividir                 ; Divide temp1 por 10:
+                                                                  ; → temp1 = dezena (quociente)
+                                                                  ; → temp2 = unidade (resto)
+0002b5 2f91                          mov r25, temp2               ; Armazena a unidade dos minutos em r25 (minutos unidade)
+0002b6 2fa0                          mov r26, temp1               ; Armazena a dezena dos minutos em r26 (minutos dezena)
+                                 
+                                     ; Agora temos os quatro dígitos separados em:
+                                     ; r26 = Min Dez, r25 = Min Unid, r24 = Sec Dez, r23 = Sec Unid
+                                 
+0002b7 c00e                          rjmp exibir_valores          ; Pula para a rotina de exibição no display
+                                 
                                  
                                  usa_dados_cronometro:
-0002b8 9100 0146                     lds temp1, mode_2 + 1
-0002ba e01a                          ldi temp2, 10
-0002bb 940e 02ea                     call dividir
-0002bd 2f71                          mov r23, temp2
-0002be 2f80                          mov r24, temp1
+                                     ; ====================================
+                                     ; Separa os dígitos dos SEGUNDOS
+                                     ; do cronômetro (armazenado em mode_2+1)
+                                     ; ====================================
                                  
-0002bf 9100 0145                     lds temp1, mode_2
-0002c1 e01a                          ldi temp2, 10
-0002c2 940e 02ea                     call dividir
-0002c4 2f91                          mov r25, temp2
-0002c5 2fa0                          mov r26, temp1
+0002b8 9100 0146                     lds temp1, mode_2 + 1        ; Carrega os segundos do cronômetro em temp1
+0002ba e01a                          ldi temp2, 10                ; Carrega o número 10 (divisor) em temp2
+0002bb 940e 02ea                     call dividir                 ; Divide temp1 por 10:
+                                                                  ; → temp1 = dezena (quociente)
+                                                                  ; → temp2 = unidade (resto)
+0002bd 2f71                          mov r23, temp2               ; r23 ← unidade dos segundos
+0002be 2f80                          mov r24, temp1               ; r24 ← dezena dos segundos
+                                 
+                                     ; ====================================
+                                     ; Separa os dígitos dos MINUTOS
+                                     ; do cronômetro (armazenado em mode_2)
+                                     ; ====================================
+                                 
+0002bf 9100 0145                     lds temp1, mode_2            ; Carrega os minutos do cronômetro em temp1
+0002c1 e01a                          ldi temp2, 10                ; Carrega o número 10 (divisor) novamente
+0002c2 940e 02ea                     call dividir                 ; Divide temp1 por 10:
+                                                                  ; → temp1 = dezena (quociente)
+                                                                  ; → temp2 = unidade (resto)
+0002c4 2f91                          mov r25, temp2               ; r25 ← unidade dos minutos
+0002c5 2fa0                          mov r26, temp1               ; r26 ← dezena dos minutos
+                                 
+                                     ; Resultado final:
+                                     ; r23 = Sec Unid
+                                     ; r24 = Sec Dez
+                                     ; r25 = Min Unid
+                                     ; r26 = Min Dez
+                                 
+                                     ; Esses valores serão usados em seguida na rotina de exibição para
+                                     ; mostrar os dígitos do cronômetro no display multiplexado.
                                  
                                  exibir_valores:
-0002c6 2f07                          mov temp1, r23
-0002c7 d01b                          rcall enviar_para_cd4511
-0002c8 b115                          in temp2, PORTB
-0002c9 7f10                          andi temp2, 0b11110000
-0002ca 6018                          ori temp2, (1 << PB3)
-0002cb b915                          out PORTB, temp2
-0002cc d028                          rcall delay_multiplex
+                                     ; ---------------------------------------------
+                                     ; Exibe o dígito das UNIDADES dos SEGUNDOS (r23)
+                                     ; ---------------------------------------------
+0002c6 2f07                          mov temp1, r23                  ; Coloca a unidade dos segundos em temp1
+0002c7 d01b                          rcall enviar_para_cd4511        ; Envia o valor em temp1 (0–9) para o CD4511 via PD2–PD5
                                  
-0002cd 2f08                          mov temp1, r24
-0002ce d014                          rcall enviar_para_cd4511
+0002c8 b115                          in temp2, PORTB                 ; Lê o estado atual de PORTB
+0002c9 7f10                          andi temp2, 0b11110000          ; Limpa os bits PB0–PB3 (desliga todos os displays)
+0002ca 6018                          ori temp2, (1 << PB3)           ; Ativa PB3 (seleciona o display da unidade dos segundos)
+0002cb b915                          out PORTB, temp2                ; Atualiza PORTB para acionar esse display
+                                 
+0002cc d028                          rcall delay_multiplex           ; Aguarda um tempo curto para manter o dígito visível
+                                 
+                                     ; ---------------------------------------------
+                                     ; Exibe o dígito das DEZENAS dos SEGUNDOS (r24)
+                                     ; ---------------------------------------------
+0002cd 2f08                          mov temp1, r24                  ; Coloca a dezena dos segundos em temp1
+0002ce d014                          rcall enviar_para_cd4511        ; Envia para o CD4511
+                                 
 0002cf b115                          in temp2, PORTB
-0002d0 7f10                          andi temp2, 0b11110000
-0002d1 6014                          ori temp2, (1 << PB2)
+0002d0 7f10                          andi temp2, 0b11110000          ; Limpa os bits PB0–PB3
+0002d1 6014                          ori temp2, (1 << PB2)           ; Ativa PB2 (seleciona o display da dezena dos segundos)
 0002d2 b915                          out PORTB, temp2
-0002d3 d021                          rcall delay_multiplex
                                  
-0002d4 2f09                          mov temp1, r25
-0002d5 d00d                          rcall enviar_para_cd4511
+0002d3 d021                          rcall delay_multiplex           ; Aguarda para manter o dígito visível
+                                 
+                                     ; ---------------------------------------------
+                                     ; Exibe o dígito das UNIDADES dos MINUTOS (r25)
+                                     ; ---------------------------------------------
+0002d4 2f09                          mov temp1, r25                  ; Coloca a unidade dos minutos em temp1
+0002d5 d00d                          rcall enviar_para_cd4511        ; Envia para o CD4511
+                                 
 0002d6 b115                          in temp2, PORTB
-0002d7 7f10                          andi temp2, 0b11110000
-0002d8 6012                          ori temp2, (1 << PB1)
+0002d7 7f10                          andi temp2, 0b11110000          ; Limpa os bits PB0–PB3
+0002d8 6012                          ori temp2, (1 << PB1)           ; Ativa PB1 (seleciona o display da unidade dos minutos)
 0002d9 b915                          out PORTB, temp2
-0002da d01a                          rcall delay_multiplex
                                  
-0002db 2f0a                          mov temp1, r26
-0002dc d006                          rcall enviar_para_cd4511
+0002da d01a                          rcall delay_multiplex           ; Aguarda para manter o dígito visível
+                                 
+                                     ; ---------------------------------------------
+                                     ; Exibe o dígito das DEZENAS dos MINUTOS (r26)
+                                     ; ---------------------------------------------
+0002db 2f0a                          mov temp1, r26                  ; Coloca a dezena dos minutos em temp1
+0002dc d006                          rcall enviar_para_cd4511        ; Envia para o CD4511
+                                 
 0002dd b115                          in temp2, PORTB
-0002de 7f10                          andi temp2, 0b11110000
-0002df 6011                          ori temp2, (1 << PB0)
+0002de 7f10                          andi temp2, 0b11110000          ; Limpa os bits PB0–PB3
+0002df 6011                          ori temp2, (1 << PB0)           ; Ativa PB0 (seleciona o display da dezena dos minutos)
 0002e0 b915                          out PORTB, temp2
-0002e1 d013                          rcall delay_multiplex
                                  
-0002e2 9508                          ret
+0002e1 d013                          rcall delay_multiplex           ; Aguarda para manter o dígito visível
+                                 
+0002e2 9508                          ret                             ; Retorna da sub-rotina
                                  
                                  
                                  enviar_para_cd4511:
-0002e3 0f00                          lsl temp1
-0002e4 0f00                          lsl temp1
-0002e5 b11b                          in temp2, PORTD
-0002e6 7c13                          andi temp2, 0b11000011
-0002e7 2b10                          or temp2, temp1
-0002e8 b91b                          out PORTD, temp2
-0002e9 9508                          ret
+0002e3 0f00                          lsl temp1              ; Desloca os bits de temp1 1 vez para a esquerda (multiplica por 2)
+0002e4 0f00                          lsl temp1              ; Desloca novamente (multiplica por 4), alinhando para PD2–PD5
+0002e5 b11b                          in temp2, PORTD        ; Lê o valor atual da PORTD para preservar os bits não usados pelo CD4511
+0002e6 7c13                          andi temp2, 0b11000011 ; Zera os bits PD2 a PD5 (onde o BCD será inserido), mantendo os outros
+0002e7 2b10                          or temp2, temp1        ; Combina os bits BCD deslocados com o restante dos bits preservados
+0002e8 b91b                          out PORTD, temp2       ; Atualiza o PORTD com o novo valor, enviando o número para o CD4511
+0002e9 9508                          ret                    ; Retorna da sub-rotina
+                                 
                                  
                                  dividir:
-0002ea 933f                          push r19
-0002eb 2733                          clr r19
+                                     ; ================================
+                                     ; Inicialização da Divisão
+                                     ; ================================
+                                 
+0002ea 933f                          push r19            ; Salva o registrador r19 na pilha (será usado como contador do quociente)
+0002eb 2733                          clr r19             ; Zera r19 para começar a contagem do quociente (quantas vezes subtrai o divisor)
+                                 
                                  div_loop:
-0002ec 1701                          cp temp1, temp2
-0002ed f018                          brlo fim_div
-0002ee 1b01                          sub temp1, temp2
-0002ef 9533                          inc r19
-0002f0 cffb                          rjmp div_loop
+                                     ; ================================
+                                     ; Loop de Subtração Repetida
+                                     ; ================================
+                                 
+0002ec 1701                          cp temp1, temp2     ; Compara o valor atual (dividendo) com o divisor
+0002ed f018                          brlo fim_div        ; Se temp1 < temp2, termina a divisão (não dá mais pra subtrair)
+0002ee 1b01                          sub temp1, temp2    ; Subtrai o divisor de temp1 (simulando uma divisão)
+0002ef 9533                          inc r19             ; Incrementa o contador de subtrações (quociente)
+0002f0 cffb                          rjmp div_loop       ; Repete o processo até temp1 < temp2
+                                 
                                  fim_div:
-0002f1 2f10                          mov temp2, temp1
-0002f2 2f03                          mov temp1, r19
-0002f3 913f                          pop r19
-0002f4 9508                          ret
+                                     ; ================================
+                                     ; Ajuste dos Resultados
+                                     ; ================================
+                                 
+0002f1 2f10                          mov temp2, temp1    ; O valor que sobrou em temp1 é o resto → vai para temp2 (unidade)
+0002f2 2f03                          mov temp1, r19      ; O número de subtrações feitas (em r19) é o quociente → vai para temp1 (dezena)
+                                 
+0002f3 913f                          pop r19             ; Restaura o valor original de r19 da pilha
+0002f4 9508                          ret                 ; Retorna da sub-rotina com:
+                                                         ; → temp1 = dezena (quociente)
+                                                         ; → temp2 = unidade (resto)
+                                 
                                  
                                  delay_multiplex:
 0002f5 938f                          push r24
 0002f6 939f                          push r25
-0002f7 e193                          ldi r25, high(5000) ;SUJEITO A MUDAN�A
+0002f7 e193                          ldi r25, high(5000)
 0002f8 e888                          ldi r24, low(5000)
                                  delay_loop:
 0002f9 9701                          sbiw r24, 1
@@ -1359,153 +1519,248 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
                                  ;-------------------------
                                  
                                  multiplexar_display_modo3:
-                                     ; Carrega valores atuais do rel�gio
-0002fe 9100 0144                     lds temp1, mode_1 + 1    ; Carrega os segundos do rel�gio
-000300 e01a                          ldi temp2, 10
-000301 940e 02ea                     call dividir             ; Divide em dezena e unidade
-000303 2f71                          mov r23, temp2           ; Unidade dos segundos em r23
-000304 2f80                          mov r24, temp1           ; Dezena dos segundos em r24
+                                     ; ================================
+                                     ; Separa os dígitos dos SEGUNDOS
+                                     ; ================================
                                  
-000305 9100 0143                     lds temp1, mode_1        ; Carrega os minutos do rel�gio
-000307 e01a                          ldi temp2, 10
-000308 940e 02ea                     call dividir             ; Divide em dezena e unidade
-00030a 2f91                          mov r25, temp2           ; Unidade dos minutos em r25
-00030b 2fa0                          mov r26, temp1           ; Dezena dos minutos em r26
+0002fe 9100 0144                     lds temp1, mode_1 + 1        ; Carrega os segundos do relógio em temp1
+000300 e01a                          ldi temp2, 10                ; Carrega o número 10 em temp2 (divisor)
+000301 940e 02ea                     call dividir                 ; Divide temp1 por 10:
+                                                                  ; → temp1 = dezena (quociente)
+                                                                  ; → temp2 = unidade (resto)
+000303 2f71                          mov r23, temp2               ; Armazena a unidade dos segundos em r23
+000304 2f80                          mov r24, temp1               ; Armazena a dezena dos segundos em r24
                                  
-                                     ; Incrementar o contador de piscagem
-00030c 9100 014a                     lds temp1, blink_counter
-00030e 9503                          inc temp1
-00030f 3906                          cpi temp1, 150            ; Ajuste esse valor para alterar a velocidade da piscagem
-                                                              ; Valores maiores = pisca mais devagar
-000310 f008                          brlo salvar_contador
-000311 e000                          ldi temp1, 0             ; Reseta o contador quando atinge o limite
+                                     ; ================================
+                                     ; Separa os dígitos dos MINUTOS
+                                     ; ================================
+                                 
+000305 9100 0143                     lds temp1, mode_1            ; Carrega os minutos do relógio em temp1
+000307 e01a                          ldi temp2, 10                ; Carrega o número 10 novamente em temp2
+000308 940e 02ea                     call dividir                 ; Divide temp1 por 10:
+                                                                  ; → temp1 = dezena (quociente)
+                                                                  ; → temp2 = unidade (resto)
+00030a 2f91                          mov r25, temp2               ; Armazena a unidade dos minutos em r25
+00030b 2fa0                          mov r26, temp1               ; Armazena a dezena dos minutos em r26
+                                 
+                                     ; ================================
+                                     ; Atualiza contador de piscagem
+                                     ; ================================
+                                 
+00030c 9100 014a                     lds temp1, blink_counter     ; Carrega o contador de piscagem
+00030e 9503                          inc temp1                    ; Incrementa o valor (1 a cada chamada da rotina)
+00030f 3906                          cpi temp1, 150               ; Compara com o limite desejado para alternar visibilidade
+                                                                  ; → Quanto maior o valor, mais devagar o piscar
+000310 f008                          brlo salvar_contador         ; Se ainda não atingiu o limite, salva e sai
+000311 e000                          ldi temp1, 0                 ; Reseta o contador quando atinge o valor de comparação
+                                           ; Reseta o contador quando atinge o limite
+                                 
                                  salvar_contador:
-000312 9300 014a                     sts blink_counter, temp1
+                                     ; ================================
+                                     ; Salva o valor atualizado do contador de piscagem
+                                     ; ================================
                                  
-                                     ; Verificar se deve piscar baseado no contador
-000314 300a                          cpi temp1, 10            ; Metade do tempo ligado, metade desligado
-000315 f088                          brlo exibe_normal        ; Se contador < 10, exibe o d�gito normalmente
-                                     
-                                     ; Se contador >= 10, apaga o d�gito selecionado
-000316 9100 0148                     lds temp1, adjust_digit_selector
-000318 3000                          cpi temp1, 0
-000319 f411                          brne testa_sd
-00031a e07a                          ldi r23, 10              ; Apaga apenas unidade dos segundos
-00031b c00b                          rjmp exibe_normal
+000312 9300 014a                     sts blink_counter, temp1    ; Armazena o novo valor de temp1 em blink_counter
+                                 
+                                     ; ================================
+                                     ; Verifica se o dígito deve ser exibido ou apagado
+                                     ; ================================
+                                 
+000314 300a                          cpi temp1, 10               ; Compara o contador com 10 (meio ciclo do piscar)
+000315 f088                          brlo exibe_normal           ; Se for menor que 10 → exibir normalmente
+                                 
+                                     ; ================================
+                                     ; Se contador >= 10, apaga o dígito selecionado
+                                     ; ================================
+                                 
+000316 9100 0148                     lds temp1, adjust_digit_selector ; Lê qual dígito está sendo ajustado (0 a 3)
+                                 
+000318 3000                          cpi temp1, 0               ; Verifica se é a unidade dos segundos
+000319 f411                          brne testa_sd              ; Se não for, pula para o próximo teste
+                                 
+00031a e07a                          ldi r23, 10                ; Coloca valor "10" para apagar o dígito da unidade dos segundos (r23)
+00031b c00b                          rjmp exibe_normal          ; Pula para exibir os demais normalmente, exceto este
+                                 
                                  testa_sd:
-00031c 3001                          cpi temp1, 1
-00031d f411                          brne testa_mu
-00031e e08a                          ldi r24, 10              ; Apaga apenas dezena dos segundos
-00031f c007                          rjmp exibe_normal
+                                     ; ================================
+                                     ; Verifica se o dígito ajustado é a dezena dos segundos
+                                     ; ================================
+                                 
+00031c 3001                          cpi temp1, 1               ; Compara com 1 (dezena dos segundos)
+00031d f411                          brne testa_mu              ; Se não for, pula para o próximo teste
+                                 
+00031e e08a                          ldi r24, 10                ; Apaga a dezena dos segundos (r24 recebe 10)
+00031f c007                          rjmp exibe_normal          ; Pula para a exibição dos outros dígitos
+                                 
                                  testa_mu:
-000320 3002                          cpi temp1, 2
-000321 f411                          brne testa_md
-000322 e09a                          ldi r25, 10              ; Apaga apenas unidade dos minutos
-000323 c003                          rjmp exibe_normal
+                                     ; ================================
+                                     ; Verifica se o dígito ajustado é a unidade dos minutos
+                                     ; ================================
+                                 
+000320 3002                          cpi temp1, 2               ; Compara com 2 (unidade dos minutos)
+000321 f411                          brne testa_md              ; Se não for, pula para o próximo teste
+                                 
+000322 e09a                          ldi r25, 10                ; Apaga a unidade dos minutos (r25 recebe 10)
+000323 c003                          rjmp exibe_normal          ; Pula para a exibição dos outros dígitos
+                                 
                                  testa_md:
-000324 3003                          cpi temp1, 3
-000325 f409                          brne exibe_normal
-000326 e0aa                          ldi r26, 10              ; Apaga apenas dezena dos minutos
+                                     ; ================================
+                                     ; Verifica se o dígito ajustado é a dezena dos minutos
+                                     ; ================================
+                                 
+000324 3003                          cpi temp1, 3               ; Compara com 3 (dezena dos minutos)
+000325 f409                          brne exibe_normal          ; Se não for nenhum dos 4 valores válidos, segue normalmente
+                                 
+000326 e0aa                          ldi r26, 10                ; Apaga a dezena dos minutos (r26 recebe 10)
+                                 
                                  
                                  exibe_normal:
-                                     ; Configura o Timer0 para pr�xima altern�ncia
-000327 e005                          ldi temp1, (1 << CS02) | (0 << CS01) | (1 << CS00)  ; Prescaler = 1024
-000328 bd05                          out TCCR0B, temp1
+                                     ; ================================
+                                     ; Configura o Timer0 para a próxima alternância de multiplexação
+                                     ; ================================
                                  
-                                     ; Exibe cada d�gito
-000329 2f07                      	mov temp1, r23           ; Unidade dos segundos
-00032a 300a                          cpi temp1, 10            ; Verifica se � para apagar (valor 10)
-00032b f031                          breq desliga_display_su
-00032c dfb6                          rcall enviar_para_cd4511
-00032d b115                          in temp2, PORTB
-00032e 7f10                          andi temp2, 0b11110000
-00032f 6018                          ori temp2, (1 << PB3)
-000330 b915                          out PORTB, temp2
-000331 c003                          rjmp continua_sd
+000327 e005                          ldi temp1, (1 << CS02) | (0 << CS01) | (1 << CS00)  ; Define prescaler como 1024 (CS02 e CS00 ligados)
+000328 bd05                          out TCCR0B, temp1                                   ; Ativa o Timer0 com esse prescaler (usado para multiplexar displays)
+                                 
+                                     ; ================================
+                                     ; Exibe o dígito da UNIDADE dos SEGUNDOS
+                                     ; ================================
+                                 
+000329 2f07                          mov temp1, r23                ; Carrega a unidade dos segundos em temp1
+00032a 300a                          cpi temp1, 10                 ; Verifica se o valor é 10 (comando para apagar o dígito)
+00032b f031                          breq desliga_display_su       ; Se for 10, pula para rotina que desliga esse dígito
+                                 
+00032c dfb6                          rcall enviar_para_cd4511      ; Envia o valor BCD para os pinos PD2–PD5 (CD4511)
+00032d b115                          in temp2, PORTB               ; Lê o valor atual de PORTB
+00032e 7f10                          andi temp2, 0b11110000        ; Limpa os bits de controle PB0–PB3 (desliga todos os displays)
+00032f 6018                          ori temp2, (1 << PB3)         ; Ativa PB3 (liga o display da unidade dos segundos)
+000330 b915                          out PORTB, temp2              ; Atualiza PORTB com esse valor para acionar o display
+                                 
+000331 c003                          rjmp continua_sd              ; Pula para a próxima etapa (exibição da dezena dos segundos)
+                                 
                                  
                                  desliga_display_su:
-000332 b115                          in temp2, PORTB
-000333 7f17                          andi temp2, 0b11110111   ; Desliga o bit PB3 (apaga o display)
-000334 b915                          out PORTB, temp2
+                                     ; ================================
+                                     ; Apaga o display da unidade dos segundos (PB3)
+                                     ; ================================
+                                 
+000332 b115                          in temp2, PORTB               ; Lê o valor atual de PORTB
+000333 7f17                          andi temp2, 0b11110111        ; Desliga PB3 (zera bit 3 → apaga o display)
+000334 b915                          out PORTB, temp2              ; Atualiza PORTB com PB3 desligado
                                  
                                  continua_sd:
-000335 dfbf                          rcall delay_multiplex
+                                     ; ================================
+                                     ; Exibe o dígito da DEZENA dos SEGUNDOS
+                                     ; ================================
                                  
-000336 2f08                          mov temp1, r24           ; Dezena dos segundos
-000337 300a                          cpi temp1, 10
-000338 f031                          breq desliga_display_sd
-000339 dfa9                          rcall enviar_para_cd4511
-00033a b115                          in temp2, PORTB
-00033b 7f10                          andi temp2, 0b11110000
-00033c 6014                          ori temp2, (1 << PB2)
-00033d b915                          out PORTB, temp2
-00033e c003                          rjmp continua_mu
+000335 dfbf                          rcall delay_multiplex         ; Aguarda um pequeno tempo antes de trocar o dígito
+                                 
+000336 2f08                          mov temp1, r24                ; Carrega a dezena dos segundos em temp1
+000337 300a                          cpi temp1, 10                 ; Verifica se deve apagar o dígito (valor 10 = ocultar)
+000338 f031                          breq desliga_display_sd       ; Se for 10, apaga o display
+                                 
+000339 dfa9                          rcall enviar_para_cd4511      ; Envia o valor para o CD4511 via PD2–PD5
+00033a b115                          in temp2, PORTB               ; Lê PORTB
+00033b 7f10                          andi temp2, 0b11110000        ; Limpa PB0–PB3 (controle dos displays)
+00033c 6014                          ori temp2, (1 << PB2)         ; Ativa PB2 (liga o display da dezena dos segundos)
+00033d b915                          out PORTB, temp2              ; Atualiza PORTB
+                                 
+00033e c003                          rjmp continua_mu              ; Pula para a exibição da unidade dos minutos
                                  
                                  desliga_display_sd:
+                                     ; ================================
+                                     ; Apaga o display da dezena dos segundos (PB2)
+                                     ; ================================
+                                 
 00033f b115                          in temp2, PORTB
-000340 7f1b                          andi temp2, 0b11111011   ; Desliga o bit PB2
+000340 7f1b                          andi temp2, 0b11111011        ; Desliga PB2 (zera bit 2)
 000341 b915                          out PORTB, temp2
                                  
                                  continua_mu:
+                                     ; ================================
+                                     ; Exibe o dígito da UNIDADE dos MINUTOS
+                                     ; ================================
+                                 
 000342 dfb2                          rcall delay_multiplex
                                  
-000343 2f09                          mov temp1, r25           ; Unidade dos minutos
-000344 300a                          cpi temp1, 10
+000343 2f09                          mov temp1, r25                ; Carrega a unidade dos minutos
+000344 300a                          cpi temp1, 10                 ; Verifica se deve apagar (valor 10 = ocultar)
 000345 f031                          breq desliga_display_mu
+                                 
 000346 df9c                          rcall enviar_para_cd4511
 000347 b115                          in temp2, PORTB
 000348 7f10                          andi temp2, 0b11110000
-000349 6012                          ori temp2, (1 << PB1)
+000349 6012                          ori temp2, (1 << PB1)         ; Ativa PB1 (liga o display da unidade dos minutos)
 00034a b915                          out PORTB, temp2
-00034b c003                          rjmp continua_md
+                                 
+00034b c003                          rjmp continua_md              ; Pula para a exibição da dezena dos minutos
                                  
                                  desliga_display_mu:
+                                     ; ================================
+                                     ; Apaga o display da unidade dos minutos (PB1)
+                                     ; ================================
+                                 
 00034c b115                          in temp2, PORTB
-00034d 7f1d                          andi temp2, 0b11111101   ; Desliga o bit PB1
+00034d 7f1d                          andi temp2, 0b11111101        ; Desliga PB1 (zera bit 1)
 00034e b915                          out PORTB, temp2
                                  
                                  continua_md:
+                                     ; ================================
+                                     ; Exibe o dígito da DEZENA dos MINUTOS
+                                     ; ================================
+                                 
 00034f dfa5                          rcall delay_multiplex
                                  
-000350 2f0a                          mov temp1, r26           ; Dezena dos minutos
-000351 300a                          cpi temp1, 10
+000350 2f0a                          mov temp1, r26                ; Carrega a dezena dos minutos
+000351 300a                          cpi temp1, 10                 ; Verifica se deve apagar (valor 10 = ocultar)
 000352 f031                          breq desliga_display_md
+                                 
 000353 df8f                          rcall enviar_para_cd4511
 000354 b115                          in temp2, PORTB
 000355 7f10                          andi temp2, 0b11110000
-000356 6011                          ori temp2, (1 << PB0)
+000356 6011                          ori temp2, (1 << PB0)         ; Ativa PB0 (liga o display da dezena dos minutos)
 000357 b915                          out PORTB, temp2
-000358 c003                          rjmp fim_multiplex_modo3
+                                 
+000358 c003                          rjmp fim_multiplex_modo3      ; Fim da rotina de exibição (modo 3)
                                  
                                  desliga_display_md:
+                                     ; ================================
+                                     ; Apaga o display da dezena dos minutos (PB0)
+                                     ; ================================
+                                 
 000359 b115                          in temp2, PORTB
-00035a 7f1e                          andi temp2, 0b11111110   ; Desliga o bit PB0
+00035a 7f1e                          andi temp2, 0b11111110        ; Desliga PB0 (zera bit 0)
 00035b b915                          out PORTB, temp2
                                  
                                  fim_multiplex_modo3:
+                                     ; ================================
+                                     ; Delay final da multiplexação (encerra ciclo)
+                                     ; ================================
+                                 
 00035c df98                          rcall delay_multiplex
+00035d 9508                          ret                           ; Retorna da sub-rotina
                                  .INCLUDE "uart.asm"
-00035d 9508                      
+                                 
                                  
                                  ; ============================
-                                 ; DSEG - Vari�veis de Controle
+                                 ; DSEG - Vari�veis de Controle
                                  ; ============================
                                  .dseg
-000100                           uart_buffer:     .byte 64      ; Buffer de transmiss�o
+000100                           uart_buffer:     .byte 64      ; Buffer de transmiss�o
 000140                           uart_head:       .byte 1       ; Ponteiro de escrita
 000141                           uart_tail:       .byte 1       ; Ponteiro de leitura
 000142                           uart_sending:    .byte 1       ; Flag de envio em andamento
                                  
                                  .cseg
                                  ; ============================
-                                 ; CONFIGURA��O USART (no RESET)
+                                 ; CONFIGURA��O USART (no RESET)
                                  ; ============================
                                  ; --- Dentro do reset ---
 00035e e000                      ldi temp1, high(UBRR_VALUE)
 00035f 9300 00c5                 sts UBRR0H, temp1
 000361 e607                      ldi temp1, low(UBRR_VALUE)
 000362 9300 00c4                 sts UBRR0L, temp1
-000364 e208                      ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; TX habilitado + interrup��o
+000364 e208                      ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; TX habilitado + interrup��o
 000365 9300 00c1                 sts UCSR0B, temp1
 000367 e006                      ldi temp1, (1 << UCSZ01) | (1 << UCSZ00)
 000368 9300 00c2                 sts UCSR0C, temp1
@@ -1537,7 +1792,7 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 00037a 1df1                          adc ZH, zero
 00037b 8330                          st Z, r19
                                  
-                                     ; Inicia envio se n�o estiver enviando
+                                     ; Inicia envio se n�o estiver enviando
 00037c 9110 0142                     lds temp2, uart_sending
 00037e 3010                          cpi temp2, 0
 00037f f431                          brne uart_enqueue_exit
@@ -1559,221 +1814,307 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
                                  ; ============================
                                  ; USART_Transmit_String_Async
                                  ; Entrada: Z aponta para string na Flash
+                                 ; Envia uma string armazenada na memória Flash, byte a byte de forma assíncrona
                                  ; ============================
                                  USART_Transmit_String_Async:
-00038b 93ef                          push r30
-00038c 93ff                          push r31
+00038b 93ef                          push r30                     ; Salva parte baixa do ponteiro Z (r30)
+00038c 93ff                          push r31                     ; Salva parte alta do ponteiro Z (r31)
+                                 
                                  str_async_loop:
-00038d 9135                          lpm r19, Z+
-00038e 2333                          tst r19
-00038f f011                          breq str_async_end
-000390 dfd9                          rcall UART_Enqueue_Byte
-000391 cffb                          rjmp str_async_loop
+00038d 9135                          lpm r19, Z+                  ; Lê byte da memória Flash apontada por Z e incrementa Z
+00038e 2333                          tst r19                      ; Testa se o byte é zero (fim da string)
+00038f f011                          breq str_async_end           ; Se for zero, termina a rotina
+000390 dfd9                          rcall UART_Enqueue_Byte      ; Enfileira o byte para envio assíncrono
+000391 cffb                          rjmp str_async_loop          ; Repete para o próximo caractere
+                                 
                                  str_async_end:
-000392 91ff                          pop r31
-000393 91ef                          pop r30
-000394 9508                          ret
+000392 91ff                          pop r31                      ; Restaura parte alta de Z
+000393 91ef                          pop r30                      ; Restaura parte baixa de Z
+000394 9508                          ret                          ; Retorna da sub-rotina
                                  
                                  
                                  ; ============================
-                                 ; Interrup��o USART - UDRE0
+                                 ; Interrupção USART - UDRE0
+                                 ; Ativada quando o registrador de dados está vazio (pronto para novo byte)
                                  ; ============================
-                                 
                                  uart_udre_isr:
-000395 930f                          push temp1
+000395 930f                          push temp1                   ; Salva registradores usados na interrupção
 000396 931f                          push temp2
 000397 933f                          push r19
 000398 935f                          push r21
 000399 936f                          push r22
 00039a 937f                          push r23
                                  
-00039b 9100 0141                     lds temp1, uart_tail
-00039d 9110 0140                     lds temp2, uart_head
-00039f 1701                          cp temp1, temp2
-0003a0 f079                          breq uart_buffer_empty
+00039b 9100 0141                     lds temp1, uart_tail         ; Lê a posição atual de leitura (tail)
+00039d 9110 0140                     lds temp2, uart_head         ; Lê a posição de escrita (head)
+00039f 1701                          cp temp1, temp2              ; Compara se o buffer está vazio
+0003a0 f079                          breq uart_buffer_empty       ; Se iguais, nada para enviar
                                  
-                                     ; Avan�a leitura
-0003a1 e410                          ldi temp2, 64
-0003a2 9503                          inc temp1
-0003a3 1701                          cp temp1, temp2
-0003a4 f008                          brlo no_wrap_read
-0003a5 e000                          ldi temp1, 0
+                                     ; ============================
+                                     ; Atualiza posição de leitura do buffer circular
+                                     ; ============================
+0003a1 e410                          ldi temp2, 64                ; Tamanho total do buffer circular
+0003a2 9503                          inc temp1                    ; Avança para o próximo byte
+0003a3 1701                          cp temp1, temp2              ; Verifica se chegou ao final
+0003a4 f008                          brlo no_wrap_read            ; Se não chegou, continua
+0003a5 e000                          ldi temp1, 0                 ; Se passou, volta para o início
+                                 
                                  no_wrap_read:
-0003a6 9300 0141                     sts uart_tail, temp1
+0003a6 9300 0141                     sts uart_tail, temp1         ; Atualiza a posição do tail
                                  
-0003a8 e0f1                          ldi ZH, high(uart_buffer)
-0003a9 e0e0                      	ldi ZL, low(uart_buffer)
-0003aa 0fe0                      	add ZL, temp1
-0003ab 1df1                      	adc ZH, zero
-0003ac 8130                      	ld r19, Z
+                                     ; ============================
+                                     ; Lê o byte do buffer circular e envia pela UART
+                                     ; ============================
+0003a8 e0f1                          ldi ZH, high(uart_buffer)    ; Carrega parte alta do ponteiro para o buffer
+0003a9 e0e0                          ldi ZL, low(uart_buffer)     ; Carrega parte baixa do ponteiro
+0003aa 0fe0                          add ZL, temp1                ; Soma o offset (tail)
+0003ab 1df1                          adc ZH, zero                 ; Adiciona carry se houver overflow
+0003ac 8130                          ld r19, Z                    ; Lê o byte da posição calculada
                                  
-0003ad 9330 00c6                     sts UDR0, r19
-0003af c006                          rjmp uart_isr_exit
+0003ad 9330 00c6                     sts UDR0, r19                ; Envia o byte para o registrador de transmissão
+0003af c006                          rjmp uart_isr_exit           ; Sai da interrupção
                                  
                                  uart_buffer_empty:
-0003b0 e008                          ldi temp1, (1 << TXEN0)        ; Desativa interrup��o, mant�m TX
-0003b1 9300 00c1                     sts UCSR0B, temp1
+                                     ; ============================
+                                     ; Se o buffer estiver vazio, desativa a interrupção UDRE0
+                                     ; ============================
+0003b0 e008                          ldi temp1, (1 << TXEN0)      ; Mantém apenas o transmissor ativado
+0003b1 9300 00c1                     sts UCSR0B, temp1            ; Atualiza controle da UART
 0003b3 e000                          ldi temp1, 0
-0003b4 9300 0142                     sts uart_sending, temp1
+0003b4 9300 0142                     sts uart_sending, temp1      ; Marca que transmissão terminou
                                  
                                  uart_isr_exit:
-0003b6 917f                          pop r23
+0003b6 917f                          pop r23                      ; Restaura registradores
 0003b7 916f                          pop r22
 0003b8 915f                          pop r21
 0003b9 913f                          pop r19
 0003ba 911f                          pop temp2
 0003bb 910f                          pop temp1
-0003bc 9518                          reti
+0003bc 9518                          reti                         ; Retorna da interrupção
                                  
                                  
                                  ; ============================
                                  ; Send_Decimal_Byte_Async
                                  ; Entrada: byte_val (r20)
+                                 ; Converte um byte (0–99) em ASCII e envia assíncronamente
                                  ; ============================
                                  Send_Decimal_Byte_Async:
-0003bd 930f                          push temp1
-0003be 931f                          push r17
-0003bf 934f                          push r20
+0003bd 930f                          push temp1                   ; Salva temporário
+0003be 931f                          push r17                     ; Reservado para possíveis cálculos
+0003bf 934f                          push r20                     ; Salva byte original
                                  
-0003c0 2f05                          mov temp1, byte_val
-0003c1 d060                          rcall div10
+0003c0 2f05                          mov temp1, byte_val          ; Copia o valor para temp1
+0003c1 d060                          rcall div10                  ; Divide por 10: temp1 = dezena, temp2 = unidade
                                  
-0003c2 2f60                          mov ascii_H, temp1
-0003c3 2f71                          mov ascii_L, temp2
+0003c2 2f60                          mov ascii_H, temp1           ; Armazena dezena
+0003c3 2f71                          mov ascii_L, temp2           ; Armazena unidade
                                  
-0003c4 5d60                          subi ascii_H, -0x30
+0003c4 5d60                          subi ascii_H, -0x30          ; Converte para ASCII
 0003c5 2f36                          mov r19, ascii_H
 0003c6 dfa3                          rcall UART_Enqueue_Byte
                                  
-0003c7 5d70                          subi ascii_L, -0x30
+0003c7 5d70                          subi ascii_L, -0x30          ; Converte para ASCII
 0003c8 2f37                          mov r19, ascii_L
 0003c9 dfa0                          rcall UART_Enqueue_Byte
                                  
-0003ca 914f                          pop r20
+0003ca 914f                          pop r20                      ; Restaura registradores
 0003cb 911f                          pop r17
 0003cc 910f                          pop temp1
 0003cd 9508                          ret
                                  
                                  
                                  ; ============================
-                                 ; send_mode1 com UART ass�ncrona
+                                 ; send_mode1 com UART assíncrona
+                                 ; Envia [MODO 1] MM:SS formatado
                                  ; ============================
                                  send_mode1:
-0003ce e5e0                          ldi ZL, low(str_modo1<<1)
-0003cf e0f0                          ldi ZH, high(str_modo1<<1)
-0003d0 dfba                          rcall USART_Transmit_String_Async
+                                     ; ================================
+                                     ; Envia o texto “[MODO 1]” pela UART (modo relógio)
+                                     ; ================================
+0003ce e5e0                          ldi ZL, low(str_modo1<<1)         ; Carrega parte baixa do endereço da string "[MODO 1]"
+0003cf e0f0                          ldi ZH, high(str_modo1<<1)        ; Carrega parte alta do endereço
+0003d0 dfba                          rcall USART_Transmit_String_Async ; Envia a string de forma assíncrona
                                  
-0003d1 9150 0143                     lds byte_val, mode_1
-0003d3 dfe9                          rcall Send_Decimal_Byte_Async
+                                     ; ================================
+                                     ; Envia os minutos (MM)
+                                     ; ================================
+0003d1 9150 0143                     lds byte_val, mode_1              ; Carrega os minutos do relógio
+0003d3 dfe9                          rcall Send_Decimal_Byte_Async     ; Envia os minutos como dois dígitos ASCII
                                  
-0003d4 e2ee                          ldi ZL, low(str_colon<<1)
+                                     ; ================================
+                                     ; Envia o caractere “:”
+                                     ; ================================
+0003d4 e2ee                          ldi ZL, low(str_colon<<1)         ; Carrega endereço da string ":"
 0003d5 e0f1                          ldi ZH, high(str_colon<<1)
-0003d6 dfb4                          rcall USART_Transmit_String_Async
+0003d6 dfb4                          rcall USART_Transmit_String_Async ; Envia ":" pela UART
                                  
-0003d7 9150 0144                     lds byte_val, mode_1+1
-0003d9 dfe3                          rcall Send_Decimal_Byte_Async
+                                     ; ================================
+                                     ; Envia os segundos (SS)
+                                     ; ================================
+0003d7 9150 0144                     lds byte_val, mode_1+1            ; Carrega os segundos do relógio
+0003d9 dfe3                          rcall Send_Decimal_Byte_Async     ; Envia os segundos como dois dígitos ASCII
                                  
-0003da c043                          rjmp send_newline_and_exit
+                                     ; ================================
+                                     ; Finaliza com quebra de linha
+                                     ; ================================
+0003da c043                          rjmp send_newline_and_exit        ; Envia \r\n e retorna
                                  
+                                 
+                                 ; ================================
+                                 ; send_mode2 com UART assíncrona
+                                 ; Envia o estado do cronômetro:
+                                 ; "[MODO 2] RUN MM:SS", "[MODO 2] STOPPED MM:SS" ou "[MODO 2] ZERO"
+                                 ; ================================
                                  send_mode2:
-0003db 9100 0147                     lds temp1, mode_2+2
-0003dd 3000                          cpi temp1, 0
-0003de f069                          breq check_mode2_zero
-0003df e5ea                          ldi ZL, low(str_modo2_run<<1)
-0003e0 e0f0                          ldi ZH, high(str_modo2_run<<1)
-0003e1 dfa9                          rcall USART_Transmit_String_Async
-0003e2 9150 0145                     lds byte_val, mode_2
-0003e4 dfd8                          rcall Send_Decimal_Byte_Async
-0003e5 e2ee                          ldi ZL, low(str_colon<<1)
+0003db 9100 0147                     lds temp1, mode_2+2               ; Carrega a flag de ativação do cronômetro
+0003dd 3000                          cpi temp1, 0                      ; Verifica se a flag está desativada (0)
+0003de f069                          breq check_mode2_zero            ; Se estiver desativado, verifica se está zerado ou parado
+                                 
+                                     ; ================================
+                                     ; Cronômetro está rodando → envia "[MODO 2] RUN MM:SS"
+                                     ; ================================
+0003df e5ea                          ldi ZL, low(str_modo2_run<<1)    ; Carrega parte baixa do endereço da string "[MODO 2] RUN"
+0003e0 e0f0                          ldi ZH, high(str_modo2_run<<1)   ; Carrega parte alta
+0003e1 dfa9                          rcall USART_Transmit_String_Async ; Envia string de forma assíncrona
+                                 
+0003e2 9150 0145                     lds byte_val, mode_2             ; Carrega os minutos do cronômetro
+0003e4 dfd8                          rcall Send_Decimal_Byte_Async    ; Envia minutos formatados como dois dígitos ASCII
+                                 
+0003e5 e2ee                          ldi ZL, low(str_colon<<1)        ; Carrega endereço do caractere ":"
 0003e6 e0f1                          ldi ZH, high(str_colon<<1)
-0003e7 dfa3                          rcall USART_Transmit_String_Async
-0003e8 9150 0146                     lds byte_val, mode_2+1
-0003ea dfd2                          rcall Send_Decimal_Byte_Async
-0003eb c032                          rjmp send_newline_and_exit
+0003e7 dfa3                          rcall USART_Transmit_String_Async ; Envia ":" pela UART
+                                 
+0003e8 9150 0146                     lds byte_val, mode_2+1           ; Carrega os segundos do cronômetro
+0003ea dfd2                          rcall Send_Decimal_Byte_Async    ; Envia segundos formatados como dois dígitos ASCII
+                                 
+0003eb c032                          rjmp send_newline_and_exit       ; Finaliza com \r\n e retorna
+                                 
                                  
                                  check_mode2_zero:
-0003ec 9100 0145                     lds temp1, mode_2
-0003ee 9110 0146                     lds temp2, mode_2+1
-0003f0 2b01                          or temp1, temp2
-0003f1 f421                          brne mode2_stopped
-0003f2 e7ea                          ldi ZL, low(str_modo2_zero<<1)
-0003f3 e0f0                          ldi ZH, high(str_modo2_zero<<1)
-0003f4 df96                          rcall USART_Transmit_String_Async
-0003f5 c028                          rjmp send_newline_and_exit
+0003ec 9100 0145                     lds temp1, mode_2              ; Carrega os minutos do cronômetro
+0003ee 9110 0146                     lds temp2, mode_2+1            ; Carrega os segundos do cronômetro
+0003f0 2b01                          or temp1, temp2                ; Verifica se ambos são zero (resultado = 0 só se os dois forem zero)
+0003f1 f421                          brne mode2_stopped             ; Se qualquer valor for diferente de zero, pula para "mode2_stopped"
+                                 
+                                     ; ================================
+                                     ; Cronômetro está parado e zerado → envia "[MODO 2] ZERO"
+                                     ; ================================
+0003f2 e7ea                          ldi ZL, low(str_modo2_zero<<1) ; Carrega parte baixa do endereço da string "[MODO 2] ZERO"
+0003f3 e0f0                          ldi ZH, high(str_modo2_zero<<1); Carrega parte alta
+0003f4 df96                          rcall USART_Transmit_String_Async ; Envia a string "[MODO 2] ZERO" pela UART
+                                 
+0003f5 c028                          rjmp send_newline_and_exit     ; Finaliza com quebra de linha e retorna
+                                 
                                  
                                  mode2_stopped:
-0003f6 e6e8                          ldi ZL, low(str_modo2_stop<<1)
-0003f7 e0f0                          ldi ZH, high(str_modo2_stop<<1)
-0003f8 df92                          rcall USART_Transmit_String_Async
-0003f9 9150 0145                     lds byte_val, mode_2
-0003fb dfc1                          rcall Send_Decimal_Byte_Async
-0003fc e2ee                          ldi ZL, low(str_colon<<1)
-0003fd e0f1                          ldi ZH, high(str_colon<<1)
-0003fe df8c                          rcall USART_Transmit_String_Async
-0003ff 9150 0146                     lds byte_val, mode_2+1
-000401 dfbb                          rcall Send_Decimal_Byte_Async
-000402 c01b                          rjmp send_newline_and_exit
+                                     ; ================================
+                                     ; Cronômetro parado (não zerado) → envia "[MODO 2] STOPPED MM:SS"
+                                     ; ================================
+0003f6 e6e8                          ldi ZL, low(str_modo2_stop<<1)   ; Carrega parte baixa do endereço da string "[MODO 2] STOPPED"
+0003f7 e0f0                          ldi ZH, high(str_modo2_stop<<1)  ; Carrega parte alta
+0003f8 df92                          rcall USART_Transmit_String_Async ; Envia a string "[MODO 2] STOPPED" pela UART
                                  
+0003f9 9150 0145                     lds byte_val, mode_2             ; Carrega os minutos do cronômetro
+0003fb dfc1                          rcall Send_Decimal_Byte_Async    ; Envia os minutos como dois dígitos ASCII
+                                 
+0003fc e2ee                          ldi ZL, low(str_colon<<1)        ; Carrega endereço da string ":"
+0003fd e0f1                          ldi ZH, high(str_colon<<1)
+0003fe df8c                          rcall USART_Transmit_String_Async ; Envia o caractere ":" pela UART
+                                 
+0003ff 9150 0146                     lds byte_val, mode_2+1           ; Carrega os segundos do cronômetro
+000401 dfbb                          rcall Send_Decimal_Byte_Async    ; Envia os segundos como dois dígitos ASCII
+                                 
+000402 c01b                          rjmp send_newline_and_exit       ; Finaliza com \r\n e retorna
+                                 
+                                 
+                                 ; ============================
+                                 ; send_mode3 com UART assíncrona
+                                 ; Envia uma mensagem indicando qual dígito está sendo ajustado no modo 3
+                                 ; ============================
                                  send_mode3:
-000403 9100 0148                     lds temp1, adjust_digit_selector
-000405 3000                          cpi temp1, 0
-000406 f039                          breq send_m3_su
-000407 3001                          cpi temp1, 1
+000403 9100 0148                     lds temp1, adjust_digit_selector ; Lê o valor do seletor de dígitos (0 a 3)
+000405 3000                          cpi temp1, 0                     ; Verifica se está ajustando unidade dos segundos
+000406 f039                          breq send_m3_su                  ; Se sim, envia string correspondente
+000407 3001                          cpi temp1, 1                     ; Verifica se está ajustando dezena dos segundos
 000408 f049                          breq send_m3_sd
-000409 3002                          cpi temp1, 2
+000409 3002                          cpi temp1, 2                     ; Verifica se está ajustando unidade dos minutos
 00040a f059                          breq send_m3_mu
-00040b 3003                          cpi temp1, 3
+00040b 3003                          cpi temp1, 3                     ; Verifica se está ajustando dezena dos minutos
 00040c f069                          breq send_m3_md
-00040d c010                          rjmp send_newline_and_exit
+00040d c010                          rjmp send_newline_and_exit      ; Se valor inválido, apenas envia nova linha
                                  
                                  send_m3_su:
-00040e e8e8                          ldi ZL, low(str_modo3_su<<1)
-00040f e0f0                          ldi ZH, high(str_modo3_su<<1)
-000410 df7a                          rcall USART_Transmit_String_Async
-000411 c00c                          rjmp send_newline_and_exit
+                                     ; ============================
+                                     ; Envia string: "[MODO 3] Ajustando a unidade dos segundos"
+                                     ; ============================
+00040e e8e8                          ldi ZL, low(str_modo3_su<<1)     ; Carrega parte baixa do endereço da string
+00040f e0f0                          ldi ZH, high(str_modo3_su<<1)    ; Carrega parte alta do endereço da string
+000410 df7a                          rcall USART_Transmit_String_Async ; Envia a string pela UART
+000411 c00c                          rjmp send_newline_and_exit       ; Finaliza com nova linha
+                                 
                                  send_m3_sd:
+                                     ; ============================
+                                     ; Envia string: "[MODO 3] Ajustando a dezena dos segundos"
+                                     ; ============================
 000412 ebe2                          ldi ZL, low(str_modo3_sd<<1)
 000413 e0f0                          ldi ZH, high(str_modo3_sd<<1)
 000414 df76                          rcall USART_Transmit_String_Async
 000415 c008                          rjmp send_newline_and_exit
+                                 
                                  send_m3_mu:
+                                     ; ============================
+                                     ; Envia string: "[MODO 3] Ajustando a unidade dos minutos"
+                                     ; ============================
 000416 edec                          ldi ZL, low(str_modo3_mu<<1)
 000417 e0f0                          ldi ZH, high(str_modo3_mu<<1)
 000418 df72                          rcall USART_Transmit_String_Async
 000419 c004                          rjmp send_newline_and_exit
+                                 
                                  send_m3_md:
+                                     ; ============================
+                                     ; Envia string: "[MODO 3] Ajustando a dezena dos minutos"
+                                     ; ============================
 00041a e0e6                          ldi ZL, low(str_modo3_md<<1)
 00041b e0f1                          ldi ZH, high(str_modo3_md<<1)
 00041c df6e                          rcall USART_Transmit_String_Async
 00041d c000                          rjmp send_newline_and_exit
                                  
+                                 
+                                 ; ============================
+                                 ; Envia caractere de nova linha e retorna
+                                 ; (quebra de linha para formatar saída UART)
+                                 ; ============================
                                  send_newline_and_exit:
-00041e e3e0                          ldi ZL, low(str_newline<<1)
+00041e e3e0                          ldi ZL, low(str_newline<<1)     ; Endereço da string "\r\n"
 00041f e0f1                          ldi ZH, high(str_newline<<1)
 000420 df6a                          rcall USART_Transmit_String_Async
 000421 9508                          ret
                                  
-                                 div10:
-000422 2711                          clr temp2           ; temp2 ser� o quociente (dezenas)
-                                 div10_loop:
-000423 300a                          cpi temp1, 10       ; Compara com 10
-000424 f018                          brlo div10_end      ; Se for menor, acabou
-000425 500a                          subi temp1, 10      ; Subtrai 10
-000426 9513                          inc temp2           ; Incrementa quociente
-000427 cffb                          rjmp div10_loop
-                                 div10_end:
-                                     ; No fim: temp1 tem o resto (unidade), temp2 tem o quociente (dezena)
-                                     ; Troca para retornar como especificado (temp1=quociente, temp2=resto)
-000428 930f                          push temp1
-000429 2f01                          mov temp1, temp2
-00042a 911f                          pop temp2
-00042b 9508                          ret
                                  
+                                 ; ============================
+                                 ; div10
+                                 ; Divide valor de temp1 por 10
+                                 ; Retorno: temp1 = dezena (quociente), temp2 = unidade (resto)
+                                 ; ============================
+                                 div10:
+000422 2711                          clr temp2                       ; Zera temp2 (será o quociente)
+                                 div10_loop:
+000423 300a                          cpi temp1, 10                   ; Verifica se temp1 ainda é maior ou igual a 10
+000424 f018                          brlo div10_end                  ; Se for menor que 10, fim da divisão
+000425 500a                          subi temp1, 10                  ; Subtrai 10 de temp1
+000426 9513                          inc temp2                       ; Incrementa o quociente
+000427 cffb                          rjmp div10_loop                 ; Repete até temp1 < 10
+                                 
+                                 div10_end:
+000428 930f                          push temp1                      ; Salva o resto (que ainda está em temp1)
+000429 2f01                          mov temp1, temp2                ; Coloca o quociente (dezena) em temp1
+00042a 911f                          pop temp2                       ; Recupera o resto (unidade) para temp2
+00042b 9508                      
                                  ; ============================
                                  ; Registradores
                                  ; ============================
                                  .def zero = r1            ; Registrador sempre zerado para adc
-                                 .def actual_mode = r18  ; Armazena o modo atual de opera��o (rel�gio, cron�metro, ajuste...)
+                                 .def actual_mode = r18  ; Armazena o modo atual de opera��o (rel�gio, cron�metro, ajuste...)
                                  .def temp1 = r16        ; Variavel temporaria
                                  .def temp2 = r17        ; Variavel temporaria
                                  .def temp3  = r20       ; Variavel temporaria
@@ -1787,25 +2128,25 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
                                  .dseg
 000143                           mode_1: .byte 2
 000145                           mode_2: .byte 3
-000148                           adjust_digit_selector: .byte 1 ; Vari�vel para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
+000148                           adjust_digit_selector: .byte 1 ; Vari�vel para MODO 3 (0=Sec Uni, 1=Sec Dez, 2=Min Uni, 3=Min Dez)
 000149                           trocar_modo_flag: .byte 1
 00014a                           blink_counter: .byte 1       ; Novo contador para controle da piscagem
                                  
                                  .cseg
                                  ; ============================
-                                 ; Vetores de Interrup��o
+                                 ; Vetores de Interrup��o
                                  ; ============================
                                  .org 0x0000
 000000 940c 009b                     jmp reset
                                  
                                  .org PCI0addr
-000006 940c 010a                     jmp pcint0_isr     ; Interrup��o do PB5 (PORTB)
+000006 940c 010a                     jmp pcint0_isr     ; Interrup��o do PB5 (PORTB)
                                  
                                  .org PCI2addr
-00000a 940c 00de                     jmp pcint2_isr     ; Interrup��o do PD6 e PD7 (PORTD)
+00000a 940c 00de                     jmp pcint2_isr     ; Interrup��o do PD6 e PD7 (PORTD)
                                  
                                  .org OC1Aaddr
-000016 940c 0123                     jmp OCI1A_ISR      ; Interrup��o TIMER
+000016 940c 0123                     jmp OCI1A_ISR      ; Interrup��o TIMER
                                  
                                  .org UDREaddr
 000026 940c 0395                     jmp uart_udre_isr
@@ -1932,16 +2273,16 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
                                  ; Reset
                                  ; ============================
                                  reset:
-                                 	; --- Inicializa��o das Vari�veis ---
+                                 	; --- Inicializa��o das Vari�veis ---
 00009b e000                          ldi temp1, 0              ; Carrega o valor 0 no registrador temp1 (r16)
-00009c 9300 0143                 	sts mode_1, temp1         ; Zera os minutos atuais do rel�gio (mode_1 = 0)
-00009e 9300 0144                 	sts mode_1 + 1, temp1     ; Zera os segundos atuais do rel�gio (mode_1 + 1 = 0)
-0000a0 9300 0145                 	sts mode_2, temp1         ; Zera os minutos do cron�metro (mode_2 = 0)
-0000a2 9300 0146                 	sts mode_2 + 1, temp1     ; Zera os segundos do cron�metro (mode_2 + 1 = 0)
-0000a4 9300 0147                 	sts mode_2 + 2, temp1     ; Zera a flag de ativa��o do cron�metro (mode_2 + 2 = 0)
+00009c 9300 0143                 	sts mode_1, temp1         ; Zera os minutos atuais do rel�gio (mode_1 = 0)
+00009e 9300 0144                 	sts mode_1 + 1, temp1     ; Zera os segundos atuais do rel�gio (mode_1 + 1 = 0)
+0000a0 9300 0145                 	sts mode_2, temp1         ; Zera os minutos do cron�metro (mode_2 = 0)
+0000a2 9300 0146                 	sts mode_2 + 1, temp1     ; Zera os segundos do cron�metro (mode_2 + 1 = 0)
+0000a4 9300 0147                 	sts mode_2 + 2, temp1     ; Zera a flag de ativa��o do cron�metro (mode_2 + 2 = 0)
 0000a6 9300 0148                     sts adjust_digit_selector, temp1 ; Zera seletor de ajuste
                                  
-0000a8 e10f                      	ldi temp1, 0b00011111     ; PB0�PB4 como sa�da
+0000a8 e10f                      	ldi temp1, 0b00011111     ; PB0�PB4 como sa�da
 0000a9 b904                      	out DDRB, temp1
                                  
                                      ; ========== Configura PD6 e PD7 ==========
@@ -1974,20 +2315,20 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 0000bc e005                          ldi temp1, (1 << PCIE2) | (1 << PCIE0)
 0000bd 9300 0068                     sts PCICR, temp1
                                  
-                                 	 ; --- Configura��o do Timer1 (Mantido do original) ---
-0000bf e002                          ldi temp1, (1 << OCIE1A)  ; Carrega no registrador temp1 um valor com o bit OCIE1A ativado (bit que habilita a interrup��o do Timer1 Compare Match A)
-0000c0 9300 006f                 	sts TIMSK1, temp1         ; Escreve esse valor no registrador TIMSK1, ativando a interrup��o do Timer1 (Canal A)
+                                 	 ; --- Configura��o do Timer1 (Mantido do original) ---
+0000bf e002                          ldi temp1, (1 << OCIE1A)  ; Carrega no registrador temp1 um valor com o bit OCIE1A ativado (bit que habilita a interrup��o do Timer1 Compare Match A)
+0000c0 9300 006f                 	sts TIMSK1, temp1         ; Escreve esse valor no registrador TIMSK1, ativando a interrup��o do Timer1 (Canal A)
                                      .equ PRESCALE = 0b100           ; Seleciona o prescaler do Timer1 como 256 (CS12:CS10 = 100)
                                  	.equ PRESCALE_DIV = 256         ; Valor real do prescaler (divisor de clock)
-                                 	.equ WGM = 0b0100               ; Define o modo de opera��o do Timer1 como CTC (Clear Timer on Compare Match)
+                                 	.equ WGM = 0b0100               ; Define o modo de opera��o do Timer1 como CTC (Clear Timer on Compare Match)
                                  	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
                                  
 0000c2 ef04                      	ldi temp1, high(TOP)              ; Carrega o byte mais significativo do valor TOP no registrador temp1
-0000c3 9300 0089                 	sts OCR1AH, temp1                 ; Armazena esse valor no registrador OCR1AH (parte alta do valor de compara��o do Timer1)
+0000c3 9300 0089                 	sts OCR1AH, temp1                 ; Armazena esse valor no registrador OCR1AH (parte alta do valor de compara��o do Timer1)
 0000c5 e204                      	ldi temp1, low(TOP)               ; Carrega o byte menos significativo do valor TOP no registrador temp1
-0000c6 9300 0088                 	sts OCR1AL, temp1                 ; Armazena esse valor no registrador OCR1AL (parte baixa do valor de compara��o do Timer1)
+0000c6 9300 0088                 	sts OCR1AL, temp1                 ; Armazena esse valor no registrador OCR1AL (parte baixa do valor de compara��o do Timer1)
 0000c8 e000                      	ldi temp1, ((WGM & 0b11) << WGM10) ; Extrai os 2 bits menos significativos de WGM e posiciona em WGM10/WGM11
-0000c9 9300 0080                 	sts TCCR1A, temp1                 ; Configura os bits de modo de opera��o do Timer1 no registrador TCCR1A
+0000c9 9300 0080                 	sts TCCR1A, temp1                 ; Configura os bits de modo de opera��o do Timer1 no registrador TCCR1A
 0000cb e00c                      	ldi temp1, ((WGM >> 2) << WGM12) | (PRESCALE << CS10)
 0000cc 9300 0081                 	sts TCCR1B, temp1                 ; Configura modo CTC e ativa o prescaler de 256 no registrador TCCR1B
                                  
@@ -1995,14 +2336,14 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 0000cf 9300 00c5                 	sts UBRR0H, temp1
 0000d1 e607                      	ldi temp1, low(UBRR_VALUE)
 0000d2 9300 00c4                 	sts UBRR0L, temp1
-0000d4 e208                      	ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; TX habilitado + interrup��o
+0000d4 e208                      	ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; TX habilitado + interrup��o
 0000d5 9300 00c1                 	sts UCSR0B, temp1
 0000d7 e006                      	ldi temp1, (1 << UCSZ01) | (1 << UCSZ00)
 0000d8 9300 00c2                 	sts UCSR0C, temp1
                                  
-                                     ; --- Estado Inicial e Interrup��es ---
-0000da e021                          ldi actual_mode, 1                ; Define o modo inicial como 1 (Rel�gio)
-0000db 9478                          sei                               ; Habilita interrup��es globais
+                                     ; --- Estado Inicial e Interrup��es ---
+0000da e021                          ldi actual_mode, 1                ; Define o modo inicial como 1 (Rel�gio)
+0000db 9478                          sei                               ; Habilita interrup��es globais
                                  
                                  main_loop:
 0000dc d1c7                      	rcall multiplexar_display
@@ -2031,7 +2372,7 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 0000ea 954a                          dec temp3
 0000eb f7d9                          brne verifica_pd6
                                  
-                                 	;; A��O PD6 | reset
+                                 	;; A��O PD6 | reset
 0000ec 3022                      	cpi actual_mode, 2
 0000ed f411                      	brne checa_reset_modo3
 0000ee d14a                      	rcall handle_reset_modo2
@@ -2058,7 +2399,7 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 0000fa 954a                          dec temp3
 0000fb f7d9                          brne verifica_pd7_loop
                                  
-                                 	;; A��O PD7 | start
+                                 	;; A��O PD7 | start
                                  
 0000fc 3022                      	cpi actual_mode, 2
 0000fd f419                      	brne pass_start_modo2
@@ -2103,7 +2444,7 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 000116 954a                          dec temp3
 000117 f7d9                          brne verifica_pb5
                                  
-                                     ;; ---------- A��O
+                                     ;; ---------- A��O
 000118 d026                      	rcall beep_modo
 000119 9523                          inc actual_mode
 00011a 3024                          cpi actual_mode, 4
@@ -2121,7 +2462,7 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 000122 9518                          reti
                                  
                                  ; =========================================================================
-                                 ; ROTINA DE INTERRUP��O DO TIMER 1 - EXECUTADA A CADA SEGUNDO
+                                 ; ROTINA DE INTERRUP��O DO TIMER 1 - EXECUTADA A CADA SEGUNDO
                                  ; =========================================================================
                                  OCI1A_ISR:
                                      ; --- Salvar Contexto ---
@@ -2131,7 +2472,7 @@ C:\Users\higor\Documents\programacao\assembly\relogio-digital-assembly\digital-c
 000126 b70f                          in temp1, SREG          
 000127 930f                          push temp1
                                  
-                                     ; --- L�gica de Atualiza��o ---
+                                     ; --- L�gica de Atualiza��o ---
 000128 3023                          cpi actual_mode, 3     
 000129 f009                          breq passa_hora
                                  
