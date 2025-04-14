@@ -198,6 +198,7 @@ verifica_pd7_loop:
 
 	cpi actual_mode, 2
 	brne pass_start_modo2
+	rcall beep_modo
 	rcall handle_start_modo2
 	rjmp pass_start_modo3
 
@@ -239,6 +240,7 @@ verifica_pb5:
     brne verifica_pb5
 
     ;; ---------- AÇÃO
+	rcall beep_modo
     inc actual_mode
     cpi actual_mode, 4
     brne end_isr
@@ -304,3 +306,9 @@ isr_end:
     pop temp2
     pop temp1
     reti
+
+beep_modo:
+    sbi PORTB, PB4
+    rcall delay_multiplex
+    cbi PORTB, PB4
+    ret

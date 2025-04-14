@@ -74,6 +74,7 @@ handle_reset_modo2:
 	ldi temp2, 0
 	sts mode_2, temp2         ; Zera os minutos do cronômetro (mode_2 = 0)
 	sts mode_2 + 1, temp2     ; Zera os segundos do cronômetro (mode_2 + 1 = 0)
+	rcall beep_modo
 
 	pass_reset:
 	pop temp2
