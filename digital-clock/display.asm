@@ -195,7 +195,7 @@ multiplexar_display_modo3:
     ; -------------------------------
     lds temp1, blink_counter    ; Carrega o valor atual do contador de piscagem
     inc temp1                   ; Incrementa o contador para indicar passagem de ciclo
-    cpi temp1, 150              ; Compara o contador com o limite para alternar a visibilidade
+    cpi temp1, 200              ; Compara o contador com o limite para alternar a visibilidade
                                 ; (limite maior → piscagem mais lenta)
     brlo salvar_contador        ; Se ainda não atingiu o limite, salta para salvar o valor
     ldi temp1, 0                ; Se atingiu ou excedeu, reseta o contador para 0

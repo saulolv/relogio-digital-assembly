@@ -42,7 +42,7 @@ UART_Enqueue_Byte:
 
     lds temp1, uart_head        ; Carrega o valor atual do ponteiro de escrita (head) do buffer
     ldi temp2, 64               ; Define o tamanho máximo do buffer (64 bytes)
-    inc temp1                 ; Incrementa o ponteiro de escrita para apontar para a próxima posição
+    inc temp1                   ; Incrementa o ponteiro de escrita para apontar para a próxima posição
     cp temp1, temp2             ; Compara com o tamanho do buffer para verificar overflow
     brlo no_wrap_uart           ; Se temp1 < 64, continua sem envolver
     ldi temp1, 0                ; Se ultrapassar 63, reinicia o ponteiro para 0 (wrap-around)
