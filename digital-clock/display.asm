@@ -158,8 +158,8 @@ fim_div:
 delay_multiplex:
     push r24                    ; Salva r24, que será usado no contador
     push r25                    ; Salva r25, também usado no contador
-    ldi r25, high(5000)         ; Carrega a parte alta do valor 5000 (constante de atraso)
-    ldi r24, low(5000)          ; Carrega a parte baixa do valor 5000
+    ldi r25, high(2500)         ; Carrega a parte alta do valor 5000 (constante de atraso)
+    ldi r24, low(2500)          ; Carrega a parte baixa do valor 5000
 delay_loop:
     sbiw r24, 1                ; Subtrai 1 do valor de r24:r25 (contador de atraso)
     brne delay_loop            ; Enquanto o contador não for zero, repete

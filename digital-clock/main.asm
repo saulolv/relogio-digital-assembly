@@ -87,6 +87,10 @@ reset:
 	ldi temp1, 0b00011111        ; Configura os bits PB0 a PB4 como 1 para serem saídas
 	out DDRB, temp1              ; Escreve a configuração no registrador DDRB
 
+    ; --- Configuração do PORTD (PD0 a PD5 como saída) ---
+    ldi temp1, 0b00111100
+	out DDRD, temp1
+
     ; --- Configuração dos pinos PD6 e PD7 como entradas com pull-up ---
     in temp1, DDRD            	  ; Lê a direção do PORTD
     andi temp1, ~(1 << PD6 | 1 << PD7)  ; Limpa os bits de PD6 e PD7 para configurar como entrada
@@ -324,7 +328,24 @@ isr_end:
 ; Descrição: Emite um beep através do pino PB4 para indicar uma mudança ou ação de modo
 ; ============================
 beep_modo:
-    sbi PORTB, PB4            ; Define o pino PB4 em nível alto (ativa o beep)
-    rcall delay_multiplex     ; Chama rotina de atraso (delay) para manter o beep ativo por um curto período
-    cbi PORTB, PB4            ; Limpa o bit de PB4, desligando o beep
-    ret                       ; Retorna para a rotina chamadora
+    sbi PORTB, PB4            ; Liga o buzzer
+    rcall delay_beep          ; Delay grande específico para beep
+    cbi PORTB, PB4            ; Desliga o buzzer
+    ret
+
+
+
+; ============================
+; Função de delay para o beep do buzzer
+; ============================
+delay_beep:
+    push r24
+    push r25
+    ldi r25, high(50000)      ; Valor muito maior que o delay_multiplex
+    ldi r24, low(50000)
+delay_beep_loop:
+    sbiw r24, 1
+    brne delay_beep_loop
+    pop r25
+    pop r24
+    ret

@@ -1,16 +1,16 @@
 
-AVRASM ver. 2.2.8  C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm Mon Apr 14 11:12:40 2025
+AVRASM ver. 2.2.8  C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm Sun Apr 27 02:46:45 2025
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\modes.asm'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(12): Including file 'C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\display.asm'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(13): Including file 'C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\uart.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(12): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(13): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328Pdef.inc'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\modes.asm'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(12): Including file 'C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\display.asm'
-C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main.asm(13): Including file 'C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\uart.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(1): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m328pdef.inc'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(11): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\modes.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(12): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\display.asm'
+C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\main.asm(13): Including file 'C:\Users\ander\Documents\Estudos\projeto micro\relogio-digital-assembly\digital-clock\uart.asm'
                                  
                                  .include "m328pdef.inc"              ; Inclui as definições do ATmega328P (endereços, registradores, etc.)
                                  
@@ -1150,7 +1150,7 @@ C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main
 00023f e010                          ldi temp2, 0                ; Prepara 0 para resetar os valores
 000240 9310 0145                     sts mode_2, temp2           ; Zera os minutos do cronômetro (mode_2)
 000242 9310 0146                     sts mode_2 + 1, temp2       ; Zera os segundos do cronômetro (mode_2+1)
-000244 defa                          rcall beep_modo             ; Emite um beep para confirmar a operação de reset
+000244 defc                          rcall beep_modo             ; Emite um beep para confirmar a operação de reset
                                  
                                  pass_reset:
 000245 911f                          pop temp2                   ; Restaura temp2
@@ -1454,8 +1454,8 @@ C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main
                                  delay_multiplex:
 0002f6 938f                          push r24                    ; Salva r24, que será usado no contador
 0002f7 939f                          push r25                    ; Salva r25, também usado no contador
-0002f8 e193                          ldi r25, high(5000)         ; Carrega a parte alta do valor 5000 (constante de atraso)
-0002f9 e888                          ldi r24, low(5000)          ; Carrega a parte baixa do valor 5000
+0002f8 e099                          ldi r25, high(2500)         ; Carrega a parte alta do valor 5000 (constante de atraso)
+0002f9 ec84                          ldi r24, low(2500)          ; Carrega a parte baixa do valor 5000
                                  delay_loop:
 0002fa 9701                          sbiw r24, 1                ; Subtrai 1 do valor de r24:r25 (contador de atraso)
 0002fb f7f1                          brne delay_loop            ; Enquanto o contador não for zero, repete
@@ -2011,13 +2011,13 @@ C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main
 000000 940c 009b                     jmp reset                    ; Vetor de Reset: salta para a rotina "reset"
                                  
                                  .org PCI0addr
-000006 940c 010a                     jmp pcint0_isr               ; Vetor da interrupção em PCINT0 (associado ao pino PB5)
+000006 940c 010c                     jmp pcint0_isr               ; Vetor da interrupção em PCINT0 (associado ao pino PB5)
                                  
                                  .org PCI2addr
-00000a 940c 00de                     jmp pcint2_isr               ; Vetor da interrupção em PCINT2 (associado aos pinos PD6 e PD7)
+00000a 940c 00e0                     jmp pcint2_isr               ; Vetor da interrupção em PCINT2 (associado aos pinos PD6 e PD7)
                                  
                                  .org OC1Aaddr
-000016 940c 0123                     jmp OCI1A_ISR                ; Vetor da interrupção do Timer1 Compare Match A
+000016 940c 0125                     jmp OCI1A_ISR                ; Vetor da interrupção do Timer1 Compare Match A
                                  
                                  .org UDREaddr
 000026 940c 0396                     jmp uart_udre_isr            ; Vetor da interrupção de UDR (Transmissor UART pronto para enviar novo byte)
@@ -2156,247 +2156,268 @@ C:\Users\saulo\EC\Microcontroladores\relogio-digital-assembly\digital-clock\main
 0000a8 e10f                      	ldi temp1, 0b00011111        ; Configura os bits PB0 a PB4 como 1 para serem saídas
 0000a9 b904                      	out DDRB, temp1              ; Escreve a configuração no registrador DDRB
                                  
-                                     ; --- Configuração dos pinos PD6 e PD7 como entradas com pull-up ---
-0000aa b10a                          in temp1, DDRD            	  ; Lê a direção do PORTD
-0000ab 730f                          andi temp1, ~(1 << PD6 | 1 << PD7)  ; Limpa os bits de PD6 e PD7 para configurar como entrada
-0000ac b90a                          out DDRD, temp1              ; Atualiza DDRD com PD6 e PD7 como entrada
+                                     ; --- Configuração do PORTD (PD0 a PD5 como saída) ---
+0000aa e30c                          ldi temp1, 0b00111100
+0000ab b90a                      	out DDRD, temp1
                                  
-0000ad b10b                          in temp1, PORTD              ; Lê o valor atual de PORTD
-0000ae 6c00                          ori temp1, (1 << PD6 | 1 << PD7) ; Ativa os resistores de pull-up para PD6 e PD7
-0000af b90b                          out PORTD, temp1             ; Escreve a configuração atualizada em PORTD
+                                     ; --- Configuração dos pinos PD6 e PD7 como entradas com pull-up ---
+0000ac b10a                          in temp1, DDRD            	  ; Lê a direção do PORTD
+0000ad 730f                          andi temp1, ~(1 << PD6 | 1 << PD7)  ; Limpa os bits de PD6 e PD7 para configurar como entrada
+0000ae b90a                          out DDRD, temp1              ; Atualiza DDRD com PD6 e PD7 como entrada
+                                 
+0000af b10b                          in temp1, PORTD              ; Lê o valor atual de PORTD
+0000b0 6c00                          ori temp1, (1 << PD6 | 1 << PD7) ; Ativa os resistores de pull-up para PD6 e PD7
+0000b1 b90b                          out PORTD, temp1             ; Escreve a configuração atualizada em PORTD
                                  
                                      ; --- Configuração do pino PB5 como entrada com pull-up ---
-0000b0 b104                          in temp1, DDRB            	  ; Lê a configuração atual do PORTB
-0000b1 7d0f                          andi temp1, ~(1 << PB5)      ; Configura PB5 como entrada (limpa bit correspondente)
-0000b2 b904                          out DDRB, temp1              ; Atualiza DDRB com PB5 como entrada
+0000b2 b104                          in temp1, DDRB            	  ; Lê a configuração atual do PORTB
+0000b3 7d0f                          andi temp1, ~(1 << PB5)      ; Configura PB5 como entrada (limpa bit correspondente)
+0000b4 b904                          out DDRB, temp1              ; Atualiza DDRB com PB5 como entrada
                                  
-0000b3 b105                          in temp1, PORTB              ; Lê o valor atual de PORTB
-0000b4 6200                          ori temp1, (1 << PB5)        ; Ativa o resistor de pull-up para PB5
-0000b5 b905                          out PORTB, temp1             ; Escreve a configuração atualizada em PORTB
+0000b5 b105                          in temp1, PORTB              ; Lê o valor atual de PORTB
+0000b6 6200                          ori temp1, (1 << PB5)        ; Ativa o resistor de pull-up para PB5
+0000b7 b905                          out PORTB, temp1             ; Escreve a configuração atualizada em PORTB
                                  
                                      ; --- Configuração das interrupções de PCINT para PD6 e PD7 ---
-0000b6 ec00                          ldi temp1, (1 << PCINT22) | (1 << PCINT23) ; Prepara a máscara para habilitar interrupções em PD6 (PCINT22) e PD7 (PCINT23)
-0000b7 9300 006d                     sts PCMSK2, temp1            ; Escreve a máscara no registrador PCMSK2
+0000b8 ec00                          ldi temp1, (1 << PCINT22) | (1 << PCINT23) ; Prepara a máscara para habilitar interrupções em PD6 (PCINT22) e PD7 (PCINT23)
+0000b9 9300 006d                     sts PCMSK2, temp1            ; Escreve a máscara no registrador PCMSK2
                                  
                                      ; --- Configuração da interrupção de PCINT para PB5 ---
-0000b9 e200                          ldi temp1, (1 << PCINT5)     ; Configura a máscara para habilitar interrupção no PB5 (PCINT5)
-0000ba 9300 006b                     sts PCMSK0, temp1            ; Escreve a máscara no registrador PCMSK0
+0000bb e200                          ldi temp1, (1 << PCINT5)     ; Configura a máscara para habilitar interrupção no PB5 (PCINT5)
+0000bc 9300 006b                     sts PCMSK0, temp1            ; Escreve a máscara no registrador PCMSK0
                                  
                                      ; --- Ativação dos grupos de interrupção PCINT ---
-0000bc e005                          ldi temp1, (1 << PCIE2) | (1 << PCIE0)  ; Habilita os grupos de interrupção PCINT2 (PORTD) e PCINT0 (PORTB)
-0000bd 9300 0068                     sts PCICR, temp1             ; Escreve a configuração no registrador PCICR
+0000be e005                          ldi temp1, (1 << PCIE2) | (1 << PCIE0)  ; Habilita os grupos de interrupção PCINT2 (PORTD) e PCINT0 (PORTB)
+0000bf 9300 0068                     sts PCICR, temp1             ; Escreve a configuração no registrador PCICR
                                  
                                  	; --- Configuração do Timer1 ---
-0000bf e002                          ldi temp1, (1 << OCIE1A)     ; Habilita a interrupção de Compare Match A do Timer1 (bit OCIE1A)
-0000c0 9300 006f                 	sts TIMSK1, temp1            ; Escreve em TIMSK1 para ativar a interrupção do Timer1
+0000c1 e002                          ldi temp1, (1 << OCIE1A)     ; Habilita a interrupção de Compare Match A do Timer1 (bit OCIE1A)
+0000c2 9300 006f                 	sts TIMSK1, temp1            ; Escreve em TIMSK1 para ativar a interrupção do Timer1
                                  
                                      .equ PRESCALE = 0b100        ; Define que o prescaler é 256 (CS12:CS10 = 100)
                                  	.equ PRESCALE_DIV = 256       ; Valor numérico do divisor do prescaler
                                  	.equ WGM = 0b0100             ; Define o modo de operação CTC (Clear Timer on Compare Match)
                                  	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY)) ; Calcula o valor de comparação para gerar um atraso definido
                                  
-0000c2 ef04                      	ldi temp1, high(TOP)         ; Carrega o byte mais significativo do valor TOP em temp1
-0000c3 9300 0089                 	sts OCR1AH, temp1            ; Armazena o byte alto no registrador OCR1AH
-0000c5 e204                      	ldi temp1, low(TOP)          ; Carrega o byte menos significativo do valor TOP em temp1
-0000c6 9300 0088                 	sts OCR1AL, temp1            ; Armazena o byte baixo no registrador OCR1AL
-0000c8 e000                      	ldi temp1, ((WGM & 0b11) << WGM10) ; Prepara os 2 bits menos significativos de WGM para configurar TCCR1A
-0000c9 9300 0080                 	sts TCCR1A, temp1            ; Configura TCCR1A com o modo CTC
-0000cb e00c                      	ldi temp1, ((WGM >> 2) << WGM12) | (PRESCALE << CS10) ; Configura TCCR1B para o modo CTC e ativa o prescaler
-0000cc 9300 0081                 	sts TCCR1B, temp1            ; Escreve em TCCR1B a configuração do Timer1
+0000c4 ef04                      	ldi temp1, high(TOP)         ; Carrega o byte mais significativo do valor TOP em temp1
+0000c5 9300 0089                 	sts OCR1AH, temp1            ; Armazena o byte alto no registrador OCR1AH
+0000c7 e204                      	ldi temp1, low(TOP)          ; Carrega o byte menos significativo do valor TOP em temp1
+0000c8 9300 0088                 	sts OCR1AL, temp1            ; Armazena o byte baixo no registrador OCR1AL
+0000ca e000                      	ldi temp1, ((WGM & 0b11) << WGM10) ; Prepara os 2 bits menos significativos de WGM para configurar TCCR1A
+0000cb 9300 0080                 	sts TCCR1A, temp1            ; Configura TCCR1A com o modo CTC
+0000cd e00c                      	ldi temp1, ((WGM >> 2) << WGM12) | (PRESCALE << CS10) ; Configura TCCR1B para o modo CTC e ativa o prescaler
+0000ce 9300 0081                 	sts TCCR1B, temp1            ; Escreve em TCCR1B a configuração do Timer1
                                  
                                  	; --- Configuração da Comunicação Serial (UART) ---
-0000ce e000                      	ldi temp1, high(UBRR_VALUE)  ; Carrega o byte alto do valor UBRR (taxa de baud)
-0000cf 9300 00c5                 	sts UBRR0H, temp1           ; Configura o registrador UBRR0H para UART
-0000d1 e607                      	ldi temp1, low(UBRR_VALUE)   ; Carrega o byte baixo do valor UBRR
-0000d2 9300 00c4                 	sts UBRR0L, temp1           ; Configura o registrador UBRR0L
-0000d4 e208                      	ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; Habilita a transmissão (TX) e a interrupção do UDR da UART
-0000d5 9300 00c1                 	sts UCSR0B, temp1           ; Escreve a configuração no registrador UCSR0B
-0000d7 e006                      	ldi temp1, (1 << UCSZ01) | (1 << UCSZ00)  ; Configura o formato dos dados: 8 bits, sem paridade, 1 stop bit
-0000d8 9300 00c2                 	sts UCSR0C, temp1           ; Escreve a configuração no registrador UCSR0C
+0000d0 e000                      	ldi temp1, high(UBRR_VALUE)  ; Carrega o byte alto do valor UBRR (taxa de baud)
+0000d1 9300 00c5                 	sts UBRR0H, temp1           ; Configura o registrador UBRR0H para UART
+0000d3 e607                      	ldi temp1, low(UBRR_VALUE)   ; Carrega o byte baixo do valor UBRR
+0000d4 9300 00c4                 	sts UBRR0L, temp1           ; Configura o registrador UBRR0L
+0000d6 e208                      	ldi temp1, (1 << TXEN0) | (1 << UDRIE0)  ; Habilita a transmissão (TX) e a interrupção do UDR da UART
+0000d7 9300 00c1                 	sts UCSR0B, temp1           ; Escreve a configuração no registrador UCSR0B
+0000d9 e006                      	ldi temp1, (1 << UCSZ01) | (1 << UCSZ00)  ; Configura o formato dos dados: 8 bits, sem paridade, 1 stop bit
+0000da 9300 00c2                 	sts UCSR0C, temp1           ; Escreve a configuração no registrador UCSR0C
                                  
                                      ; --- Estado Inicial do Sistema ---
-0000da e021                          ldi actual_mode, 1         ; Define o modo inicial como 1 (Relógio)
-0000db 9478                          sei                        ; Habilita as interrupções globais
+0000dc e021                          ldi actual_mode, 1         ; Define o modo inicial como 1 (Relógio)
+0000dd 9478                          sei                        ; Habilita as interrupções globais
                                  
                                  ; ============================
                                  ; Loop Principal
                                  ; ============================
                                  main_loop:
-0000dc d1c7                      	rcall multiplexar_display   ; Chama a rotina que atualiza o display multiplexado
-0000dd cffe                          rjmp main_loop              ; Salta incondicionalmente para o início do loop principal
+0000de d1c5                      	rcall multiplexar_display   ; Chama a rotina que atualiza o display multiplexado
+0000df cffe                          rjmp main_loop              ; Salta incondicionalmente para o início do loop principal
                                  
                                  ; ============================
                                  ; ISR: PCINT2 (Interrupção para PD6 e PD7)
                                  ; ============================
                                  pcint2_isr:
-0000de 930f                          push temp1                ; Salva o conteúdo de r16
-0000df 931f                          push temp2                ; Salva o conteúdo de r17
-0000e0 934f                          push temp3                ; Salva o conteúdo de r20
-0000e1 b70f                          in temp1, SREG            ; Lê o registrador de status (SREG)
-0000e2 930f                          push temp1                ; Salva o SREG
+0000e0 930f                          push temp1                ; Salva o conteúdo de r16
+0000e1 931f                          push temp2                ; Salva o conteúdo de r17
+0000e2 934f                          push temp3                ; Salva o conteúdo de r20
+0000e3 b70f                          in temp1, SREG            ; Lê o registrador de status (SREG)
+0000e4 930f                          push temp1                ; Salva o SREG
                                  
-0000e3 b119                          in temp2, PIND            ; Lê o valor dos pinos do PORTD
-0000e4 fd16                          sbrc temp2, PD6           ; Se o bit PD6 estiver limpo (descida), pula a próxima instrução
-0000e5 c00d                          rjmp verifica_pd7         ; Caso contrário, pula para verificar PD7
-0000e6 e045                          ldi temp3, 5              ; Inicializa um contador para debouncing
+0000e5 b119                          in temp2, PIND            ; Lê o valor dos pinos do PORTD
+0000e6 fd16                          sbrc temp2, PD6           ; Se o bit PD6 estiver limpo (descida), pula a próxima instrução
+0000e7 c00d                          rjmp verifica_pd7         ; Caso contrário, pula para verificar PD7
+0000e8 e045                          ldi temp3, 5              ; Inicializa um contador para debouncing
                                  
                                  ; --- Rotina de verificação para PD6 (detecção de borda de descida) ---
                                  verifica_pd6:
-0000e7 b109                          in temp1, PIND            ; Lê novamente o estado de PORTD
-0000e8 fd06                          sbrc temp1, PD6           ; Verifica se PD6 ainda está ativo (alta), se sim pula
-0000e9 c009                          rjmp verifica_pd7         ; Se mudou, passa a verificar PD7
-0000ea 954a                          dec temp3                 ; Decrementa o contador
-0000eb f7d9                          brne verifica_pd6         ; Se o contador não zerou, repete a verificação
+0000e9 b109                          in temp1, PIND            ; Lê novamente o estado de PORTD
+0000ea fd06                          sbrc temp1, PD6           ; Verifica se PD6 ainda está ativo (alta), se sim pula
+0000eb c009                          rjmp verifica_pd7         ; Se mudou, passa a verificar PD7
+0000ec 954a                          dec temp3                 ; Decrementa o contador
+0000ed f7d9                          brne verifica_pd6         ; Se o contador não zerou, repete a verificação
                                  
                                  	;; Ação executada se PD6 confirma uma borda de descida:
                                  	; Se o modo atual é 2 (cronômetro), executa o reset do modo 2
-0000ec 3022                      	cpi actual_mode, 2        
-0000ed f411                      	brne checa_reset_modo3     ; Se não for modo 2, pula para verificação do modo 3
-0000ee d14a                      	rcall handle_reset_modo2   ; Chama a rotina para resetar o cronômetro (modo 2)
-0000ef c003                      	rjmp fim_acao_pd6         ; Salta para o fim da ação de PD6
+0000ee 3022                      	cpi actual_mode, 2        
+0000ef f411                      	brne checa_reset_modo3     ; Se não for modo 2, pula para verificação do modo 3
+0000f0 d148                      	rcall handle_reset_modo2   ; Chama a rotina para resetar o cronômetro (modo 2)
+0000f1 c003                      	rjmp fim_acao_pd6         ; Salta para o fim da ação de PD6
                                  
                                  checa_reset_modo3:
                                  	; Se o modo atual é 3 (ajuste), executa o reset do modo 3
-0000f0 3023                      	cpi actual_mode, 3
-0000f1 f409                      	brne fim_acao_pd6         ; Se não for modo 3, não faz nada
-0000f2 d15b                      	rcall handle_reset_modo3   ; Chama a rotina para reset do modo 3
+0000f2 3023                      	cpi actual_mode, 3
+0000f3 f409                      	brne fim_acao_pd6         ; Se não for modo 3, não faz nada
+0000f4 d159                      	rcall handle_reset_modo3   ; Chama a rotina para reset do modo 3
                                  
                                  fim_acao_pd6:
                                      ; --- Continuação: Verificação para PD7 ---
                                  ; --- Rotina de verificação para PD7 (detecção de borda de descida) ---
                                  verifica_pd7:
-0000f3 b119                          in temp2, PIND            ; Lê o valor atual dos pinos de PORTD
-0000f4 fd17                          sbrc temp2, PD7           ; Se PD7 estiver em nível lógico alto, pula
-0000f5 c00e                          rjmp end_pcint2_isr       ; Se não, prossegue com a detecção de borda de descida
-0000f6 e045                          ldi temp3, 5              ; Inicializa o contador para debouncing de PD7
+0000f5 b119                          in temp2, PIND            ; Lê o valor atual dos pinos de PORTD
+0000f6 fd17                          sbrc temp2, PD7           ; Se PD7 estiver em nível lógico alto, pula
+0000f7 c00e                          rjmp end_pcint2_isr       ; Se não, prossegue com a detecção de borda de descida
+0000f8 e045                          ldi temp3, 5              ; Inicializa o contador para debouncing de PD7
                                  
                                  verifica_pd7_loop:
-0000f7 b109                          in temp1, PIND            ; Lê novamente o PORTD
-0000f8 fd07                          sbrc temp1, PD7           ; Verifica o estado de PD7; se ainda estiver ativo, pula
-0000f9 c00a                          rjmp end_pcint2_isr       ; Se já subiu, sai da rotina
-0000fa 954a                          dec temp3                 ; Decrementa o contador
-0000fb f7d9                          brne verifica_pd7_loop    ; Repete enquanto o contador não chegar a zero
+0000f9 b109                          in temp1, PIND            ; Lê novamente o PORTD
+0000fa fd07                          sbrc temp1, PD7           ; Verifica o estado de PD7; se ainda estiver ativo, pula
+0000fb c00a                          rjmp end_pcint2_isr       ; Se já subiu, sai da rotina
+0000fc 954a                          dec temp3                 ; Decrementa o contador
+0000fd f7d9                          brne verifica_pd7_loop    ; Repete enquanto o contador não chegar a zero
                                  
                                  	;; Ação executada se PD7 confirma a borda de descida:
                                  	; Se o modo atual é 2, executa a ação de início do cronômetro
-0000fc 3022                      	cpi actual_mode, 2
-0000fd f419                      	brne pass_start_modo2     ; Se não for modo 2, verifica o modo 3
-0000fe d040                      	rcall beep_modo            ; Emite um beep para sinalizar a ação
-0000ff d12e                      	rcall handle_start_modo2   ; Chama a rotina para iniciar o cronômetro (modo 2)
-000100 c003                      	rjmp pass_start_modo3     ; Pula para a verificação seguinte
+0000fe 3022                      	cpi actual_mode, 2
+0000ff f419                      	brne pass_start_modo2     ; Se não for modo 2, verifica o modo 3
+000100 d040                      	rcall beep_modo            ; Emite um beep para sinalizar a ação
+000101 d12c                      	rcall handle_start_modo2   ; Chama a rotina para iniciar o cronômetro (modo 2)
+000102 c003                      	rjmp pass_start_modo3     ; Pula para a verificação seguinte
                                  
                                  	pass_start_modo2:
-000101 3023                      	cpi actual_mode, 3
-000102 f409                      	brne pass_start_modo3     ; Se não for modo 3, não faz ação
-000103 d144                      	rcall handle_start_modo3   ; Chama a rotina para iniciar a ação específica do modo 3
+000103 3023                      	cpi actual_mode, 3
+000104 f409                      	brne pass_start_modo3     ; Se não for modo 3, não faz ação
+000105 d142                      	rcall handle_start_modo3   ; Chama a rotina para iniciar a ação específica do modo 3
                                  
                                  	pass_start_modo3:
                                      ; --- Finalização da ISR PCINT2 ---
                                  end_pcint2_isr:
-000104 910f                          pop temp1                 ; Restaura o valor salvo do SREG
-000105 bf0f                          out SREG, temp1           ; Restaura o SREG
+000106 910f                          pop temp1                 ; Restaura o valor salvo do SREG
+000107 bf0f                          out SREG, temp1           ; Restaura o SREG
                                  
-000106 914f                          pop temp3                 ; Restaura temp3
-000107 911f                          pop temp2                 ; Restaura temp2
-000108 910f                          pop temp1                 ; Restaura temp1
-000109 9518                          reti                      ; Retorna da interrupção
+000108 914f                          pop temp3                 ; Restaura temp3
+000109 911f                          pop temp2                 ; Restaura temp2
+00010a 910f                          pop temp1                 ; Restaura temp1
+00010b 9518                          reti                      ; Retorna da interrupção
                                  
                                  ; ============================
                                  ; ISR: PCINT0 (Interrupção para PB5)
                                  ; ============================
                                  pcint0_isr:
-00010a 930f                          push temp1                ; Salva r16
-00010b 931f                          push temp2                ; Salva r17
-00010c 934f                          push temp3                ; Salva r20
-00010d b70f                          in temp1, SREG            ; Lê o SREG
-00010e 930f                          push temp1                ; Salva o SREG
+00010c 930f                          push temp1                ; Salva r16
+00010d 931f                          push temp2                ; Salva r17
+00010e 934f                          push temp3                ; Salva r20
+00010f b70f                          in temp1, SREG            ; Lê o SREG
+000110 930f                          push temp1                ; Salva o SREG
                                  
-00010f b113                          in temp2, PINB            ; Lê o valor dos pinos de PORTB
-000110 fd15                          sbrc temp2, PB5           ; Se PB5 estiver alto, pula a próxima instrução
-000111 c00b                          rjmp end_isr              ; Se o botão não foi pressionado, sai da ISR
-000112 e045                          ldi temp3, 5              ; Inicializa contador para debouncing
+000111 b113                          in temp2, PINB            ; Lê o valor dos pinos de PORTB
+000112 fd15                          sbrc temp2, PB5           ; Se PB5 estiver alto, pula a próxima instrução
+000113 c00b                          rjmp end_isr              ; Se o botão não foi pressionado, sai da ISR
+000114 e045                          ldi temp3, 5              ; Inicializa contador para debouncing
                                  
                                  verifica_pb5:
-000113 b103                          in temp1, PINB            ; Lê novamente o PINB
-000114 fd05                          sbrc temp1, PB5           ; Verifica se PB5 mudou de estado
-000115 c007                          rjmp end_isr              ; Se o botão não estiver mais pressionado, termina a verificação
-000116 954a                          dec temp3                 ; Decrementa o contador
-000117 f7d9                          brne verifica_pb5         ; Repete a verificação enquanto o contador não chegar a zero
+000115 b103                          in temp1, PINB            ; Lê novamente o PINB
+000116 fd05                          sbrc temp1, PB5           ; Verifica se PB5 mudou de estado
+000117 c007                          rjmp end_isr              ; Se o botão não estiver mais pressionado, termina a verificação
+000118 954a                          dec temp3                 ; Decrementa o contador
+000119 f7d9                          brne verifica_pb5         ; Repete a verificação enquanto o contador não chegar a zero
                                  
                                      ;; Ação executada na interrupção:
-000118 d026                      	rcall beep_modo            ; Emite um beep para indicar a mudança de modo
-000119 9523                          inc actual_mode           ; Incrementa o modo atual
-00011a 3024                          cpi actual_mode, 4        ; Compara se o novo modo atingiu 4
-00011b f409                          brne end_isr              ; Se não for 4, termina a ISR
-00011c e021                          ldi actual_mode, 1        ; Se for 4, reinicia para o modo 1 (relógio)
+00011a d026                      	rcall beep_modo            ; Emite um beep para indicar a mudança de modo
+00011b 9523                          inc actual_mode           ; Incrementa o modo atual
+00011c 3024                          cpi actual_mode, 4        ; Compara se o novo modo atingiu 4
+00011d f409                          brne end_isr              ; Se não for 4, termina a ISR
+00011e e021                          ldi actual_mode, 1        ; Se for 4, reinicia para o modo 1 (relógio)
                                  
                                  end_isr:
-00011d 910f                          pop temp1                 ; Restaura o SREG
-00011e bf0f                          out SREG, temp1           ; Restaura o SREG
+00011f 910f                          pop temp1                 ; Restaura o SREG
+000120 bf0f                          out SREG, temp1           ; Restaura o SREG
                                  
-00011f 914f                          pop temp3                 ; Restaura temp3
-000120 911f                          pop temp2                 ; Restaura temp2
-000121 910f                          pop temp1                 ; Restaura temp1
-000122 9518                          reti                      ; Retorna da interrupção
+000121 914f                          pop temp3                 ; Restaura temp3
+000122 911f                          pop temp2                 ; Restaura temp2
+000123 910f                          pop temp1                 ; Restaura temp1
+000124 9518                          reti                      ; Retorna da interrupção
                                  
                                  ; ============================
                                  ; ISR: Timer1 Compare Match A (rotina executada a cada segundo)
                                  ; ============================
                                  OCI1A_ISR:
                                      ; --- Salvar contexto ---
-000123 930f                          push temp1                ; Salva r16
-000124 931f                          push temp2                ; Salva r17
-000125 934f                          push temp3                ; Salva r20
-000126 b70f                          in temp1, SREG            ; Lê SREG
-000127 930f                          push temp1                ; Salva SREG
+000125 930f                          push temp1                ; Salva r16
+000126 931f                          push temp2                ; Salva r17
+000127 934f                          push temp3                ; Salva r20
+000128 b70f                          in temp1, SREG            ; Lê SREG
+000129 930f                          push temp1                ; Salva SREG
                                  
                                      ; --- Lógica de atualização do tempo ---
-000128 3023                          cpi actual_mode, 3        ; Compara se o modo atual é 3 (modo de ajuste)
-000129 f009                          breq passa_hora           ; Se for modo 3, pula a atualização do relógio
-00012a d0d5                          rcall hora_atual          ; Caso contrário, atualiza a hora (rotina que incrementa o relógio)
+00012a 3023                          cpi actual_mode, 3        ; Compara se o modo atual é 3 (modo de ajuste)
+00012b f009                          breq passa_hora           ; Se for modo 3, pula a atualização do relógio
+00012c d0d3                          rcall hora_atual          ; Caso contrário, atualiza a hora (rotina que incrementa o relógio)
                                  
                                  passa_hora:
                                  	; --- Se o cronômetro estiver ativado (flag em mode_2 + 2 = 1), atualiza o cronômetro ---
-00012b 9100 0147                 	lds temp1, mode_2 + 2      ; Carrega o valor da flag do cronômetro
-00012d 3001                      	cpi temp1, 1              ; Verifica se a flag está ativa (igual a 1)
-00012e f409                      	brne pass_cronometro      ; Se não estiver ativa, pula a rotina de cronômetro
-00012f d0e5                          rcall cronometro          ; Se estiver ativa, chama a rotina que atualiza o cronômetro
+00012d 9100 0147                 	lds temp1, mode_2 + 2      ; Carrega o valor da flag do cronômetro
+00012f 3001                      	cpi temp1, 1              ; Verifica se a flag está ativa (igual a 1)
+000130 f409                      	brne pass_cronometro      ; Se não estiver ativa, pula a rotina de cronômetro
+000131 d0e3                          rcall cronometro          ; Se estiver ativa, chama a rotina que atualiza o cronômetro
                                  pass_cronometro:
                                  
                                      ; --- Envio de informações via UART conforme o modo ---
-000130 3021                          cpi actual_mode, 1        ; Verifica se o modo atual é 1 (Relógio)
-000131 f409                      	brne pass_uart_mode1
-000132 d29c                          rcall send_mode1          ; Se for modo 1, envia informações do relógio pela serial
+000132 3021                          cpi actual_mode, 1        ; Verifica se o modo atual é 1 (Relógio)
+000133 f409                      	brne pass_uart_mode1
+000134 d29a                          rcall send_mode1          ; Se for modo 1, envia informações do relógio pela serial
                                  pass_uart_mode1:
                                  
-000133 3022                          cpi actual_mode, 2        ; Verifica se o modo atual é 2 (Cronômetro)
-000134 f409                      	brne pass_uart_mode2
-000135 d2a6                          rcall send_mode2          ; Se for modo 2, envia informações do cronômetro pela serial
+000135 3022                          cpi actual_mode, 2        ; Verifica se o modo atual é 2 (Cronômetro)
+000136 f409                      	brne pass_uart_mode2
+000137 d2a4                          rcall send_mode2          ; Se for modo 2, envia informações do cronômetro pela serial
                                  pass_uart_mode2:
                                  
-000136 3023                          cpi actual_mode, 3        ; Verifica se o modo atual é 3 (Ajuste)
-000137 f409                          brne continuar_uart       ; Se não for modo 3, pula para continuar
-000138 d2cb                          rcall send_mode3          ; Se for modo 3, envia informações de ajuste pela serial
+000138 3023                          cpi actual_mode, 3        ; Verifica se o modo atual é 3 (Ajuste)
+000139 f409                          brne continuar_uart       ; Se não for modo 3, pula para continuar
+00013a d2c9                          rcall send_mode3          ; Se for modo 3, envia informações de ajuste pela serial
                                  
                                  continuar_uart:
                                  isr_end:
                                      ; --- Restaurar contexto ---
-000139 910f                          pop temp1                 ; Restaura SREG
-00013a bf0f                          out SREG, temp1           ; Restaura SREG
-00013b 914f                          pop temp3                 ; Restaura temp3
-00013c 911f                          pop temp2                 ; Restaura temp2
-00013d 910f                          pop temp1                 ; Restaura temp1
-00013e 9518                          reti                      ; Retorna da interrupção
+00013b 910f                          pop temp1                 ; Restaura SREG
+00013c bf0f                          out SREG, temp1           ; Restaura SREG
+00013d 914f                          pop temp3                 ; Restaura temp3
+00013e 911f                          pop temp2                 ; Restaura temp2
+00013f 910f                          pop temp1                 ; Restaura temp1
+000140 9518                          reti                      ; Retorna da interrupção
                                  
                                  ; ============================
                                  ; Função: beep_modo
                                  ; Descrição: Emite um beep através do pino PB4 para indicar uma mudança ou ação de modo
                                  ; ============================
                                  beep_modo:
-00013f 9a2c                          sbi PORTB, PB4            ; Define o pino PB4 em nível alto (ativa o beep)
-000140 d1b5                          rcall delay_multiplex     ; Chama rotina de atraso (delay) para manter o beep ativo por um curto período
-000141 982c                          cbi PORTB, PB4            ; Limpa o bit de PB4, desligando o beep
-000142 9508                          ret                       ; Retorna para a rotina chamadora
+000141 9a2c                          sbi PORTB, PB4            ; Liga o buzzer
+000142 d002                          rcall delay_beep          ; Delay grande específico para beep
+000143 982c                          cbi PORTB, PB4            ; Desliga o buzzer
+000144 9508                          ret
+                                 
+                                 
+                                 
+                                 ; ============================
+                                 ; Função de delay para o beep do buzzer
+                                 ; ============================
+                                 delay_beep:
+000145 938f                          push r24
+000146 939f                          push r25
+000147 ec93                          ldi r25, high(50000)      ; Valor muito maior que o delay_multiplex
+000148 e580                          ldi r24, low(50000)
+                                 delay_beep_loop:
+000149 9701                          sbiw r24, 1
+00014a f7f1                          brne delay_beep_loop
+00014b 919f                          pop r25
+00014c 918f                          pop r24
+00014d 9508                          ret
 
 
 RESOURCE USE INFORMATION
@@ -2416,8 +2437,8 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   3 r0 :   4 r1 :   2 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 226 r17: 141 r18:  14 r19:  14 r20:  14 
-r21:   9 r22:   5 r23:  19 r24:  10 r25:   9 r26:   6 r27:   0 r28:   0 
+r13:   0 r14:   0 r15:   0 r16: 228 r17: 141 r18:  14 r19:  14 r20:  14 
+r21:   9 r22:   5 r23:  19 r24:  14 r25:  12 r26:   6 r27:   0 r28:   0 
 r29:   0 r30:  20 r31:  20 
 Registers used: 16 out of 35 (45.7%)
 
@@ -2426,18 +2447,18 @@ Registers used: 16 out of 35 (45.7%)
 andi  :  15 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :  18 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :  11 brlt  :   0 brmi  :   0 
-brne  :  25 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brne  :  26 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   6 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   4 cpc   :   0 
 cpi   :  44 cpse  :   0 dec   :   3 eor   :   1 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :  26 inc   :  15 jmp   :   5 
-ld    :   1 ldd   :   0 ldi   :  92 lds   :  36 lpm   :   1 lsl   :   2 
+ld    :   1 ldd   :   0 ldi   :  95 lds   :  36 lpm   :   1 lsl   :   2 
 lsr   :   0 mov   :  32 movw  :   0 mul   :   4 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   2 ori   :  10 out   :  22 pop   :  43 
-push  :  43 rcall :  58 ret   :  23 reti  :   4 rjmp  :  32 rol   :   0 
+neg   :   0 nop   :   0 or    :   2 ori   :  10 out   :  23 pop   :  45 
+push  :  45 rcall :  58 ret   :  24 reti  :   4 rjmp  :  32 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
-sbiw  :   1 sbr   :   0 sbrc  :   6 sbrs  :   0 sec   :   0 seh   :   0 
+sbiw  :   2 sbr   :   0 sbrc  :   6 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   1 std   :   0 sts   :  42 
 sub   :   1 subi  :   3 swap  :   0 tst   :   1 wdr   :   0 
@@ -2446,7 +2467,7 @@ Instructions used: 41 out of 113 (36.3%)
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00085a   1470    230   1700   32768   5.2%
+[.cseg] 0x000000 0x00085a   1492    230   1722   32768   5.3%
 [.dseg] 0x000100 0x00014b      0     75     75    2048   3.7%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
