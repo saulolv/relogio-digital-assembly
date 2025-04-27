@@ -26,6 +26,7 @@
 .def ascii_L = r23                 ; Guarda o dígito ASCII da unidade
 .def botao_pd7 = r24               ; Registrador para controle do botão ligado ao pino PD7
 
+
 ; ============================
 ; Área de Dados (declaração de variáveis em RAM)
 ; ============================
